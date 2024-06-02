@@ -1,0 +1,54 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh; /* Pastikan container minimal tinggi viewport */
+    height: auto; /* Biarkan tinggi container mengikuti konten */
+}
+
+.nav-admin {
+    flex: 0 0 270px; /* lebar tetap 290px, tidak tumbuh atau menyusut */
+    background: #443f3f;
+    min-height: 100%; /* Pastikan navbar mengikuti tinggi container */
+    position: sticky;
+    top: 0;
+    flex-basis: 290px;
+    width: 290px;
+}
+
+.nav-admin .nav-admin-ul {
+    padding: 0;
+}
+
+.nav-admin .nav-admin-ul .nav-admin-ul-li {
+    list-style: none;
+}
+
+.logoImg {
+    width: 170px;
+    height: 170px;
+    flex-shrink: 0;
+    margin-left: 50px;
+    margin-right: auto;
+}
+
+.content {
+    flex: 1 1 auto; /* tumbuh dan menyusut sesuai kebutuhan */
+    padding: 15px 25px;
+}
+
+.title {
+    color: #fff;
+    font-family: Poppins;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    text-transform: uppercase;
+}
+
+.contentWrapper {
+    margin-top: 10px;
+    background-color: #fffdfd;
+    border-radius: 10px;
+    padding: 10px 20px;
+}
