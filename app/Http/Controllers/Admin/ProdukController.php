@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\Booking;
+use App\Http\Controllers\Controller;
+use App\Models\Produk;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
-class BookingController extends Controller
+class ProdukController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return Inertia::render("Admin/ManajemenProduk");
     }
 
     /**
@@ -20,7 +22,6 @@ class BookingController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -34,23 +35,21 @@ class BookingController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Booking $booking)
+    public function show(Produk $produk)
     {
-        //
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Booking $booking)
+    public function edit(Produk $produk)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Booking $booking)
+    public function update(Request $request, Produk $produk)
     {
         //
     }
@@ -58,7 +57,7 @@ class BookingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Booking $booking)
+    public function destroy(Produk $produk)
     {
         //
     }

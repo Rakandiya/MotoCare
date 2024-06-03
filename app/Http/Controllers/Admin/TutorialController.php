@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Tutorial;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,15 +24,15 @@ class TutorialController extends Controller
      */
     public function create()
     {
-        
+        //
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $validatedData = $request->validate([
+    {
+        $validatedData = $request->validate([
         'judul' => 'required|max:255',
         'deskripsi' => 'required',
         'link' => 'required|url'
@@ -48,8 +49,8 @@ class TutorialController extends Controller
         'link' => $validatedData['link'],
     ]);
 
-    // return redirect()->back();
-}
+    return redirect()->back();
+    }
 
     /**
      * Display the specified resource.
@@ -64,7 +65,7 @@ class TutorialController extends Controller
      */
     public function edit(Tutorial $tutorial)
     {
-        
+        //
     }
 
     /**
@@ -72,9 +73,6 @@ class TutorialController extends Controller
      */
     public function update(Request $request, Tutorial $tutorial)
     {
-
-        
-        
         $validatedData = $request->validate([
             'judul' => 'required|max:255',
             'deskripsi' => 'required',

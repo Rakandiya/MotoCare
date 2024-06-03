@@ -1,0 +1,43 @@
+.form-wrapper {
+  width: 90%;
+  margin-left: 5%;
+}
+
+.title-form {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.form {
+  margin-top: 10px;
+  /* width: 90%; */
+  width: 100%;
+}
+.label {
+  display: block;
+  padding: 5px 5px;
+}
+
+.form .input,
+.form .select {
+  display: inline;
+  padding: 5px 5px;
+  color: rgba(0, 0, 0, 0.6);
+  font-family: Poppins;
+  font-size: 16px;
+  border-bottom: 2px solid rgba(183, 182, 182, 0.8);
+  width: 100%;
+}
+
+.catatan {
+  display: block;
+  padding: 5px 5px;
+  color: rgba(0, 0, 0, 0.6);
+  font-family: Poppins;
+  font-size: 16px;
+  border: 2px solid rgba(183, 182, 182, 0.8);
+  border-radius: 5px;
+  resize: none;
+  width: 100%;
+}

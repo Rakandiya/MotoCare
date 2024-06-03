@@ -1,0 +1,132 @@
+.title-table {
+  color: #000000;
+  font-family: Poppins;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom: 10px;
+}
+
+.form-search {
+  display: flex;
+  color: #c7c7c7;
+  gap: 2px;
+  border-bottom: 2px solid rgba(241, 98, 17, 0.8);
+  width: 75%;
+}
+
+.icon-search {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  padding-top: 5px;
+  color: rgba(241, 98, 17, 0.8);
+}
+
+.search {
+  /* border-bottom: 2px solid rgba(241, 98, 17, 0.8); */
+  /* border-radius: 5px; */
+  width: 250px;
+  padding: 5px 10px;
+  color: rgba(0, 0, 0, 0.6);
+  font-family: Poppins;
+  font-size: 16px;
+}
+
+.title-form {
+  color: #000000;
+  font-family: Poppins;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.form {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.input-merk,
+.input-model {
+  padding: 5px 5px;
+  color: rgba(0, 0, 0, 0.6);
+  font-family: Poppins;
+  font-size: 16px;
+  border-bottom: 2px solid rgba(183, 182, 182, 0.8);
+  width: 100%;
+}
+
+.input-gambar[type="file"] {
+  display: none;
+}
+
+.label-gambar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: rgba(241, 98, 17, 0.4);
+  color: rgba(255, 255, 255, 1);
+  font-family: Poppins;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: uppercase;
+  padding: 10px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  opacity: 1;
+  width: 200px;
+  height: 125px;
+  /* margin-bottom: 20px; */
+}
+
+.opsi {
+  font-size: 11px;
+}
+
+.label-gambar .label-gambar-div {
+  background-color: rgba(255, 255, 255, 1);
+  color: rgba(241, 98, 17, 1);
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.img-preview {
+  width: 200px;
+  /* height: 225px; */
+}
+
+.deskripsi {
+  display: block;
+  padding: 5px 10px;
+  color: rgba(0, 0, 0, 0.6);
+  font-family: Poppins;
+  font-size: 14px;
+  border: 2px solid rgba(183, 182, 182, 0.8);
+  border-radius: 5px;
+  resize: none;
+  width: 100%;
+}
+
+.table .tr .th {
+  text-align: left;
+  width: 10%;
+}
+
+.table .tr .td {
+  width: 10px;
+}

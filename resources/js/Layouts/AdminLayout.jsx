@@ -2,61 +2,59 @@ import "../../css/Admin/AdminGlobal.css";
 import styles from "../../css/Admin/layoutStyles.module.css";
 import PropTypes from "prop-types";
 import { NavLink } from "@/Components/NavbarLink";
+import { route } from "ziggy-js";
 // import logo from "../assets/images/logo.png";
 // import { useLocation } from "react-router-dom";
 
 export default function AdminLayout({ title, children }) {
     // const location = useLocation();
 
-    const routes = [
-        { path: "/admin", label: "Dashboard", subPaths: [] },
+    const routeList = [
+        { path: "admin.dashboard", label: "Dashboard", subPaths: [] },
         {
-            path: "/admin/manajemen-pengguna",
-            label: "Manajemen Pengguna",
+            path: "admin.user.index",
+            label: "Manajemen User",
             subPaths: [
-                "/admin/tambah-pengguna",
-                "/admin/edit-pengguna",
-                "/admin/detail-pengguna",
+                "admin.user.create",
+                "admin.user.edit",
+                "admin.user.show",
             ],
         },
         {
-            path: "/admin/manajemen-booking",
+            path: "admin.booking.index",
             label: "Manajemen Booking",
             subPaths: [
-                "/admin/tambah-booking",
-                "/admin/edit-booking",
-                "/admin/detail-booking",
+                "admin.booking.create",
+                "admin.booking.edit",
+                "admin.booking.show",
+                "admin.booking.createInvoice",
             ],
         },
         {
-            path: "/admin/manajemen-katalog",
+            path: "admin.katalog.index",
             label: "Manajemen Katalog",
             subPaths: [],
         },
         {
-            path: "/admin/manajemen-tutorial",
+            path: "admin.tutorial.index",
             label: "Manajemen Tutorial",
             subPaths: [],
         },
         {
-            path: "/admin/ulasan",
+            path: "admin.ulasan.index",
             label: "Ulasan Pengguna",
             subPaths: [],
         },
         {
-            path: "#",
-            label: "Log Out",
-            className: "logout",
-            isLogout: true,
+            path: "admin.produk.index",
+            label: "Manajemen Produk",
             subPaths: [],
         },
-        {
-            path: "#",
-            label: "Log Out",
-            className: "logout",
-            isLogout: true,
-            subPaths: [],
-        },
+        // {
+        //     path: "admin.invoice.index",
+        //     label: "Manajamaen Invoice",
+        //     subPaths: [],
+        // },
         {
             path: "#",
             label: "Log Out",
@@ -66,11 +64,11 @@ export default function AdminLayout({ title, children }) {
         },
     ];
 
-    const isActive = (route) => {
-        const matchExact = location.pathname === route.path;
-        const matchSubPaths = route.subPaths.some((subPath) =>
-            location.pathname.startsWith(subPath)
-        );
+    const isActive = (r) => {
+        const matchExact = !!route().current(r.path); // Memastikan hasilnya adalah boolean
+        const matchSubPaths = r.subPaths.some(
+            (subPath) => !!route().current(subPath)
+        ); // Memastikan hasilnya adalah boolean
         return matchExact || matchSubPaths;
     };
 
@@ -83,15 +81,19 @@ export default function AdminLayout({ title, children }) {
                     alt="Logo"
                 />
                 <ul className={styles["nav-admin-ul"]}>
-                    {routes.map((route, index) => (
+                    {routeList.map((routeData, index) => (
                         <li key={index} className={styles["nav-admin-ul-li"]}>
                             <NavLink
-                                to={route.path}
-                                className={route.className || ""}
-                                isLogout={route.isLogout || false}
-                                isActive={isActive(route)}
+                                to={
+                                    routeData.label !== "Log Out"
+                                        ? route(routeData.path)
+                                        : "#"
+                                }
+                                className={routeData.className || ""}
+                                isLogout={routeData.isLogout || false}
+                                isActive={isActive(routeData)}
                             >
-                                {route.label}
+                                {routeData.label}
                             </NavLink>
                         </li>
                     ))}

@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Katalog;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class KatalogController extends Controller
 {
@@ -12,7 +14,7 @@ class KatalogController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render("Admin/ManajemenKatalog");
     }
 
     /**
