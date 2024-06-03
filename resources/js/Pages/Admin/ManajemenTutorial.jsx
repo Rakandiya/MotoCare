@@ -2,31 +2,39 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import styles from "../../../css/Admin/ManajemenTutorial.module.css";
 import { Row, Col, Modal, Button, Table } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import { Link } from "@inertiajs/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ButtonAdmin from "@/Components/ButtonAdmin";
 import "../../../css/Admin/AdminGlobal.css";
 import { Head, useForm, router } from "@inertiajs/react";
 // import { Inertia } from "@inertiajs/inertia";
+// import { route } from "ziggy-js";
 
 export default function ManajemenTutorial({ tutorials }) {
     const [showDetail, setShowDetail] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [selectedTutorial, setSelectedTutorial] = useState(false);
 
-    const [formData, setFormData] = useState({
-        id: "",
-        judul: "",
-        link: "",
-        deskripsi: "",
-    });
-
-    // const { data, setData, put, post, processing, errors } = useForm({
+    // const [formData, setFormData] = useState({
     //     id: "",
     //     judul: "",
     //     link: "",
     //     deskripsi: "",
     // });
+
+    const {
+        data,
+        setData,
+        put,
+        post,
+        delete: deleteRoute,
+        processing,
+        errors,
+    } = useForm({
+        id: "",
+        judul: "",
+        link: "",
+        deskripsi: "",
+    });
     const [tutorialList, setTutorialList] = useState(tutorials);
     const handleCloseDetail = () => setShowDetail(false);
     const handleShowDetail = (tutorial) => {
@@ -84,7 +92,7 @@ export default function ManajemenTutorial({ tutorials }) {
     ];
 
     const handleEditTutorial = (tutorial) => {
-        setFormData({
+        setData({
             id: tutorial.id,
             judul: tutorial.judul,
             link: tutorial.link,
@@ -95,48 +103,64 @@ export default function ManajemenTutorial({ tutorials }) {
     function handleInputChange(e) {
         const key = e.target.id;
         const value = e.target.value;
-        setFormData((values) => ({
+        setData((values) => ({
             ...values,
             [key]: value,
         }));
     }
 
+    const [errorMessages, setErrorMessages] = useState({});
+    const [reload, setReload] = useState(false);
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (formData.id) {
-            router.visit(route("admin.tutorial.update", formData.id), {
-                method: "PUT",
-                preserveScroll: true,
-                data: formData,
-                headers: {
-                    // "X-CSRF-TOKEN": csrfToken,
-                    "Content-Type": "application/json",
-                },
-                onSuccess: () => {
-                    console.log("Data berhasil diubah");
-                },
-                onError: (error) => {
-                    console.log("Error:", error);
-                },
-            });
-        } else {
-            router.visit(route("admin.tutorial.store"), {
-                method: "POST",
-                preserveScroll: true,
-                data: formData,
-                headers: {
-                    // "X-CSRF-TOKEN": csrfToken,
-                    "Content-Type": "application/json",
-                },
-                onSuccess: () => {
-                    console.log("Data berhasil disimpan");
-                },
-                onError: (error) => {
-                    console.log("Error:", error);
-                },
-            });
-        }
+        const routeName = data.id
+            ? "admin.tutorial.update"
+            : "admin.tutorial.store";
+
+        const action = data.id ? put : post;
+        action(route(routeName, data.id), {
+            preserveScroll: true,
+            data: data,
+            onSuccess: () => {
+                setReload(!reload); // Toggle state untuk memicu reload
+            },
+        });
     };
+
+    const handleDelete = (e) => {
+        e.preventDefault();
+        deleteRoute(
+            route("admin.tutorial.delete", { tutorial: selectedTutorial.id }),
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setShowDelete(false); // Menutup modal setelah berhasil
+                    setReload(!reload); // Memicu reload data
+                    console.log("OK");
+                },
+                onError: () => {
+                    console.error("Error deleting tutorial");
+                },
+            }
+        );
+    };
+
+    useEffect(() => {
+        // Hanya membersihkan errorMessages jika form berhasil disubmit dan tidak ada error
+        setErrorMessages(errors);
+    }, [errors]);
+
+    useEffect(() => {
+        // Fungsi untuk memuat ulang data atau komponen
+        setTutorialList(tutorials); // Misalnya fungsi untuk memuat ulang data tutorial
+        setData({
+            id: "",
+            judul: "",
+            link: "",
+            deskripsi: "",
+        });
+    }, [reload, tutorialList]);
 
     return (
         <AdminLayout title="Manajemen Tutorial">
@@ -187,7 +211,7 @@ export default function ManajemenTutorial({ tutorials }) {
                             type="hidden"
                             name="id"
                             id="id"
-                            value={formData.id}
+                            value={data.id}
                         />
                         <Row className="mb-3">
                             <Col md={{ span: 9, offset: 1 }}>
@@ -198,10 +222,15 @@ export default function ManajemenTutorial({ tutorials }) {
                                     placeholder="Judul Video"
                                     autoComplete="off"
                                     required
-                                    value={formData.judul}
+                                    value={data.judul}
                                     onChange={handleInputChange}
                                     className={styles["judul"]}
                                 />
+                                {errorMessages.judul && (
+                                    <small className="text-danger">
+                                        {errorMessages.judul}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
 
@@ -214,10 +243,15 @@ export default function ManajemenTutorial({ tutorials }) {
                                     placeholder="Link Video"
                                     autoComplete="off"
                                     required
-                                    value={formData.link}
+                                    value={data.link}
                                     onChange={handleInputChange}
                                     className={styles["link"]}
                                 />
+                                {errorMessages.link && (
+                                    <small className="text-danger">
+                                        {errorMessages.link}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
 
@@ -230,18 +264,24 @@ export default function ManajemenTutorial({ tutorials }) {
                                     placeholder="Deskripsi Video"
                                     autoComplete="off"
                                     required
-                                    value={formData.deskripsi}
+                                    value={data.deskripsi}
                                     onChange={handleInputChange}
                                     className={styles["deskripsi"]}
                                 >
-                                    {formData.deskripsi}
+                                    {data.deskripsi}
                                 </textarea>
+                                {errorMessages.deskripsi && (
+                                    <small className="text-danger">
+                                        {errorMessages.deskripsi}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
 
                         <Row>
                             <Col md={{ span: 8, offset: 4 }}>
                                 <ButtonAdmin
+                                    disabled={processing}
                                     type="submit"
                                     style={{
                                         background:
@@ -268,15 +308,14 @@ export default function ManajemenTutorial({ tutorials }) {
             {/* Modal Show Detail */}
             <Modal size="lg" show={showDetail} onHide={handleCloseDetail}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Detail Tutorial</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <h4>
-                        Detail Data Tutorial{" "}
+                    <Modal.Title>
+                        Detail Tutorial{" "}
                         <span className="title">
                             {selectedTutorial && selectedTutorial.judul}
                         </span>
-                    </h4>
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
                     <Table borderless className={styles["table"]}>
                         <tbody>
                             <tr className={styles["tr"]}>
@@ -342,16 +381,19 @@ export default function ManajemenTutorial({ tutorials }) {
                     <Button variant="secondary" onClick={handleCloseDelete}>
                         Close
                     </Button>
-                    <ButtonAdmin
-                        variant="primary"
-                        onClick={handleCloseDelete}
-                        style={{
-                            backgroundColor: "#f16211",
-                            borderColor: "#f16211",
-                        }}
-                    >
-                        Ya, Hapus
-                    </ButtonAdmin>
+                    <form onSubmit={handleDelete} action="#" method="post">
+                        <ButtonAdmin
+                            type="submit"
+                            variant="primary"
+                            onClick={handleCloseDelete}
+                            style={{
+                                backgroundColor: "#f16211",
+                                borderColor: "#f16211",
+                            }}
+                        >
+                            Ya, Hapus
+                        </ButtonAdmin>
+                    </form>
                 </Modal.Footer>
             </Modal>
         </AdminLayout>

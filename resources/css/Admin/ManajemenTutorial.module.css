@@ -47,7 +47,12 @@
 
 .table .tr .th {
     text-align: left;
-    width: 14%;
+    width: 15%;
+}
+
+.table .tr .td {
+    text-align: left;
+    width: 10px;
 }
 
 .title-form {
@@ -98,8 +103,4 @@
     margin-top: 35px;
     resize: none;
     width: 100%;
-}
-
-.table .tr .th {
-    width: 15%;
 }

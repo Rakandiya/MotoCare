@@ -14,7 +14,8 @@ class ProdukController extends Controller
      */
     public function index()
     {
-        return Inertia::render("Admin/ManajemenProduk");
+        $produks = Produk::all();
+        return Inertia::render("Admin/ManajemenProduk", compact("produks"));
     }
 
     /**
@@ -29,7 +30,25 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'nama_produk' => 'required|max:255',
+            'harga' => 'required|numeric',
+            'stok' => 'required|numeric',
+            'deskripsi' => 'required',
+        ]);
+
+        // var_dump($validatedData);
+        // die;
+
+        // $slug = Str::slug($validatedData['judul']);
+        $produk = Produk::create([
+            'nama_produk' => $validatedData['nama_produk'],
+            'harga' => $validatedData['harga'],
+            'stok' => $validatedData['stok'],
+            'deskripsi' => $validatedData['deskripsi'],
+        ]);
+
+        return redirect()->back();
     }
 
     /**
@@ -51,7 +70,25 @@ class ProdukController extends Controller
      */
     public function update(Request $request, Produk $produk)
     {
-        //
+        $validatedData = $request->validate([
+            'nama_produk' => 'required|max:255',
+            'harga' => 'required|numeric',
+            'stok' => 'required|numeric',
+            'deskripsi' => 'required',
+        ]);
+
+        // var_dump($validatedData);
+        // die;
+
+        // $slug = Str::slug($validatedData['judul']);
+        $produk->update([
+            'nama_produk' => $validatedData['nama_produk'],
+            'harga' => $validatedData['harga'],
+            'stok' => $validatedData['stok'],
+            'deskripsi' => $validatedData['deskripsi'],
+        ]);
+
+        return redirect()->back();
     }
 
     /**
@@ -59,6 +96,7 @@ class ProdukController extends Controller
      */
     public function destroy(Produk $produk)
     {
-        //
+        $produk->delete();
+        return redirect()->back();
     }
 }

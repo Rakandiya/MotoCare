@@ -2,8 +2,7 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import styles from "../../../css/Admin/ManajemenProduk.module.css";
 import { Row, Col, Modal, Button, Table } from "react-bootstrap";
 import DataTable from "react-data-table-component";
-import { Link } from "@inertiajs/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ButtonAdmin from "@/Components/ButtonAdmin";
 import "../../../css/Admin/AdminGlobal.css";
 import { Head, useForm, router } from "@inertiajs/react";
@@ -14,7 +13,15 @@ export default function ManajemenProduk({ produks }) {
     const [showDelete, setShowDelete] = useState(false);
     const [selectedProduk, setselectedProduk] = useState(false);
 
-    const [formData, setFormData] = useState({
+    const {
+        data,
+        setData,
+        put,
+        post,
+        delete: deleteRoute,
+        processing,
+        errors,
+    } = useForm({
         id: "",
         nama_produk: "",
         harga: "",
@@ -22,20 +29,7 @@ export default function ManajemenProduk({ produks }) {
         deskripsi: "",
     });
 
-    // const { data, setData, put, post, processing, errors } = useForm({
-    //     id: "",
-    //     judul: "",
-    //     link: "",
-    //     deskripsi: "",
-    // });
-    const [produkList, setProdukList] = useState([
-        {
-            nama_produk: "Oli 150ml",
-            harga: 50000,
-            stok: 50,
-            deskripsi: "Oli 150ml sebanyak 50 buah dengan harga Rp. 50.000",
-        },
-    ]);
+    const [produkList, setProdukList] = useState(produks);
     const handleCloseDetail = () => setShowDetail(false);
     const handleShowDetail = (produk) => {
         setShowDetail(true);
@@ -100,7 +94,7 @@ export default function ManajemenProduk({ produks }) {
     ];
 
     const handleEditProduk = (produk) => {
-        setFormData({
+        setData({
             id: produk.id,
             nama_produk: produk.nama_produk,
             harga: produk.harga,
@@ -112,48 +106,64 @@ export default function ManajemenProduk({ produks }) {
     function handleInputChange(e) {
         const key = e.target.id;
         const value = e.target.value;
-        setFormData((values) => ({
+        setData((values) => ({
             ...values,
             [key]: value,
         }));
     }
 
+    const [errorMessages, setErrorMessages] = useState({});
+    const [reload, setReload] = useState(false);
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (formData.id) {
-            router.visit(route("admin.produk.update", formData.id), {
-                method: "PUT",
-                preserveScroll: true,
-                data: formData,
-                headers: {
-                    // "X-CSRF-TOKEN": csrfToken,
-                    "Content-Type": "application/json",
-                },
-                onSuccess: () => {
-                    console.log("Data berhasil diubah");
-                },
-                onError: (error) => {
-                    console.log("Error:", error);
-                },
-            });
-        } else {
-            router.visit(route("admin.produk.store"), {
-                method: "POST",
-                preserveScroll: true,
-                data: formData,
-                headers: {
-                    // "X-CSRF-TOKEN": csrfToken,
-                    "Content-Type": "application/json",
-                },
-                onSuccess: () => {
-                    console.log("Data berhasil disimpan");
-                },
-                onError: (error) => {
-                    console.log("Error:", error);
-                },
-            });
-        }
+        const routeName = data.id
+            ? "admin.produk.update"
+            : "admin.produk.store";
+
+        const action = data.id ? put : post;
+        action(route(routeName, data.id), {
+            preserveScroll: true,
+            data: data,
+            onSuccess: () => {
+                setReload(!reload); // Toggle state untuk memicu reload
+            },
+        });
     };
+
+    const handleDelete = (e) => {
+        e.preventDefault();
+        deleteRoute(
+            route("admin.produk.delete", { produk: selectedProduk.id }),
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setShowDelete(false); // Menutup modal setelah berhasil
+                    setReload(!reload); // Memicu reload data
+                },
+                onError: () => {
+                    console.error("Error deleting produk");
+                },
+            }
+        );
+    };
+
+    useEffect(() => {
+        // Hanya membersihkan errorMessages jika form berhasil disubmit dan tidak ada error
+        setErrorMessages(errors);
+    }, [errors]);
+
+    useEffect(() => {
+        // Fungsi untuk memuat ulang data atau komponen
+        setProdukList(produks); // Misalnya fungsi untuk memuat ulang data tutorial
+        setData({
+            id: "",
+            nama_produk: "",
+            harga: "",
+            stok: "",
+            deskripsi: "",
+        });
+    }, [reload, produkList]);
 
     return (
         <AdminLayout title="Manajemen Produk">
@@ -210,7 +220,7 @@ export default function ManajemenProduk({ produks }) {
                             type="hidden"
                             name="id"
                             id="id"
-                            value={formData.id}
+                            value={data.id}
                         />
                         <Row className="mb-3">
                             <Col md={{ span: 9, offset: 1 }}>
@@ -221,10 +231,15 @@ export default function ManajemenProduk({ produks }) {
                                     placeholder="Nama Produk"
                                     autoComplete="off"
                                     required
-                                    value={formData.nama_produk}
+                                    value={data.nama_produk}
                                     onChange={handleInputChange}
                                     className={styles["judul"]}
                                 />
+                                {errorMessages.nama_produk && (
+                                    <small className="text-danger">
+                                        {errorMessages.nama_produk}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
 
@@ -237,10 +252,15 @@ export default function ManajemenProduk({ produks }) {
                                     placeholder="Harga"
                                     autoComplete="off"
                                     required
-                                    value={formData.harga}
+                                    value={data.harga}
                                     onChange={handleInputChange}
                                     className={styles["link"]}
                                 />
+                                {errorMessages.harga && (
+                                    <small className="text-danger">
+                                        {errorMessages.harga}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
 
@@ -253,10 +273,15 @@ export default function ManajemenProduk({ produks }) {
                                     placeholder="Stok"
                                     autoComplete="off"
                                     required
-                                    value={formData.stok}
+                                    value={data.stok}
                                     onChange={handleInputChange}
                                     className={styles["link"]}
                                 />
+                                {errorMessages.stok && (
+                                    <small className="text-danger">
+                                        {errorMessages.stok}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
 
@@ -269,12 +294,17 @@ export default function ManajemenProduk({ produks }) {
                                     placeholder="Deskripsi"
                                     autoComplete="off"
                                     required
-                                    value={formData.deskripsi}
+                                    value={data.deskripsi}
                                     onChange={handleInputChange}
                                     className={styles["deskripsi"]}
                                 >
-                                    {formData.deskripsi}
+                                    {data.deskripsi}
                                 </textarea>
+                                {errorMessages.deskripsi && (
+                                    <small className="text-danger">
+                                        {errorMessages.deskripsi}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
 
@@ -282,6 +312,7 @@ export default function ManajemenProduk({ produks }) {
                             <Col md={{ span: 8, offset: 4 }}>
                                 <ButtonAdmin
                                     type="submit"
+                                    disabled={processing}
                                     style={{
                                         background:
                                             "linear-gradient(90deg, #f16211 -14.33%, #e59a6f 85.67%)",
@@ -307,15 +338,14 @@ export default function ManajemenProduk({ produks }) {
             {/* Modal Show Detail */}
             <Modal size="lg" show={showDetail} onHide={handleCloseDetail}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Detail Produk</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <h4>
-                        Detail Data Produk{" "}
+                    <Modal.Title>
+                        Detail Produk{" "}
                         <span className="title">
                             {selectedProduk && selectedProduk.nama_produk}
                         </span>
-                    </h4>
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
                     <Table borderless className={styles["table"]}>
                         <tbody>
                             <tr className={styles["tr"]}>
@@ -332,7 +362,7 @@ export default function ManajemenProduk({ produks }) {
                                 <td className={styles["td"]}>:</td>
                                 <td>
                                     {selectedProduk &&
-                                        "Rp. " + selectedProduk.nama_produk}
+                                        "Rp. " + selectedProduk.harga}
                                 </td>
                             </tr>
 
@@ -374,16 +404,19 @@ export default function ManajemenProduk({ produks }) {
                     <Button variant="secondary" onClick={handleCloseDelete}>
                         Close
                     </Button>
-                    <ButtonAdmin
-                        variant="primary"
-                        onClick={handleCloseDelete}
-                        style={{
-                            backgroundColor: "#f16211",
-                            borderColor: "#f16211",
-                        }}
-                    >
-                        Ya, Hapus
-                    </ButtonAdmin>
+                    <form onSubmit={handleDelete} action="#" method="post">
+                        <ButtonAdmin
+                            type="submit"
+                            variant="primary"
+                            onClick={handleCloseDelete}
+                            style={{
+                                backgroundColor: "#f16211",
+                                borderColor: "#f16211",
+                            }}
+                        >
+                            Ya, Hapus
+                        </ButtonAdmin>
+                    </form>
                 </Modal.Footer>
             </Modal>
         </AdminLayout>
