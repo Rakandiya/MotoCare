@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Admin\TutorialController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\KatalogController;
@@ -92,7 +93,16 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
     Route::get('/ulasan', function () {
         return Inertia::render('User/Ulasan');
     })->name('ulasan');
+
+    Route::get('/register', function () {
+        return Inertia::render('User/Register');
+    })->name('register');
+
+    
+
 })->name('user.');
+
+Route::post('/register', [RegisterController::class, 'register']);
 
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
