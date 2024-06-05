@@ -37,20 +37,35 @@ export default function Register() {
         };
     }, []);
 
-    const { data, setData, post, errors } = useForm({
+    const { data: registerData, setData: setRegisterData, post: postRegister, errors: registerErrors } = useForm({
         username: '',
         email: '',
         password: ''
     });
 
-    const handleChange = (e) => {
-        setData(e.target.name, e.target.value);
+    const { data: loginData, setData: setLoginData, post: postLogin, errors: loginErrors } = useForm({
+        email: '',
+        password: ''
+    });
+
+    const handleRegisterChange = (e) => {
+        setRegisterData(e.target.name, e.target.value);
     };
 
-    const handleSubmit = (e) => {
+    const handleRegisterSubmit = (e) => {
         e.preventDefault();
-        console.log('Submitting form with data:', data); // Tambahkan log ini untuk memastikan data yang dikirim
-        post('/register'); // Pastikan rute ini benar
+        console.log('Submitting registration form with data:', registerData); // Tambahkan log ini untuk memastikan data yang dikirim
+        postRegister('/register'); // Pastikan rute ini benar
+    };
+
+    const handleLoginChange = (e) => {
+        setLoginData(e.target.name, e.target.value);
+    };
+
+    const handleLoginSubmit = (e) => {
+        e.preventDefault();
+        console.log('Submitting login form with data:', loginData); // Tambahkan log ini untuk memastikan data yang dikirim
+        postLogin('/login'); // Pastikan rute ini benar
     };
 
     return (
@@ -62,20 +77,34 @@ export default function Register() {
                             <div className={styles.wrapper} ref={wrapperRef}>
                                 <div className={`${styles["form-box"]} ${styles.login}`}>
                                     <h2>Login</h2>
-                                    <form action="#">
+                                    <form onSubmit={handleLoginSubmit}>
                                         <div className={styles["input-box"]}>
                                             <span className={styles.icon}>
                                                 <i className={`${styles.bx} ${styles["bxs-envelope"]}`}></i>
                                             </span>
-                                            <input type="email" required />
+                                            <input 
+                                                type="email" 
+                                                name="email" 
+                                                value={loginData.email} 
+                                                onChange={handleLoginChange} 
+                                                required 
+                                            />
                                             <label>Email</label>
+                                            {loginErrors.email && <p className="error">{loginErrors.email}</p>}
                                         </div>
                                         <div className={styles["input-box"]}>
                                             <span className={styles.icon}>
                                                 <i className={`${styles.bx} ${styles["bxs-lock-alt"]}`}></i>
                                             </span>
-                                            <input type="password" required />
+                                            <input 
+                                                type="password" 
+                                                name="password" 
+                                                value={loginData.password} 
+                                                onChange={handleLoginChange} 
+                                                required 
+                                            />
                                             <label>Password</label>
+                                            {loginErrors.password && <p className="error">{loginErrors.password}</p>}
                                         </div>
                                         <div className={styles["remember-forgot"]}>
                                             <label>
@@ -99,7 +128,7 @@ export default function Register() {
 
                                 <div className={`${styles["form-box"]} ${styles.register}`}>
                                     <h2>Registration</h2>
-                                    <form onSubmit={handleSubmit}>
+                                    <form onSubmit={handleRegisterSubmit}>
                                         <div className={styles["input-box"]}>
                                             <span className={styles.icon}>
                                                 <i className={`${styles.bx} ${styles["bxs-user"]}`}></i>
@@ -107,12 +136,12 @@ export default function Register() {
                                             <input 
                                                 type="text" 
                                                 name="username" 
-                                                value={data.username}
-                                                onChange={handleChange}
+                                                value={registerData.username}
+                                                onChange={handleRegisterChange}
                                                 required 
                                             />
                                             <label>Username</label>
-                                            {errors.username && <p className="error">{errors.username}</p>}
+                                            {registerErrors.username && <p className="error">{registerErrors.username}</p>}
                                         </div>
                                         <div className={styles["input-box"]}>
                                             <span className={styles.icon}>
@@ -121,12 +150,12 @@ export default function Register() {
                                             <input 
                                                 type="email" 
                                                 name="email"
-                                                value={data.email}
-                                                onChange={handleChange}
+                                                value={registerData.email}
+                                                onChange={handleRegisterChange}
                                                 required 
                                             />
                                             <label>Email</label>
-                                            {errors.email && <p className="error">{errors.email}</p>}
+                                            {registerErrors.email && <p className="error">{registerErrors.email}</p>}
                                         </div>
                                         <div className={styles["input-box"]}>
                                             <span className={styles.icon}>
@@ -135,12 +164,12 @@ export default function Register() {
                                             <input 
                                                 type="password" 
                                                 name="password"
-                                                value={data.password}
-                                                onChange={handleChange}
+                                                value={registerData.password}
+                                                onChange={handleRegisterChange}
                                                 required 
                                             />
                                             <label>Password</label>
-                                            {errors.password && <p className="error">{errors.password}</p>}
+                                            {registerErrors.password && <p className="error">{registerErrors.password}</p>}
                                         </div>
                                         <div className={styles["remember-forgot"]}>
                                             <label>
