@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Tutorial;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TutorialController extends Controller
 {
@@ -13,15 +14,19 @@ class TutorialController extends Controller
      */
     public function index()
     {
-        //
+            
+        $tutorials = Tutorial::all();
+        return Inertia::render("User/Tutorial", compact("tutorials"));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function search(Request $request)
     {
-        //
+        $keyword = $request->input('search');
+        $tutorials = Tutorial::where('judul', 'like', "%" .$keyword."%")->orWhere('deskripsi', 'like', "%".$keyword."%")->get();
+        return Inertia::render("User/Tutorial", compact("tutorials"));
     }
 
     /**

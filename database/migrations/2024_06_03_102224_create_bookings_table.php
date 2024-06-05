@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string("nomor_polisi");
             $table->string("km_kendaraan");
             $table->date("jadwal_booking");
-            $table->string("status");
+            $table->enum("status", ["Diproses", "Selesai", "Dibatalkan"]);
             $table->text("catatan");
             $table->timestamps();
         });

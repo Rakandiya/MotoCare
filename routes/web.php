@@ -4,12 +4,18 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+// Admin Controller
 use App\Http\Controllers\Admin\TutorialController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\KatalogController;
 use App\Http\Controllers\Admin\UlasanController;
 use App\Http\Controllers\Admin\ProdukController;
+
+// User Controller
+use App\Http\Controllers\User\TutorialController as UserTutorialController;
+
 
 
 
@@ -85,9 +91,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
 
 
 Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
-    Route::get('/tutorial', function () {
-        return Inertia::render('User/Tutorial');
-    })->name('tutorial');
+    Route::get('/tutorial', [UserTutorialController::class, 'index'])->name('tutorial');
+    Route::get('/tutorial/search', [UserTutorialController::class, 'search'])->name('tutorial.search');
 
     Route::get('/ulasan', function () {
         return Inertia::render('User/Ulasan');
