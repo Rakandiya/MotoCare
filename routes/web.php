@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\KatalogController;
 use App\Http\Controllers\Admin\UlasanController;
 use App\Http\Controllers\Admin\ProdukController;
+use App\Http\Controllers\Auth\LoginController;
 
 // User Controller
 use App\Http\Controllers\User\TutorialController as UserTutorialController;
@@ -114,6 +115,7 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
 })->name('user.');
 
 Route::post('/register', [RegisterController::class, 'register']);
+Route::post('/login', [LoginController::class, 'login'])->name('login');
 
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
