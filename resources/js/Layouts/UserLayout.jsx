@@ -32,10 +32,9 @@ export default function UserLayout({ children }) {
             url: "../booking/index.html",
         },
         {
-            path: "/katalog",
+            path: "user.katalog",
             label: "Katalog",
-            external: true,
-            url: "../katalog/index.html",
+            external: false,
         },
         { path: "user.tutorial", label: "Tutorial", external: false },
         {

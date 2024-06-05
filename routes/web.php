@@ -27,6 +27,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         return Inertia::render('Admin/Dashboard');
     })->name('dashboard');
 
+
     // Route Manajemen Tutorial
     Route::get('/manajemen-tutorial', [TutorialController::class, 'index'])->name('tutorial.index');
 
@@ -98,6 +99,11 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
     Route::get('/ulasan', function () {
         return Inertia::render('User/Ulasan');
     })->name('ulasan');
+    
+    Route::get('/katalog', function () {
+        return Inertia::render('User/Katalog');
+        
+    })->name('katalog');
 
     Route::get('/register', function () {
         return Inertia::render('User/Register');
