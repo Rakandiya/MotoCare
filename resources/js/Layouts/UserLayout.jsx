@@ -92,7 +92,7 @@ export default function UserLayout({ children }) {
                     </nav>
 
                     <a
-                        href="../loginsignup/index.html"
+                        href="../user/register"
                         className={styles["button-login"]}
                     >
                         <span className="span">SIGN IN / SIGN UP</span>
