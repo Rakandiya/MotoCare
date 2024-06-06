@@ -12,24 +12,24 @@ export default function Register() {
         const wrapper = wrapperRef.current;
         const loginLink = loginLinkRef.current;
         const registerLink = registerLinkRef.current;
-        
+
         if (registerLink && loginLink && wrapper) {
             registerLink.addEventListener('click', () => {
                 wrapper.classList.add(styles.active);
             });
-        
+
             loginLink.addEventListener('click', () => {
                 wrapper.classList.remove(styles.active);
             });
         }
-        
+
         // Cleanup event listeners on component unmount
         return () => {
             if (registerLink && loginLink) {
                 registerLink.removeEventListener('click', () => {
                     wrapper.classList.add(styles.active);
                 });
-        
+
                 loginLink.removeEventListener('click', () => {
                     wrapper.classList.remove(styles.active);
                 });

@@ -1,16 +1,28 @@
 import PropTypes from "prop-types";
 import "../../css/User/userGlobal.css";
-
 import styles from "../../css/User/LayoutStyles.module.css";
 import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
-// const location = useLocation();
+import { useEffect } from "react";
 
-// if (location.pathname === "/tutorial") {
-//   import globalStyles from "../assets/css/user/userGlobal.module.css";
-// }
 export default function UserLayout({ children }) {
-    // const location = useLocation();
+    useEffect(() => {
+        const navbar = document.querySelector("[data-navbar]");
+        const navToggler = document.querySelector("[data-nav-toggler]");
+
+        navToggler.addEventListener("click", function () {
+            navbar.classList.toggle("active");
+            this.classList.toggle("active");
+        });
+
+        // Clean up event listener on component unmount
+        return () => {
+            navToggler.removeEventListener("click", function () {
+                navbar.classList.toggle("active");
+                this.classList.toggle("active");
+            });
+        };
+    }, []);
 
     const navItems = [
         {
