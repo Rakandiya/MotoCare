@@ -76,6 +76,10 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
     Route::get('/register', function () {
         return Inertia::render('User/Register');
     })->name('register');
+
+    Route::get('/home', function () {
+        return Inertia::render('User/Home');
+    })->name('home');
 });
 
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');

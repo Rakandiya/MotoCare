@@ -26,10 +26,10 @@ export default function UserLayout({ children }) {
 
     const navItems = [
         {
-            path: "/home",
+            path: "user.home",
             label: "Home",
             external: true,
-            url: "../home/index.html",
+            url: "../home",
         },
         {
             path: "/about",
@@ -63,7 +63,7 @@ export default function UserLayout({ children }) {
         <>
             <header className={styles["header"]}>
                 <div className={styles["container"]}>
-                    <a href="#" className={styles["logo"]}>
+                    <a href="../user/home" className={styles["logo"]}>
                         <img
                             src="/images/logo.png"
                             width="128"
