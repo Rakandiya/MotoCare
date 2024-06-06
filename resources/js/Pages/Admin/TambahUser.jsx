@@ -8,9 +8,28 @@ import { route } from "ziggy-js";
 
 export default function TambahUser() {
     const [previewImage, setPreviewImage] = useState(null);
+    const [formData, setFormData] = useState({
+        nama: '',
+        username: '',
+        email: '',
+        tanggal_lahir: '',
+        no_telepon: '',
+        jenis_kelamin: 'Pilih Jenis Kelamin',  // Set default sesuai ENUM
+        password: '',
+        password_confirmation: '',
+        role: 'Pilih Role',
+        foto: null
+    });
+
+    const [errors, setErrors] = useState({});
+    const [passwordType, setPasswordType] = useState("password");
+    const [confirmPasswordType, setConfirmPasswordType] = useState("password");
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     const handleFotoChange = (event) => {
         const file = event.target.files[0];
+        setFormData({ ...formData, foto: file });
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -20,6 +39,77 @@ export default function TambahUser() {
         }
     };
 
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const togglePasswordVisibility = () => {
+        setPasswordType(passwordType === "password" ? "text" : "password");
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+        setConfirmPasswordType(confirmPasswordType === "password" ? "text" : "password");
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        
+        // Validasi
+        const newErrors = {};
+        if (!formData.nama) newErrors.nama = 'Nama tidak boleh kosong';
+        if (!formData.username) newErrors.username = 'Username tidak boleh kosong';
+        if (!formData.email) newErrors.email = 'Email tidak boleh kosong';
+        if (!formData.tanggal_lahir) newErrors.tanggal_lahir = 'Tanggal lahir tidak boleh kosong';
+        if (!formData.no_telepon) newErrors.no_telepon = 'No Telepon tidak boleh kosong';
+        if (formData.jenis_kelamin === 'Pilih Jenis Kelamin') newErrors.jenis_kelamin = 'Jenis kelamin tidak boleh kosong';
+        if (!formData.password) newErrors.password = 'Password tidak boleh kosong';
+        if (!formData.password_confirmation) newErrors.password_confirmation = 'Konfirmasi password tidak boleh kosong';
+        if (formData.password !== formData.password_confirmation) newErrors.password_confirmation = 'Konfirmasi password tidak sesuai';
+        if (formData.role === 'Pilih Role') newErrors.role = 'Role tidak boleh kosong';
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
+        setErrors({});  // Clear errors if no validation errors
+        
+        const formDataToSend = new FormData();
+        Object.keys(formData).forEach(key => {
+            formDataToSend.append(key, formData[key]);
+        });
+
+        fetch(route('admin.user.store'), {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken // Sertakan CSRF token di header
+            },
+            body: formDataToSend
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(JSON.stringify(errorData));
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            alert('Form telah berhasil di-submit!');
+        })
+        .catch((error) => {
+            console.error('Error:', error.message);
+            const parsedError = JSON.parse(error.message);
+            if (parsedError.errors) {
+                setErrors(parsedError.errors);
+            }
+            alert('Terjadi kesalahan: ' + parsedError.message);
+        });
+    };
+
     return (
         <AdminLayout title="MANAJEMEN USER">
             <div className={styles["form-wrapper"]}>
@@ -27,7 +117,7 @@ export default function TambahUser() {
                     Form Tambah User
                 </h1>
                 <form
-                    action="#"
+                    onSubmit={handleSubmit}
                     method="post"
                     id="form"
                     className={styles["form"]}
@@ -45,7 +135,10 @@ export default function TambahUser() {
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleChange}
+                                value={formData.nama}
                             />
+                            {errors.nama && <p className={styles.error}>{errors.nama}</p>}
                         </Col>
 
                         <Col md={6}>
@@ -63,7 +156,10 @@ export default function TambahUser() {
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleChange}
+                                value={formData.username}
                             />
+                            {errors.username && <p className={styles.error}>{errors.username}</p>}
                         </Col>
                     </Row>
 
@@ -73,14 +169,17 @@ export default function TambahUser() {
                                 Email
                             </label>
                             <input
-                                type="text"
+                                type="email"
                                 name="email"
                                 id="email"
                                 placeholder="johndoe@gmail.com"
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleChange}
+                                value={formData.email}
                             />
+                            {errors.email && <p className={styles.error}>{errors.email}</p>}
                         </Col>
 
                         <Col md={6}>
@@ -95,7 +194,10 @@ export default function TambahUser() {
                                 name="tanggal_lahir"
                                 id="tanggal_lahir"
                                 className={styles["input"]}
+                                onChange={handleChange}
+                                value={formData.tanggal_lahir}
                             />
+                            {errors.tanggal_lahir && <p className={styles.error}>{errors.tanggal_lahir}</p>}
                         </Col>
                     </Row>
 
@@ -115,7 +217,10 @@ export default function TambahUser() {
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleChange}
+                                value={formData.no_telepon}
                             />
+                            {errors.no_telepon && <p className={styles.error}>{errors.no_telepon}</p>}
                         </Col>
 
                         <Col md={6}>
@@ -129,17 +234,15 @@ export default function TambahUser() {
                                 name="jenis_kelamin"
                                 id="jenis_kelamin"
                                 className={styles["select"]}
+                                onChange={handleChange}
+                                value={formData.jenis_kelamin}
                             >
-                                <option
-                                    defaultValue="Pilih Jenis Kelamin"
-                                    disabled
-                                    value="Pilih Jenis Kelamin"
-                                >
-                                    Pilih Jenis Kelamin
-                                </option>
+                                <option value="Pilih Jenis Kelamin" disabled>Pilih Jenis Kelamin</option>
                                 <option value="Laki-laki">Laki-laki</option>
                                 <option value="Perempuan">Perempuan</option>
+                                <option value="Lainnya">Lainnya</option>
                             </select>
+                            {errors.jenis_kelamin && <p className={styles.error}>{errors.jenis_kelamin}</p>}
                         </Col>
                     </Row>
 
@@ -149,35 +252,51 @@ export default function TambahUser() {
                                 className={styles["label"]}
                                 htmlFor="password"
                             >
-                                password
+                                Password
                             </label>
-                            <input
-                                type="password"
-                                name="password"
-                                id="password"
-                                autoComplete="off"
-                                required
-                                className={styles["input"]}
-                                placeholder="********"
-                            />
+                            <div className={styles["input-with-icon"]}>
+                                <input
+                                    type={passwordType}
+                                    name="password"
+                                    id="password"
+                                    autoComplete="off"
+                                    required
+                                    className={styles["input"]}
+                                    placeholder="********"
+                                    onChange={handleChange}
+                                    value={formData.password}
+                                />
+                                <span onClick={togglePasswordVisibility}>
+                                    {passwordType === "password" ? "Show" : "Hide"}
+                                </span>
+                            </div>
+                            {errors.password && <p className={styles.error}>{errors.password}</p>}
                         </Col>
 
                         <Col md={6}>
                             <label
                                 className={styles["label"]}
-                                htmlFor="konfirmasi_password"
+                                htmlFor="password_confirmation"
                             >
                                 Konfirmasi Password
                             </label>
-                            <input
-                                type="password"
-                                name="konfirmasi_password"
-                                id="konfirmasi_password"
-                                autoComplete="off"
-                                required
-                                className={styles["input"]}
-                                placeholder="********"
-                            />
+                            <div className={styles["input-with-icon"]}>
+                                <input
+                                    type={confirmPasswordType}
+                                    name="password_confirmation"
+                                    id="password_confirmation"
+                                    autoComplete="off"
+                                    required
+                                    className={styles["input"]}
+                                    placeholder="********"
+                                    onChange={handleChange}
+                                    value={formData.password_confirmation}
+                                />
+                                <span onClick={toggleConfirmPasswordVisibility}>
+                                    {confirmPasswordType === "password" ? "Show" : "Hide"}
+                                </span>
+                            </div>
+                            {errors.password_confirmation && <p className={styles.error}>{errors.password_confirmation}</p>}
                         </Col>
                     </Row>
 
@@ -190,17 +309,16 @@ export default function TambahUser() {
                                 name="role"
                                 id="role"
                                 className={styles["select"]}
+                                onChange={handleChange}
+                                value={formData.role}
                             >
-                                <option
-                                    defaultValue="Pilih Role"
-                                    disabled
-                                    value="Pilih Role"
-                                >
+                                <option value="Pilih Role" disabled>
                                     Pilih Role
                                 </option>
                                 <option value="Admin">Admin</option>
                                 <option value="User">User</option>
                             </select>
+                            {errors.role && <p className={styles.error}>{errors.role}</p>}
                         </Col>
 
                         <Col md={6}>
