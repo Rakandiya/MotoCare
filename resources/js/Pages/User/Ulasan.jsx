@@ -1,61 +1,25 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import UserLayout from "@/Layouts/UserLayout";
 import styles from "../../../css/User/Ulasan.module.css";
 import { Row, Col, Modal, Button } from "react-bootstrap";
-export default function Ulasan() {
+import { Head, useForm, router } from "@inertiajs/react";
+import { route } from "ziggy-js";
+export default function Ulasan({ auth, ulasans }) {
     const [selectedRating, setSelectedRating] = useState(0);
-    const [ulasan, setUlasan] = useState([
-        {
-            id: 1,
-            reviewTitle: "Pelayanan Motor",
-            bintang: 5,
-            reviewName: "Olivia Hall",
-            reviewDate: "12 Januari 2022",
-            reviewDesc: "Pelayanan motor yang sangat bagus",
-            foto: ["/images/aerox.png", "/images/beat.jpeg"],
-        },
+    const fotoUlasan =
+        "images/ulasan/eGvCgog8A4AOPsFJY1s9EYeKZ3yPJBvIHTHzBaDy.png";
+    const [ulasan, setUlasan] = useState(ulasans);
 
-        {
-            id: 2,
-            reviewTitle: "Service Motor",
-            bintang: 4,
-            reviewName: "James Taylor",
-            reviewDate: "15 Februari 2022",
-            reviewDesc: "Hasil service motor sangat bagus",
-            foto: ["klx.png"],
-        },
+    console.log(ulasan);
 
-        {
-            id: 3,
-            reviewTitle: "Ganti Oli Mesin",
-            bintang: 3,
-            reviewName: "John Doe",
-            reviewDate: "18 Maret 2022",
-            reviewDesc: "Ganti oli mesin sangat cepat",
-            foto: ["beat.jpeg"],
-        },
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
-        {
-            id: 4,
-            reviewTitle: "Penggantian Ban",
-            bintang: 5,
-            reviewName: "Jane Doe",
-            reviewDate: "21 April 2022",
-            reviewDesc: "Penggantian ban sangat cepat dan bagus",
-            foto: ["cbr.png"],
-        },
-
-        {
-            id: 5,
-            reviewTitle: "Penggantian Lampu Depan dan Belakang",
-            bintang: 4,
-            reviewName: "Smith Doe",
-            reviewDate: "24 Mei 2022",
-            reviewDesc:
-                "Penggantian lampu depan dan belakang sangat cepat dan bagus",
-            foto: ["nmax.png"],
-        },
-    ]);
+    const { data, setData, post, processing, errors } = useForm({
+        jenis_layanan: "",
+        rating: selectedRating,
+        foto: [], // initialize foto as an empty array
+        review: "",
+    });
 
     const [show, setShow] = useState(false);
     const [modalImage, setModalImage] = useState("");
@@ -138,6 +102,62 @@ export default function Ulasan() {
         }
         return stars;
     };
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        if (auth.user) {
+            post(route("user.ulasan.create"));
+            e.target.reset();
+
+            setSelectedFiles([]);
+            setSelectedRating(0);
+
+            setData({
+                jenis_layanan: "",
+                rating: "",
+                review: "",
+                foto: [],
+            });
+
+            console.log(data);
+        } else {
+            router.visit(route("auth"), {
+                method: "GET",
+                headers: {
+                    "Content-type": "Application/json",
+                },
+            });
+        }
+    }
+
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        const newSelectedFiles = [...selectedFiles, ...files];
+        setSelectedFiles(newSelectedFiles); // update state with new files
+    };
+
+    useEffect(() => {
+        setData((prevData) => ({
+            ...prevData,
+            foto: selectedFiles,
+            rating: selectedRating,
+        })); // use callback function to ensure latest state value
+    }, [selectedFiles, selectedRating]);
+
+    // useEffect(() => {
+    //     setData((prevData) => ({
+    //         ...prevData,
+    //         foto: selectedFiles,
+    //     })); // use callback function to ensure latest state value
+
+    //     setData("rating", selectedRating);
+    // }, [selectedFiles, selectedRating]);
+
+    const handleDeleteFile = (index) => {
+        const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+        setSelectedFiles(updatedFiles);
+    };
+
     return (
         <UserLayout>
             <section className={styles["rating-page"]}>
@@ -189,7 +209,7 @@ export default function Ulasan() {
                                     Berikan Rating
                                 </h1>
                                 <form
-                                    action="#"
+                                    onSubmit={handleSubmit}
                                     method="post"
                                     className={styles["form-input-ulasan"]}
                                 >
@@ -204,6 +224,13 @@ export default function Ulasan() {
                                             className={styles["input-text"]}
                                             placeholder="Masukkan jenis layanan"
                                             autoComplete="off"
+                                            value={data.jenis_layanan}
+                                            onChange={(e) =>
+                                                setData(
+                                                    "jenis_layanan",
+                                                    e.target.value
+                                                )
+                                            }
                                         />
                                     </div>
 
@@ -247,43 +274,110 @@ export default function Ulasan() {
                                         </div>
                                     </div>
 
-                                    <div className={styles["img"]}>
-                                        <h4 className={styles["title-rate"]}>
-                                            Foto
-                                        </h4>
-                                        <label
-                                            htmlFor="image"
-                                            className={styles["label-gambar"]}
-                                        >
-                                            <div className={styles["img-box"]}>
-                                                <box-icon
-                                                    name="plus"
-                                                    color="#f16211"
-                                                ></box-icon>
+                                    <Row>
+                                        <Col>
+                                            <div className={styles["img"]}>
+                                                <h4
+                                                    className={
+                                                        styles["title-rate"]
+                                                    }
+                                                >
+                                                    Foto
+                                                </h4>
+                                                <label
+                                                    htmlFor="image"
+                                                    className={
+                                                        styles["label-gambar"]
+                                                    }
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles["img-box"]
+                                                        }
+                                                    >
+                                                        <box-icon
+                                                            name="plus"
+                                                            color="#f16211"
+                                                        ></box-icon>
+                                                    </div>
+                                                    <span
+                                                        className={
+                                                            styles["text-img"]
+                                                        }
+                                                    >
+                                                        Tambah Foto
+                                                    </span>
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    name="image"
+                                                    id="image"
+                                                    className={
+                                                        styles["input-file"]
+                                                    }
+                                                    onChange={handleFileChange}
+                                                    multiple
+                                                />
                                             </div>
-                                            <span
-                                                className={styles["text-img"]}
+                                        </Col>
+                                        <Col>
+                                            <div
+                                                className={
+                                                    styles["selected-files"]
+                                                }
                                             >
-                                                Tambah Foto
-                                            </span>
-                                        </label>
-                                        <input
-                                            type="file"
-                                            name="image"
-                                            id="image"
-                                            className={styles["input-file"]}
-                                        />
-                                    </div>
+                                                <h4>Nama File</h4>
+                                                {selectedFiles.map(
+                                                    (file, index) => (
+                                                        <Row key={index}>
+                                                            <Col>
+                                                                <div>
+                                                                    <p>
+                                                                        {
+                                                                            file.name
+                                                                        }
+                                                                    </p>
+                                                                </div>
+                                                            </Col>
+                                                            <Col>
+                                                                <button
+                                                                    title="Hapus"
+                                                                    onClick={() =>
+                                                                        handleDeleteFile(
+                                                                            index
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <box-icon
+                                                                        name="trash"
+                                                                        type="solid"
+                                                                        color="#f16211"
+                                                                    ></box-icon>
+                                                                </button>
+                                                            </Col>
+                                                        </Row>
+                                                    )
+                                                )}
+                                            </div>
+                                        </Col>
+                                    </Row>
 
                                     <div className={styles["desc"]}>
                                         <h4 className={styles["title-rate"]}>
                                             Catatan
                                         </h4>
                                         <textarea
-                                            id="catatan"
-                                            name="catatan"
+                                            id="review"
+                                            name="review"
                                             className={styles["textarea"]}
                                             autoComplete="off"
+                                            value={data.review}
+                                            onChange={(e) =>
+                                                setData(
+                                                    "review",
+                                                    e.target.value
+                                                )
+                                            }
                                         ></textarea>
                                     </div>
 
@@ -362,7 +456,7 @@ export default function Ulasan() {
                                         >
                                             {review.reviewDesc}
                                         </p>
-                                        {review.foto.map((image, index) => (
+                                        {/* {review.foto.map((image, index) => (
                                             <img
                                                 key={index}
                                                 className={styles["review-img"]}
@@ -375,7 +469,11 @@ export default function Ulasan() {
                                                     )
                                                 }
                                             />
-                                        ))}
+                                        ))} */}
+                                        <img
+                                            className={styles["review-img"]}
+                                            src={"/storage/" + fotoUlasan}
+                                        />
                                     </div>
                                 ))}
                             </div>

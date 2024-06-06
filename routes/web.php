@@ -17,12 +17,16 @@ use App\Http\Controllers\Auth\LoginController;
 
 // User Controller
 use App\Http\Controllers\User\TutorialController as UserTutorialController;
+use App\Http\Controllers\User\UlasanController as UserUlasanController;
+
+//Middleware
+use App\Http\Middleware\AdminMiddleware;
 
 
 
 
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware'=> 'admin'], function () {
     // Route Dashboard
     Route::get('/', function () {
         return Inertia::render('Admin/Dashboard');
@@ -90,29 +94,32 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::put("/manajemen-produk/{produk}", [ProdukController::class, 'update'])->name('produk.update');
 
     Route::delete("/manajemen-produk/{produk}", [ProdukController::class, 'destroy'])->name('produk.delete');
-})->name('admin.');
+})->middleware(["admin, auth"])->name('admin.');
 
 
 Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
     Route::get('/tutorial', [UserTutorialController::class, 'index'])->name('tutorial');
     Route::get('/tutorial/search', [UserTutorialController::class, 'search'])->name('tutorial.search');
 
-    Route::get('/ulasan', function () {
-        return Inertia::render('User/Ulasan');
-    })->name('ulasan');
+    Route::get('/ulasan', [UserUlasanController::class, 'index'])->name('ulasan');
+
+    Route::post('/ulasan', [UserUlasanController::class, 'store'])->name('ulasan.create');
     
     Route::get('/katalog', function () {
         return Inertia::render('User/Katalog');
         
     })->name('katalog');
 
-    Route::get('/register', function () {
-        return Inertia::render('User/Register');
-    })->name('register');
+    
 
     
 
 })->name('user.');
+
+Route::get('/', function () {
+        return Inertia::render('Register');
+    })->name('auth');
+
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login'])->name('login');

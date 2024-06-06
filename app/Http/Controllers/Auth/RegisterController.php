@@ -33,10 +33,12 @@ class RegisterController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
-            return Inertia::render('User/Register', [
+            return redirect()->back()-with([
                 'message' => 'User registered successfully',
                 'user' => $user
             ]);
+
+            
         } catch (\Exception $e) {
             \Log::error($e);
             return response()->json(['message' => $e->getMessage()], 500);
