@@ -37,7 +37,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::post('/manajemen-user', [UserController::class, 'store'])->name('user.store');
     Route::get('/manajemen-user/edit/{user}', [UserController::class, 'edit'])->name('user.edit');
     Route::put("/manajemen-user/{user}", [UserController::class, 'update'])->name('user.update');
-    Route::delete("/manajemen-user/{user}", [UserController::class, 'destroy'])->name('user.delete');
+    Route::delete('/manajemen-user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
 
     // Route Manajemen Booking
     Route::get('/manajemen-booking', [BookingController::class, 'index'])->name('booking.index');
