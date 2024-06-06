@@ -1,40 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Row, Col } from "react-bootstrap";
 import styles from "../../../css/Admin/EditUser.module.css";
-// import previewImage from "../../assets/images/preview.png";
 import ButtonAdmin from "@/Components/ButtonAdmin";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
-export default function EditUser() {
-    // State untuk menyimpan data pengguna yang akan diedit
+export default function EditUser({ userId }) {
+    const { props } = usePage();
+    const user = props.user;
+
     const [userData, setUserData] = useState({
-        id: 1, // Ganti dengan id pengguna yang sesuai
-        nama: "John Doe",
-        username: "johndoe",
-        email: "johndoe@example.com",
-        tanggal_lahir: "1990-01-01",
-        no_telepon: "08123456789",
-        jenis_kelamin: "Laki-laki",
-        role: "User",
+        id: user?.id || '',
+        name: user?.name || '',
+        username: user?.username || '',
+        email: user?.email || '',
+        tanggal_lahir: user?.tanggal_lahir || '',
+        no_telepon: user?.no_telepon || '',
+        jenis_kelamin: user?.jenis_kelamin || '',
+        role: user?.role || '',
     });
 
     const [previewImage, setPreviewImage] = useState(null);
+    const [passwordType, setPasswordType] = useState("password");
+    const [confirmPasswordType, setConfirmPasswordType] = useState("password");
 
-    // Fungsi untuk mengubah data pengguna
+    useEffect(() => {
+        if (user) {
+            setUserData({
+                id: user.id,
+                name: user.name,
+                username: user.username,
+                email: user.email,
+                tanggal_lahir: user.tanggal_lahir,
+                no_telepon: user.no_telepon,
+                jenis_kelamin: user.jenis_kelamin,
+                role: user.role,
+            });
+        }
+    }, [user]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUserData({
             ...userData,
             [name]: value,
         });
-    };
-
-    // Fungsi untuk mengirimkan data pengguna yang diubah
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Kode untuk mengirimkan data pengguna yang diubah
     };
 
     const handleFotoChange = (event) => {
@@ -45,7 +56,62 @@ export default function EditUser() {
                 setPreviewImage(reader.result);
             };
             reader.readAsDataURL(file);
+            setUserData({ ...userData, foto: file });
         }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+    
+        // Buat objek data yang akan dikirim
+        const dataToSend = {
+            id: userData.id,
+            nama: userData.name,
+            username: userData.username,
+            email: userData.email,
+            tanggal_lahir: userData.tanggal_lahir,
+            no_telepon: userData.no_telepon,
+            jenis_kelamin: userData.jenis_kelamin,
+            role: userData.role,
+            // Jika ada foto yang di-upload, sertakan juga dalam formData
+            foto: userData.foto
+        };
+    
+        fetch(route('admin.user.update', userData.id), {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(dataToSend)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(JSON.stringify(errorData));
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            alert('User berhasil diperbarui!');
+            window.location.href = route('admin.user.index');
+        })
+        .catch((error) => {
+            console.error('Error:', error.message);
+            alert('Terjadi kesalahan: ' + error.message);
+        });
+    };
+    
+
+    const togglePasswordVisibility = () => {
+        setPasswordType(passwordType === "password" ? "text" : "password");
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+        setConfirmPasswordType(confirmPasswordType === "password" ? "text" : "password");
     };
 
     return (
@@ -59,17 +125,16 @@ export default function EditUser() {
                     id="form"
                     className={styles["form"]}
                 >
-                    {/* Isi formulir dengan data pengguna */}
                     <Row className="justify-content-md-center mb-3">
                         <Col md={6}>
-                            <label className={styles["label"]} htmlFor="nama">
+                            <label className={styles["label"]} htmlFor="name">
                                 Nama
                             </label>
                             <input
                                 type="text"
-                                name="nama"
-                                id="nama"
-                                value={userData.nama}
+                                name="name"
+                                id="name"
+                                value={userData.name}
                                 onChange={handleChange}
                                 autoComplete="off"
                                 required
@@ -77,10 +142,7 @@ export default function EditUser() {
                             />
                         </Col>
                         <Col md={6}>
-                            <label
-                                className={styles["label"]}
-                                htmlFor="username"
-                            >
+                            <label className={styles["label"]} htmlFor="username">
                                 Username
                             </label>
                             <input
@@ -112,10 +174,7 @@ export default function EditUser() {
                             />
                         </Col>
                         <Col md={6}>
-                            <label
-                                className={styles["label"]}
-                                htmlFor="tanggal_lahir"
-                            >
+                            <label className={styles["label"]} htmlFor="tanggal_lahir">
                                 Tanggal Lahir
                             </label>
                             <input
@@ -130,10 +189,7 @@ export default function EditUser() {
                     </Row>
                     <Row className="justify-content-md-center mb-3">
                         <Col md={6}>
-                            <label
-                                className={styles["label"]}
-                                htmlFor="no_telepon"
-                            >
+                            <label className={styles["label"]} htmlFor="no_telepon">
                                 No Telepon
                             </label>
                             <input
@@ -148,10 +204,7 @@ export default function EditUser() {
                             />
                         </Col>
                         <Col md={6}>
-                            <label
-                                className={styles["label"]}
-                                htmlFor="jenis_kelamin"
-                            >
+                            <label className={styles["label"]} htmlFor="jenis_kelamin">
                                 Jenis Kelamin
                             </label>
                             <select
@@ -168,37 +221,39 @@ export default function EditUser() {
                     </Row>
                     <Row className="justify-content-md-center mb-3">
                         <Col md={6}>
-                            <label
-                                className={styles["label"]}
-                                htmlFor="password"
-                            >
-                                password <small>(opsional)</small>
+                            <label className={styles["label"]} htmlFor="password">
+                                Password <small>(opsional)</small>
                             </label>
-                            <input
-                                type="password"
-                                name="password"
-                                id="password"
-                                autoComplete="off"
-                                required
-                                className={styles["input"]}
-                            />
+                            <div className={styles["input-with-icon"]}>
+                                <input
+                                    type={passwordType}
+                                    name="password"
+                                    id="password"
+                                    autoComplete="off"
+                                    className={styles["input"]}
+                                />
+                                <span onClick={togglePasswordVisibility}>
+                                    {passwordType === "password" ? "Show" : "Hide"}
+                                </span>
+                            </div>
                         </Col>
 
                         <Col md={6}>
-                            <label
-                                className={styles["label"]}
-                                htmlFor="konfirmasi_password"
-                            >
+                            <label className={styles["label"]} htmlFor="konfirmasi_password">
                                 Konfirmasi Password
                             </label>
-                            <input
-                                type="password"
-                                name="konfirmasi_password"
-                                id="konfirmasi_password"
-                                autoComplete="off"
-                                required
-                                className={styles["input"]}
-                            />
+                            <div className={styles["input-with-icon"]}>
+                                <input
+                                    type={confirmPasswordType}
+                                    name="konfirmasi_password"
+                                    id="konfirmasi_password"
+                                    autoComplete="off"
+                                    className={styles["input"]}
+                                />
+                                <span onClick={toggleConfirmPasswordVisibility}>
+                                    {confirmPasswordType === "password" ? "Show" : "Hide"}
+                                </span>
+                            </div>
                         </Col>
                     </Row>
                     <Row className="justify-content-md-center mb-3">
@@ -220,10 +275,7 @@ export default function EditUser() {
                         <Col md={6}>
                             <Row>
                                 <Col md={8}>
-                                    <label
-                                        className={styles["label"]}
-                                        htmlFor="foto"
-                                    >
+                                    <label className={styles["label"]} htmlFor="foto">
                                         Foto Profil
                                     </label>
                                     <input
@@ -254,7 +306,6 @@ export default function EditUser() {
                             </Row>
                         </Col>
                     </Row>
-                    {/* Tombol untuk kembali ke halaman manajemen pengguna */}
                     <Row className="mb-3">
                         <Col md={6}>
                             <ButtonAdmin
@@ -283,12 +334,10 @@ export default function EditUser() {
                                 </Link>
                             </ButtonAdmin>
                         </Col>
-                        {/* Tombol untuk menyimpan perubahan */}
                         <Col md={{ span: 2, offset: 4 }}>
                             <ButtonAdmin
                                 style={{
-                                    background:
-                                        "linear-gradient(90deg, #f16211 -14.33%, #e59a6f 85.67%)",
+                                    background: "linear-gradient(90deg, #f16211 -14.33%, #e59a6f 85.67%)",
                                     fontSize: "20px",
                                 }}
                                 type="submit"

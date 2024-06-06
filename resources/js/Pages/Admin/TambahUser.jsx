@@ -99,6 +99,7 @@ export default function TambahUser() {
         .then(data => {
             console.log('Success:', data);
             alert('Form telah berhasil di-submit!');
+            window.location.href = route('admin.user.index'); // Redirect setelah submit berhasil
         })
         .catch((error) => {
             console.error('Error:', error.message);

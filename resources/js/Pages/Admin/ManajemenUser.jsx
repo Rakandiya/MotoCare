@@ -9,11 +9,19 @@ import { route } from "ziggy-js";
 
 const ManajemenUser = () => {
     const { props } = usePage();
-    const initialUsers = props.users;
+    const users = props.users;
 
     const [show, setShow] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
-    const [users, setUsers] = useState(initialUsers);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredUsers, setFilteredUsers] = useState(users);
+
+    useEffect(() => {
+        const results = users.filter(user =>
+            user.username.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredUsers(results);
+    }, [searchTerm, users]);
 
     const handleClose = () => setShow(false);
     const handleShow = (user) => {
@@ -32,16 +40,11 @@ const ManajemenUser = () => {
             if (!response.ok) {
                 throw new Error('Error deleting user');
             }
-            // Remove user from state without reloading the page
-            setUsers(users.filter(user => user.id !== selectedUser.id));
-            setShow(false);
+            window.location.reload();
         })
-        .catch(error => {
-            console.error('Error:', error);
-            setShow(false);
-        });
+        .catch(error => console.error('Error:', error));
+        setShow(false);
     };
-       
 
     const columns = [
         {
@@ -70,9 +73,9 @@ const ManajemenUser = () => {
                     <Link href={route("admin.user.edit", [row.id])} className="mx-2">
                         <box-icon name="edit" type="solid" color="#f16211"></box-icon>
                     </Link>
-                    <button onClick={(e) => { e.preventDefault(); handleShow(row); }} style={{ background: "none", border: "none", color: "#f16211", cursor: "pointer" }}>
+                    <Link onClick={() => handleShow(row)} style={{ color: "#f16211" }}>
                         <box-icon name="trash" type="solid" color="#f16211"></box-icon>
-                    </button>
+                    </Link>
                 </>
             ),
         },
@@ -99,10 +102,12 @@ const ManajemenUser = () => {
                             className={styles["input-search"]}
                             placeholder="Cari User"
                             autoComplete="off"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </form>
                 </div>
-                <DataTable columns={columns} data={users} pagination />
+                <DataTable columns={columns} data={filteredUsers} pagination />
             </div>
 
             <Modal show={show} onHide={handleClose}>

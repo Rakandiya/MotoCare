@@ -29,3 +29,21 @@
   border-bottom: 2px solid rgba(183, 182, 182, 0.8);
   width: 100%;
 }
+
+/* Gaya placeholder */
+::placeholder {
+  color: #aaa; /* Ubah sesuai kebutuhan */
+  font-weight: 400; /* Ubah sesuai kebutuhan */
+}
+
+/* Gaya input teks */
+input {
+  color: #333; /* Ubah sesuai kebutuhan */
+  font-weight: 700; /* Ubah sesuai kebutuhan */
+}
+
+.error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
