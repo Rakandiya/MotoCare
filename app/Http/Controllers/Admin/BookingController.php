@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Tutorial;
+use App\Models\User;
+use App\Models\Katalog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+
 
 class BookingController extends Controller
 {
@@ -20,13 +23,18 @@ class BookingController extends Controller
     // menampilkan form untuk tambah booking
     public function create()
     {
-        return Inertia::render("Admin/TambahBooking");
-
+        // direct tombolBooking ke tambahBooking
+        // return Inertia::render("Admin/TambahBooking");
+        // panggil data user
+        $users = User::all();
+        $katalogs = Katalog::all();
+        return Inertia::render("Admin/TambahBooking", compact("users", "katalogs"));
     }
 
     // menyimpan data booking baru ke dalam database
     public function store(Request $request)
     {
+        dd($request->all());
         $validatedData = $request -> validate([
             'nama' => 'required',
             'jenis_layanan' => 'required',

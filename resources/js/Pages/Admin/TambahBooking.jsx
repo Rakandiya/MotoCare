@@ -5,146 +5,33 @@ import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Link } from "@inertiajs/react";
 import { useState } from "react";
 import ReactSelect from "react-select";
+import { Head, useForm, router } from "@inertiajs/react";
 
-export default function TambahBooking() {
+export default function TambahBooking({katalogs, users}) {
     const [selectedUser, setSelectedUser] = useState("");
     const [selectedKatalog, setSelectedKatalog] = useState("");
-    const [selectedBooking, setSelectedBooking] = useState(false);
-    const [userList, setUserList] = useState([
-        {
-            id: 1,
-            name: "John Doe",
-            username: "john_doe123",
-            email: "john.doe@example.com",
-            role: "User",
-        },
-        {
-            id: 2,
-            name: "Jane Smith",
-            username: "jane_smith456",
-            email: "jane.smith@example.com",
-            role: "Admin",
-        },
-        {
-            id: 3,
-            name: "Michael Johnson",
-            username: "michael_johnson789",
-            email: "michael.johnson@example.com",
-            role: "User",
-        },
-        {
-            id: 4,
-            name: "Alice Johnson",
-            username: "alice_johnson",
-            email: "alice.johnson@example.com",
-            role: "User",
-        },
-        {
-            id: 5,
-            name: "Robert Brown",
-            username: "robert_brown",
-            email: "robert.brown@example.com",
-            role: "Admin",
-        },
-        {
-            id: 6,
-            name: "Sarah Lee",
-            username: "sarah_lee",
-            email: "sarah.lee@example.com",
-            role: "User",
-        },
-        {
-            id: 7,
-            name: "Michael Smith",
-            username: "michael_smith",
-            email: "michael.smith@example.com",
-            role: "User",
-        },
-        {
-            id: 8,
-            name: "Emma Davis",
-            username: "emma_davis",
-            email: "emma.davis@example.com",
-            role: "Admin",
-        },
-        {
-            id: 9,
-            name: "James Wilson",
-            username: "james_wilson",
-            email: "james.wilson@example.com",
-            role: "User",
-        },
-        {
-            id: 10,
-            name: "Olivia Taylor",
-            username: "olivia_taylor",
-            email: "olivia.taylor@example.com",
-            role: "Admin",
-        },
-    ]);
+    const [selectedJenisLayanan, setSelectedJenisLayanan] = useState("");
 
-    const [katalogList, setKatalogList] = useState([
-        {
-            id: "1",
-            merk: "Honda",
-            model: "BeAT",
-        },
-        {
-            id: "2",
-            merk: "Honda",
-            model: "PCX160",
-        },
-        {
-            id: "3",
-            merk: "Honda",
-            model: "Vario 160",
-        },
+    // DROP DOWN: ambil nama dari tabel users
+    const [userList, setUserList] = useState(users);
 
-        {
-            id: "4",
-            merk: "Honda",
-            model: "CBR150R",
-        },
+    // DROP DOWN: ambil merk motor dari tabel katalogs
+    const [katalogList, setKatalogList] = useState(katalogs);
 
-        {
-            id: "5",
-            merk: "Yamaha",
-            model: "NMAX 155",
-        },
+    const jenisLayananList = [
+        { value: "Service Rutin", label: "Service Rutin" },
+        { value: "Perbaikan Khusus", label: "Perbaikan Khusus" },
+        { value: "Tune Up / Bore Up", label: "Tune Up / Bore Up" },
+        { value: "Cek Kendaraan", label: "Cek Kendaraan" },
+    ];
 
-        {
-            id: "6",
-            merk: "Yamaha",
-            model: "Aerox",
-        },
-
-        {
-            id: "7",
-            merk: "Yamaha",
-            model: "Xmax",
-        },
-
-        {
-            id: "8",
-            merk: "Yamaha",
-            model: "XSR 155",
-        },
-
-        {
-            id: "9",
-            merk: "Suzuki",
-            model: "GSX-R150",
-        },
-
-        {
-            id: "10",
-            merk: "Suzuki",
-            model: "NEX II",
-        },
-    ]);
+    const dataSelectJenisLayanan = jenisLayananList.map((layanan) => ({
+        value: layanan.value,
+        label: layanan.label,
+    }));
 
     const dataSelectUser = userList.map((user) => ({
-        value: user.name,
+        value: user.id,
         label: user.name,
     }));
 
@@ -153,44 +40,54 @@ export default function TambahBooking() {
         label: katalog.merk + " " + katalog.model,
     })); 
 
-    // const {
-    //     data,
-    //     setData,
-    //     put,
-    //     post,
-    //     delete: deleteRoute,
-    //     processing,
-    //     errors,
-    // } = useForm({
-        // id: "",
-        // user_id: "",
-        // jenis_layanan: "",
-        // merk_motor: "",
-        // tahun_pembuatan: "",
-        // nomor_polisi: "",
-        // km_kendaraan: "",
-        // jadwal_booking: "",
-        // catatan: "",
-
-    // });
-    // const [BookingList, setBookingList] = useState(bookings);
+    const {
+        data,
+        setData,
+        put,
+        post,
+        delete: deleteRoute,
+        processing,
+        errors,
+    } = useForm({
+        id: "",
+        user_id: selectedUser.id,
+        jenis_layanan: selectedJenisLayanan,
+        katalog_id: selectedKatalog.id,
+        tahun_pembuatan: "",
+        nomor_polisi: "",
+        km_kendaraan: "",
+        jadwal_booking: "",
+        catatan: "",
+    });
 
     // handleSubmit untuk tambah booking
     const handleSubmit = (e) => {
         e.preventDefault();
-        const routeName = data.id
-            ? "admin.booking.update"
+        const routeName = 
             : "admin.booking.store";
 
-        const action = data.id ? put : post;
-        action(route(routeName, data.id), {
+        const action = post;
+        action(route(routeName), {
             preserveScroll: true,
             data: data,
             onSuccess: () => {
                 setReload(!reload); // Toggle state untuk memicu reload
             },
         });
+
     };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setData({
+            ...data,
+            [name]: value,
+        });
+    };
+
+    
+
+    
     return (
         <AdminLayout title="MANAJEMEN BOOKING">
             <div className={styles["form-wrapper"]}>
@@ -213,9 +110,14 @@ export default function TambahBooking() {
                                 value={dataSelectUser.find(
                                     (option) => option.value === selectedUser
                                 )}
-                                onChange={(selectedOption) =>
+                                onChange={(selectedOption) => {
                                     setSelectedUser(selectedOption.value)
-                                }
+                                    setData((prevData) => ({
+                                        ...prevData,
+                                        user_id: selectedOption.value
+                                    }));
+                                }}
+                        
                                 placeholder="Pilih User"
                             />
                         </Col>
@@ -223,30 +125,24 @@ export default function TambahBooking() {
                             <label
                                 className={styles["label"]}
                                 htmlFor="jenis_layanan"
+    
                             >
                                 Jenis Layanan
                             </label>
-                            <select
-                                className={styles["select"]}
-                                name="jenis_layanan"
-                                id="jenis_layanan"
-                            >
-                                <option disabled value="Pilih Jenis Layanan">
-                                    Pilih Jenis Layanan
-                                </option>
-                                <option value="Service Rutin">
-                                    Service Rutin
-                                </option>
-                                <option value="Perbaikan Khusu">
-                                    Perbaikan Khusus
-                                </option>
-                                <option value="Tune Up / Bore Up">
-                                    Tune Up / Bore Up
-                                </option>
-                                <option value="Cek Kendaraan">
-                                    Cek Kendaraan
-                                </option>
-                            </select>
+                            <ReactSelect
+                                id="jenisLayanan"
+                                options={dataSelectJenisLayanan}
+                                value={dataSelectJenisLayanan.find(
+                                    (option) =>
+                                        option.value === selectedJenisLayanan
+                                )}
+                                onChange={(selectedOption) =>
+                                    setSelectedJenisLayanan(
+                                        selectedOption.value
+                                    )
+                                }
+                                placeholder="Pilih Jenis Layanan"
+                            />
                         </Col>
                         <Col md={4}>
                             <label className={styles["label"]} htmlFor="merk">
@@ -258,9 +154,13 @@ export default function TambahBooking() {
                                 value={dataSelectKatalog.find(
                                     (option) => option.value === selectedKatalog
                                 )}
-                                onChange={(selectedOption) =>
+                                onChange={(selectedOption) => {
                                     setSelectedKatalog(selectedOption.value)
-                                }
+                                    setData((prevData) => ({
+                                        ...prevData,
+                                        katalog_id: selectedOption.value
+                                    }));
+                                }}
                                 placeholder="Pilih Katalog"
                             />
                         </Col>
@@ -282,6 +182,8 @@ export default function TambahBooking() {
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleInputChange}
+                                value={data.model}
                             />
                         </Col>
 
@@ -300,6 +202,8 @@ export default function TambahBooking() {
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleInputChange}
+                                value={data.model}
                             />
                         </Col>
 
@@ -318,6 +222,8 @@ export default function TambahBooking() {
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleInputChange}
+                                value={data.model}
                             />
                         </Col>
                     </Row>
@@ -338,6 +244,8 @@ export default function TambahBooking() {
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleInputChange}
+                                value={data.model}
                             />
                         </Col>
 
@@ -356,6 +264,8 @@ export default function TambahBooking() {
                                 placeholder="catatan Tambahan"
                                 autoComplete="off"
                                 required
+                                onChange={handleInputChange}
+                                value={data.catatan}
                             ></textarea>
                         </Col>
                     </Row>

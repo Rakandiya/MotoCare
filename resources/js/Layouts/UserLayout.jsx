@@ -5,7 +5,7 @@ import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import { useEffect } from "react";
 
-export default function UserLayout({ children }) {
+export default function UserLayout({ auth, children }) {
     useEffect(() => {
         const navbar = document.querySelector("[data-navbar]");
         const navToggler = document.querySelector("[data-nav-toggler]");

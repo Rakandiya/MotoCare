@@ -6,7 +6,7 @@ import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Link, useForm, Head, router } from "@inertiajs/react";
 import { Modal, Button } from "react-bootstrap";
 
-export default function ManajemenBooking({ bookings }) {
+export default function ManajemenBooking({ bookings, users, katalog }) {
     const [showDetail, setShowDetail] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
@@ -155,11 +155,11 @@ export default function ManajemenBooking({ bookings }) {
 
     const getStatusStyle = (status) => {
         switch (status) {
-            case "diproses":
+            case "Diproses":
                 return { backgroundColor: "#1fe71b" };
-            case "selesai":
+            case "Selesai":
                 return { backgroundColor: "#1887d7" };
-            case "dibatalkan":
+            case "Dibatalkan":
                 return { backgroundColor: "#ff0000" };
             default:
                 return {};
@@ -185,8 +185,8 @@ export default function ManajemenBooking({ bookings }) {
         },
         {
             name: "Name",
-            // ambil nama dari tabel user
-            selector: (row) => row.nama,
+            // ambil data name dari tabel users
+            selector: (row) => row.name,
         },
         {
             name: "Service",

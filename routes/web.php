@@ -93,6 +93,14 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
     Route::get('/home', function () {
         return Inertia::render('User/Home');
     })->name('home');
+
+    Route::get('/booking', function () {
+        return Inertia::render('User/Booking');
+    })->name('home');
+
+    Route::get('/riwayat', function () {
+        return Inertia::render('User/Riwayat');
+    })->name('home');
 })->name('user.');
 
 Route::get('/', function () {
