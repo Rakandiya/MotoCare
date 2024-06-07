@@ -60,7 +60,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware'=> 'admin'], fu
 
     // Route Manajemen Katalog
     //tambahan
-    Route::resource('admin/katalog', KatalogController::class);
+    // Route::resource('admin/katalog', KatalogController::class);
     
     Route::get('/manajemen-katalog', [KatalogController::class, 'index'])->name('katalog.index');
     Route::post('/manajemen-katalog', [KatalogController::class, 'store'])->name('katalog.store');

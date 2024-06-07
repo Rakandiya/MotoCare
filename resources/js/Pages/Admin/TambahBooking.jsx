@@ -6,141 +6,28 @@ import { Link } from "@inertiajs/react";
 import { useState } from "react";
 import ReactSelect from "react-select";
 
-export default function TambahBooking() {
+export default function TambahBooking({ users, katalogs }) {
     const [selectedUser, setSelectedUser] = useState("");
     const [selectedKatalog, setSelectedKatalog] = useState("");
-    const [userList, setUserList] = useState([
-        {
-            id: 1,
-            name: "John Doe",
-            username: "john_doe123",
-            email: "john.doe@example.com",
-            role: "User",
-        },
-        {
-            id: 2,
-            name: "Jane Smith",
-            username: "jane_smith456",
-            email: "jane.smith@example.com",
-            role: "Admin",
-        },
-        {
-            id: 3,
-            name: "Michael Johnson",
-            username: "michael_johnson789",
-            email: "michael.johnson@example.com",
-            role: "User",
-        },
-        {
-            id: 4,
-            name: "Alice Johnson",
-            username: "alice_johnson",
-            email: "alice.johnson@example.com",
-            role: "User",
-        },
-        {
-            id: 5,
-            name: "Robert Brown",
-            username: "robert_brown",
-            email: "robert.brown@example.com",
-            role: "Admin",
-        },
-        {
-            id: 6,
-            name: "Sarah Lee",
-            username: "sarah_lee",
-            email: "sarah.lee@example.com",
-            role: "User",
-        },
-        {
-            id: 7,
-            name: "Michael Smith",
-            username: "michael_smith",
-            email: "michael.smith@example.com",
-            role: "User",
-        },
-        {
-            id: 8,
-            name: "Emma Davis",
-            username: "emma_davis",
-            email: "emma.davis@example.com",
-            role: "Admin",
-        },
-        {
-            id: 9,
-            name: "James Wilson",
-            username: "james_wilson",
-            email: "james.wilson@example.com",
-            role: "User",
-        },
-        {
-            id: 10,
-            name: "Olivia Taylor",
-            username: "olivia_taylor",
-            email: "olivia.taylor@example.com",
-            role: "Admin",
-        },
-    ]);
+    const [selectedJenisLayanan, setSelectedJenisLayanan] = useState("");
+    const [userList, setUserList] = useState(users);
 
-    const [katalogList, setKatalogList] = useState([
-        {
-            id: "1",
-            merk: "Honda",
-            model: "BeAT",
-        },
-        {
-            id: "2",
-            merk: "Honda",
-            model: "PCX160",
-        },
-        {
-            id: "3",
-            merk: "Honda",
-            model: "Vario 160",
-        },
+    const { data, setData, post, processing, errors } = useForm({
+        id: "",
+        jenis_layanan: "",
+        user_id: "",
+        katalog_id: "",
+        tgl_booking: "",
+    });
 
-        {
-            id: "4",
-            merk: "Honda",
-            model: "CBR150R",
-        },
+    const jenisLayananList = [
+        { value: "Service Rutin", label: "Service Rutin" },
+        { value: "Perbaikan Khusus", label: "Perbaikan Khusus" },
+        { value: "Tune Up / Bore Up", label: "Tune Up / Bore Up" },
+        { value: "Cek Kendaraan", label: "Cek Kendaraan" },
+    ];
 
-        {
-            id: "5",
-            merk: "Yamaha",
-            model: "NMAX 155",
-        },
-
-        {
-            id: "6",
-            merk: "Yamaha",
-            model: "Aerox",
-        },
-
-        {
-            id: "7",
-            merk: "Yamaha",
-            model: "Xmax",
-        },
-
-        {
-            id: "8",
-            merk: "Yamaha",
-            model: "XSR 155",
-        },
-
-        {
-            id: "9",
-            merk: "Suzuki",
-            model: "GSX-R150",
-        },
-
-        {
-            id: "10",
-            merk: "Suzuki",
-            model: "NEX II",
-        },
-    ]);
+    const [katalogList, setKatalogList] = useState(katalogs);
 
     const dataSelectUser = userList.map((user) => ({
         value: user.name,
@@ -151,18 +38,18 @@ export default function TambahBooking() {
         value: katalog.id,
         label: katalog.merk + " " + katalog.model,
     }));
+
+    const dataSelectJenisLayanan = jenisLayananList.map((layanan) => ({
+        value: layanan.value,
+        label: layanan.label,
+    }));
     return (
         <AdminLayout title="MANAJEMEN BOOKING">
             <div className={styles["form-wrapper"]}>
                 <h1 className={styles["title-form"] + " my-3"}>
                     Form Tambah Booking
                 </h1>
-                <form
-                    action="#"
-                    method="post"
-                    id="form"
-                    className={styles["form"]}
-                >
+                <form method="post" id="form" className={styles["form"]}>
                     <Row className="justify-content-md-center mb-3">
                         <Col md={4}>
                             <label className={styles["label"]} htmlFor="nama">
@@ -187,27 +74,20 @@ export default function TambahBooking() {
                             >
                                 Jenis Layanan
                             </label>
-                            <select
-                                className={styles["select"]}
-                                name="jenis_layanan"
-                                id="jenis_layanan"
-                            >
-                                <option disabled value="Pilih Jenis Layanan">
-                                    Pilih Jenis Layanan
-                                </option>
-                                <option value="Service Rutin">
-                                    Service Rutin
-                                </option>
-                                <option value="Perbaikan Khusu">
-                                    Perbaikan Khusu
-                                </option>
-                                <option value="Tune Up / Bore Up">
-                                    Tune Up / Bore Up
-                                </option>
-                                <option value="Cek Kendaraan">
-                                    Cek Kendaraan
-                                </option>
-                            </select>
+                            <ReactSelect
+                                id="jenisLayanan"
+                                options={dataSelectJenisLayanan}
+                                value={dataSelectJenisLayanan.find(
+                                    (option) =>
+                                        option.value === selectedJenisLayanan
+                                )}
+                                onChange={(selectedOption) =>
+                                    setSelectedJenisLayanan(
+                                        selectedOption.value
+                                    )
+                                }
+                                placeholder="Pilih Jenis Layanan"
+                            />
                         </Col>
                         <Col md={4}>
                             <label className={styles["label"]} htmlFor="merk">

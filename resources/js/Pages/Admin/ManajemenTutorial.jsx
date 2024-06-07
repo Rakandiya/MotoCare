@@ -37,13 +37,15 @@ export default function ManajemenTutorial({ tutorials }) {
     });
     const [tutorialList, setTutorialList] = useState(tutorials);
     const handleCloseDetail = () => setShowDetail(false);
-    const handleShowDetail = (tutorial) => {
+    const handleShowDetail = (e, tutorial) => {
+        e.preventDefault();
         setShowDetail(true);
         setSelectedTutorial(tutorial);
         console.log(tutorial);
     };
     const handleCloseDelete = () => setShowDelete(false);
-    const handleShowDelete = (tutorial) => {
+    const handleShowDelete = (e, tutorial) => {
+        e.preventDefault();
         setShowDelete(true);
         setSelectedTutorial(tutorial);
     };
@@ -67,7 +69,7 @@ export default function ManajemenTutorial({ tutorials }) {
                         ></box-icon>
                     </button>
                     <button
-                        onClick={() => handleEditTutorial(row)}
+                        onClick={(e) => handleEditTutorial(e, row)}
                         className="mx-2"
                     >
                         <box-icon
@@ -77,7 +79,7 @@ export default function ManajemenTutorial({ tutorials }) {
                         ></box-icon>
                     </button>
                     <button
-                        onClick={() => handleShowDelete(row)}
+                        onClick={(e) => handleShowDelete(e, row)}
                         style={{ color: "#f16211" }}
                     >
                         <box-icon
@@ -128,8 +130,7 @@ export default function ManajemenTutorial({ tutorials }) {
         });
     };
 
-    const handleDelete = (e) => {
-        e.preventDefault();
+    const handleDelete = () => {
         deleteRoute(
             route("admin.tutorial.delete", { tutorial: selectedTutorial.id }),
             {

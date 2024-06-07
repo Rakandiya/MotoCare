@@ -7,6 +7,7 @@ use App\Models\Katalog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class KatalogController extends Controller
 {
@@ -32,6 +33,8 @@ class KatalogController extends Controller
      */
     public function store(Request $request)
     {
+
+        // dd($request->all());
         $request->validate([
             'gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'merk' => 'required|string|max:255',
@@ -72,25 +75,44 @@ class KatalogController extends Controller
      */
     public function update(Request $request, Katalog $katalog)
     {
-        $request->validate([
-            'gambar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+
+        
+        dd($request->all());
+        $validation = [
             'merk' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
+            'model' => 'string|max:255',
             'deskripsi' => 'required|string',
-        ]);
+        ];
+
+        $data = [];
+
+        if ($request->hasFile('gambar')) {
+            $validation['gambar'] = 'image|mimes:jpeg,png,jpg,gif,svg|max:2048';
+        }
+
+        $validated = $request->validate($validation);
+
+        // var_dump($validated);
+        // die;
+
+        // dd($validated);
 
         if ($request->hasFile('gambar')) {
             if (Storage::disk('public')->exists($katalog->gambar)) {
                 Storage::disk('public')->delete($katalog->gambar);
             }
-            $path = $request->file('gambar')->store('images', 'public');
-            $katalog->gambar = $path;
+            $path = $request->file('gambar')->store('images/katalog', 'public');
+            $data['gambar'] = $path;
+
         }
 
-        $katalog->merk = $request->merk;
-        $katalog->model = $request->model;
-        $katalog->deskripsi = $request->deskripsi;
-        $katalog->save();
+        
+
+        
+        $data['merk'] = $request->merk;
+        $data['model'] = $request->model;
+        $data['deskripsi'] = $request->deskripsi;
+        $katalog->update($data);
 
         return redirect()->route('admin.katalog.index')->with('success', 'Katalog updated successfully.');
     }
@@ -104,7 +126,8 @@ class KatalogController extends Controller
             Storage::disk('public')->delete($katalog->gambar);
         }
 
+
         $katalog->delete();
-        return redirect()->route('admin.katalog.index')->with('success', 'Katalog deleted successfully.');
+        return redirect()->back();
     }
 }

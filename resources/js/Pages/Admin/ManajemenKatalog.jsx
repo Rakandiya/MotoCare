@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import AdminLayout from "@/Layouts/AdminLayout";
 import styles from "../../../css/Admin/ManajemenKatalog.module.css";
 import { Row, Col, Modal, Button, Table } from "react-bootstrap";
@@ -7,12 +6,14 @@ import DataTable from "react-data-table-component";
 import { Link } from "@inertiajs/react";
 import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Head, useForm, router } from "@inertiajs/react";
+import { route } from "ziggy-js";
 
 export default function ManajemenKatalog({ katalogs }) {
     const [showDetail, setShowDetail] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [selectedKatalog, setSelectedKatalog] = useState(false);
-    const [previewImage, setPreviewImage] = useState(null); 
+    const [previewImage, setPreviewImage] = useState(null);
+    const [isNewImage, setisNewImage] = useState(false);
     const {
         data,
         setData,
@@ -38,11 +39,12 @@ export default function ManajemenKatalog({ katalogs }) {
     };
 
     const handleCloseDelete = () => setShowDelete(false);
-    const handleShowDelete = (katalog) => {
+    const handleShowDelete = (e, katalog) => {
+        e.preventDefault();
         setShowDelete(true);
         setSelectedKatalog(katalog);
     };
-    
+
     const columns = [
         {
             name: "Merk Motor",
@@ -65,7 +67,7 @@ export default function ManajemenKatalog({ katalogs }) {
                     </Link>
                     <Link
                         href="#"
-                        onClick={() => handleEditKatalog(row)}
+                        onClick={(e) => handleEditKatalog(e, row)}
                         className="mx-2"
                     >
                         <box-icon
@@ -74,9 +76,8 @@ export default function ManajemenKatalog({ katalogs }) {
                             color="#f16211"
                         ></box-icon>
                     </Link>
-                    <Link
-                        href="#"
-                        onClick={() => handleShowDelete(row)}
+                    <button
+                        onClick={(e) => handleShowDelete(e, row)}
                         style={{ color: "#f16211" }}
                     >
                         <box-icon
@@ -84,7 +85,7 @@ export default function ManajemenKatalog({ katalogs }) {
                             type="solid"
                             color="#f16211"
                         ></box-icon>
-                    </Link>
+                    </button>
                 </>
             ),
         },
@@ -99,19 +100,21 @@ export default function ManajemenKatalog({ katalogs }) {
             }));
             const reader = new FileReader();
             reader.onloadend = () => {
+                setisNewImage(true);
                 setPreviewImage(reader.result);
             };
             reader.readAsDataURL(file);
         }
     };
 
-    const handleEditKatalog = (katalog) => {
+    const handleEditKatalog = (e, katalog) => {
+        e.preventDefault();
         setData({
             id: katalog.id,
             merk: katalog.merk,
             model: katalog.model,
             deskripsi: katalog.deskripsi,
-            gambar: katalog.gambar,
+            gambar: "",
         });
         setPreviewImage(katalog.gambar);
     };
@@ -124,8 +127,6 @@ export default function ManajemenKatalog({ katalogs }) {
         });
     };
 
-
-
     const [errorMessages, setErrorMessages] = useState({});
     const [reload, setReload] = useState(false);
 
@@ -134,24 +135,63 @@ export default function ManajemenKatalog({ katalogs }) {
         const routeName = data.id
             ? "admin.katalog.update"
             : "admin.katalog.store";
-            console.log(data);
-        const action = data.id ? put : post;
-        action(route(routeName, data.id), {
-            preserveScroll: true,
-            data: data,
-            onSuccess: () => {
-                setReload(!reload); // Toggle state untuk memicu reload
-            },
-        });
-    };
-    
-    const handleDelete = () => {
-        try {
-            deleteRoute(route("admin.katalog.destroy", data.id));
-            setShowDelete(false);
-        } catch (error) {
-            console.error('Error deleting katalog:', error);
+        // Create a FormData object
+
+        if (data.id) {
+            router.visit(route("admin.katalog.update", { katalog: data.id }), {
+                data: data,
+                method: "PUT",
+                preserveScroll: true,
+                headers: {
+                    "X-HTTP-Method-Override": "PATCH",
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                    "Content-Type": "multipart/form-data",
+                    "Content-Type": "application/json",
+                },
+                onSuccess: () => {
+                    setReload(!reload); // Toggle state to trigger reload
+                    console.log(data);
+                },
+                onError: () => {
+                    console.log(errors);
+                    console.log(data);
+                },
+            });
+        } else {
+            post(route(routeName), {
+                data: formData,
+                preserveScroll: true,
+                onSuccess: () => {
+                    setReload(!reload); // Toggle state to trigger reload
+                    console.log(data);
+                },
+                onError: () => {
+                    console.log(errors);
+                    console.log(data);
+                },
+            });
         }
+
+        console.log(data);
+    };
+
+    const handleDelete = () => {
+        deleteRoute(
+            route("admin.katalog.delete", { katalog: selectedKatalog.id }),
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setShowDelete(false); // Menutup modal setelah berhasil
+                    setReload(!reload); // Memicu reload data
+                    console.log("OK");
+                },
+                onError: () => {
+                    console.log(errorMessages);
+                },
+            }
+        );
     };
 
     useEffect(() => {
@@ -169,6 +209,8 @@ export default function ManajemenKatalog({ katalogs }) {
             model: "",
             deskripsi: "",
         });
+        setisNewImage(false);
+        setPreviewImage(null);
     }, [reload, katalogList]);
 
     return (
@@ -261,7 +303,6 @@ export default function ManajemenKatalog({ katalogs }) {
                                     type="file"
                                     name="gambar"
                                     id="gambar"
-                                    required
                                     accept="image/*"
                                     style={{ display: "none" }}
                                     onChange={handleFotoChange}
@@ -285,7 +326,11 @@ export default function ManajemenKatalog({ katalogs }) {
                             <Col md={6}>
                                 {previewImage ? (
                                     <img
-                                        src={previewImage}
+                                        src={
+                                            isNewImage
+                                                ? previewImage
+                                                : "/storage/" + previewImage
+                                        }
                                         className={styles["img-preview"]}
                                         id="img-preview"
                                         alt=""
@@ -388,7 +433,10 @@ export default function ManajemenKatalog({ katalogs }) {
                                     {selectedKatalog &&
                                     selectedKatalog.gambar ? (
                                         <img
-                                            src={"/storage/" + selectedKatalog.gambar}
+                                            src={
+                                                "/storage/" +
+                                                selectedKatalog.gambar
+                                            }
                                             alt="Image Preview Gambar Motor"
                                             className="img-preview-modal"
                                         />
@@ -397,7 +445,7 @@ export default function ManajemenKatalog({ katalogs }) {
                                     )}
                                 </td>
                             </tr>
-                            </tbody>
+                        </tbody>
                     </Table>
                 </Modal.Body>
                 <Modal.Footer>
@@ -428,10 +476,11 @@ export default function ManajemenKatalog({ katalogs }) {
                     <Button variant="secondary" onClick={handleCloseDelete}>
                         Close
                     </Button>
-                    <form onSubmit={handleDelete}>
+                    <form onSubmit={handleDelete} method="post">
                         <ButtonAdmin
-                            variant="primary"
                             type="submit"
+                            variant="primary"
+                            onClick={handleCloseDelete}
                             style={{
                                 backgroundColor: "#f16211",
                                 borderColor: "#f16211",

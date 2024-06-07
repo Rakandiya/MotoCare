@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\User;
+use App\Models\Katalog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -14,6 +16,8 @@ class BookingController extends Controller
      */
     public function index()
     {
+        
+
         return Inertia::render("Admin/ManajemenBooking");
     }
 
@@ -22,7 +26,9 @@ class BookingController extends Controller
      */
     public function create()
     {
-        return Inertia::render("Admin/TambahBooking");
+        $users = User::all();
+        $katalogs = Katalog::all();
+        return Inertia::render("Admin/TambahBooking", compact("users", "katalogs"));
     }
 
     /**

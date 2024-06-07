@@ -33,10 +33,7 @@ class RegisterController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
-            return redirect()->back()-with([
-                'message' => 'User registered successfully',
-                'user' => $user
-            ]);
+            return redirect()->back();
 
             
         } catch (\Exception $e) {
