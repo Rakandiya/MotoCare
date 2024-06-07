@@ -6,7 +6,8 @@ import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
-export default function DetailUser() {
+export default function DetailUser({ auth, user }) {
+    console.log(user);
     // const { id } = useParams();
     return (
         <AdminLayout title="MANAJEMEN USER">

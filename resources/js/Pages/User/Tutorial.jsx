@@ -5,7 +5,7 @@ import { useState, useEffect, useForm } from "react";
 import { router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
-export default function Tutorial({ tutorials }) {
+export default function Tutorial({ auth, tutorials }) {
     const [tutorialData, setTutorials] = useState(tutorials);
     const [search, setSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -83,7 +83,7 @@ export default function Tutorial({ tutorials }) {
     }, [search]);
 
     return (
-        <UserLayout>
+        <UserLayout auth={auth}>
             <div className={styles["container"]}>
                 <section className={styles["content"]}>
                     <h1 className={styles["title"]}>TUTORIAL</h1>

@@ -4,13 +4,13 @@ import styles from "../../../css/User/Ulasan.module.css";
 import { Row, Col, Modal, Button } from "react-bootstrap";
 import { Head, useForm, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
+import moment from "moment";
 export default function Ulasan({ auth, ulasans }) {
     const [selectedRating, setSelectedRating] = useState(0);
-    const fotoUlasan =
-        "images/ulasan/eGvCgog8A4AOPsFJY1s9EYeKZ3yPJBvIHTHzBaDy.png";
+
     const [ulasan, setUlasan] = useState(ulasans);
 
-    console.log(ulasan);
+    // console.log(ulasan);
 
     const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -28,7 +28,7 @@ export default function Ulasan({ auth, ulasans }) {
     const [reviewImages, setReviewImages] = useState([]);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [reviewsPerPage] = useState(1);
+    const [reviewsPerPage] = useState(10);
     const reviewListRef = useRef(null);
 
     const indexOfLastReview = currentPage * reviewsPerPage;
@@ -52,7 +52,7 @@ export default function Ulasan({ auth, ulasans }) {
     const handleShow = (images, index) => {
         setReviewImages(images);
         setCurrentImageIndex(index);
-        setModalImage(images[index]);
+        setModalImage("/storage/" + images[index].foto);
         setShow(true);
     };
 
@@ -63,14 +63,14 @@ export default function Ulasan({ auth, ulasans }) {
     const handleNext = () => {
         const nextIndex = (currentImageIndex + 1) % reviewImages.length;
         setCurrentImageIndex(nextIndex);
-        setModalImage(reviewImages[nextIndex]);
+        setModalImage("/storage/" + reviewImages[nextIndex].foto);
     };
 
     const handlePrev = () => {
         const prevIndex =
             (currentImageIndex - 1 + reviewImages.length) % reviewImages.length;
         setCurrentImageIndex(prevIndex);
-        setModalImage(reviewImages[prevIndex]);
+        setModalImage("/storage/" + reviewImages[prevIndex].foto);
     };
 
     const stars = [
@@ -106,6 +106,7 @@ export default function Ulasan({ auth, ulasans }) {
     function handleSubmit(e) {
         e.preventDefault();
         if (auth.user) {
+            console.log(data);
             post(route("user.ulasan.create"));
             e.target.reset();
 
@@ -118,8 +119,6 @@ export default function Ulasan({ auth, ulasans }) {
                 review: "",
                 foto: [],
             });
-
-            console.log(data);
         } else {
             router.visit(route("auth"), {
                 method: "GET",
@@ -159,7 +158,7 @@ export default function Ulasan({ auth, ulasans }) {
     };
 
     return (
-        <UserLayout>
+        <UserLayout auth={auth}>
             <section className={styles["rating-page"]}>
                 <div className={styles["container"]}>
                     <h1 className={styles["title-page"]}>RATING PAGE</h1>
@@ -420,8 +419,8 @@ export default function Ulasan({ auth, ulasans }) {
                                                     styles["review-info"]
                                                 }
                                             >
-                                                {review.reviewTitle} -{" "}
-                                                {review.reviewName}
+                                                {review.jenis_layanan} -{" "}
+                                                {review.user.username}
                                             </h3>
                                             <div
                                                 className={
@@ -429,15 +428,19 @@ export default function Ulasan({ auth, ulasans }) {
                                                 }
                                             >
                                                 {[...Array(5)].map((_, i) => (
-                                                    <span
-                                                        key={i}
-                                                        className={
-                                                            i < review.bintang
-                                                                ? `${styles.star} ${styles["active-star"]}`
-                                                                : styles.star
-                                                        }
-                                                    >
-                                                        <i className="bx bxs-star"></i>
+                                                    <span key={i}>
+                                                        <box-icon
+                                                            type="solid"
+                                                            name="star"
+                                                            color={
+                                                                i <
+                                                                parseInt(
+                                                                    review.rating
+                                                                )
+                                                                    ? "#f16211"
+                                                                    : "#ddd"
+                                                            }
+                                                        ></box-icon>
                                                     </span>
                                                 ))}
                                             </div>
@@ -446,7 +449,9 @@ export default function Ulasan({ auth, ulasans }) {
                                                     styles["review-date"]
                                                 }
                                             >
-                                                {review.reviewDate}
+                                                {moment(
+                                                    review.created_at
+                                                ).format("DD-MM-YYYY HH:mm:ss")}
                                             </p>
                                         </div>
                                         <p
@@ -454,26 +459,28 @@ export default function Ulasan({ auth, ulasans }) {
                                                 styles["review-description"]
                                             }
                                         >
-                                            {review.reviewDesc}
+                                            {review.review}
                                         </p>
-                                        {/* {review.foto.map((image, index) => (
-                                            <img
-                                                key={index}
-                                                className={styles["review-img"]}
-                                                src={image}
-                                                alt={`Review ${index}`}
-                                                onClick={() =>
-                                                    handleShow(
-                                                        review.foto,
-                                                        index
-                                                    )
-                                                }
-                                            />
-                                        ))} */}
-                                        <img
-                                            className={styles["review-img"]}
-                                            src={"/storage/" + fotoUlasan}
-                                        />
+                                        {review.foto_ulasans.map(
+                                            (image, index) => (
+                                                <img
+                                                    key={index}
+                                                    className={
+                                                        styles["review-img"]
+                                                    }
+                                                    src={
+                                                        "/storage/" + image.foto
+                                                    }
+                                                    alt={`Review ${index}`}
+                                                    onClick={() =>
+                                                        handleShow(
+                                                            review.foto_ulasans,
+                                                            index
+                                                        )
+                                                    }
+                                                />
+                                            )
+                                        )}
                                     </div>
                                 ))}
                             </div>

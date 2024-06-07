@@ -4,7 +4,7 @@ import UserLayout from "@/Layouts/UserLayout";
 import styles from "../../css/Register.module.css";
 import { Head, useForm, router } from "@inertiajs/react";
 
-export default function Register() {
+export default function Register({ auth }) {
     const wrapperRef = useRef(null);
     const loginLinkRef = useRef(null);
     const registerLinkRef = useRef(null);
@@ -80,7 +80,7 @@ export default function Register() {
     };
 
     return (
-        <UserLayout>
+        <UserLayout auth={auth}>
             <main>
                 <article>
                     <section

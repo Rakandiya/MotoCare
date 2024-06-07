@@ -22,9 +22,22 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Login successful'], 200);
+            $request->session()->regenerate();
+            $user = Auth::user();
+
+            if($user->role == 'admin') {
+                return redirect(route('admin.dashboard'));
+            }else{
+                return redirect(route('home'));
+            }
         }
 
+
         return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+    public function logout(Request $request) {
+        Auth::logout();
+        return redirect('/');
     }
 }

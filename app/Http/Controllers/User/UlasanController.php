@@ -18,7 +18,7 @@ class UlasanController extends Controller
      */
     public function index()
     {
-        $ulasans = Ulasan::with('fotoUlasans')->get();
+        $ulasans = Ulasan::with(['fotoUlasans', 'user'])->get();
         // dd($ulasans);
         return Inertia::render('User/Ulasan', compact('ulasans'));
     }
@@ -66,14 +66,7 @@ class UlasanController extends Controller
 
                 foreach ($request->foto as $key => $value) {
                     $path = $value->store('images/ulasan', 'public');
-                    // $filename = time() . '_' . str_replace(' ', '-',$value->getClientOriginalName());
-                    // $filePath = Storage::disk('public')->put('images/foto-ulasan', $filename);
-                    // $fullFilePath = Storage::url($filePath);
-                    // dd($fullFilePath);
-
-                    // $filePath = Storage::putFile('/images/ulasan', $value, Auth::user()->id);
                     
-                    // dd($filePath);
                     FotoUlasan::create([
                         'ulasan_id' => $ulasan->id,
                         'foto' => $path

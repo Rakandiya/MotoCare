@@ -4,13 +4,10 @@ import "../../css/User/userGlobal.css";
 import styles from "../../css/User/LayoutStyles.module.css";
 import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
-// const location = useLocation();
-
-// if (location.pathname === "/tutorial") {
-//   import globalStyles from "../assets/css/user/userGlobal.module.css";
-// }
-export default function UserLayout({ children }) {
+export default function UserLayout({ auth, children }) {
     // const location = useLocation();
+
+    console.log(auth);
 
     const navItems = [
         {
@@ -90,17 +87,21 @@ export default function UserLayout({ children }) {
                         </ul>
                     </nav>
 
-                    <a
-                        href="../user/register"
-                        className={styles["button-login"]}
-                    >
-                        <span className="span">SIGN IN / SIGN UP</span>
+                    {auth && !auth.user ? (
+                        <Link
+                            href={route("auth")}
+                            className={styles["button-login"]}
+                        >
+                            <span className="span">SIGN IN / SIGN UP</span>
 
-                        <box-icon
-                            name="right-arrow-alt"
-                            color="#ffffff"
-                        ></box-icon>
-                    </a>
+                            <box-icon
+                                name="right-arrow-alt"
+                                color="#ffffff"
+                            ></box-icon>
+                        </Link>
+                    ) : (
+                        ""
+                    )}
 
                     <button
                         className={styles["nav-toggle-btn"]}
