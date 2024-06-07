@@ -1,0 +1,601 @@
+    
+  /*-----------------------------------*\
+    #BOOKING-RIWAYAT
+  \*-----------------------------------*/
+  
+  .user {
+    text-align: center;
+    color: var(--white);
+    padding: 30px;
+  }
+  
+  section {
+    border-radius: 25px;
+    padding: 30px;
+  }
+  
+  .col {
+    width: 33.3%;
+    padding: 0 20px;
+    /* flex: 1; */
+    box-sizing: border-box;
+  }
+  
+  .laporan-kondisi {
+  }
+
+  .search-button {
+    display: inline-block !important;
+    position: relative !important;
+    border: none !important;
+    outline: none !important;
+    padding: 5px 15px !important;
+  }
+
+  #search-input {
+  border-radius: 10px 10px 10px 10px !important;
+  width: 50%;
+  color: #333;
+  font-size: 20px;
+  margin-left: 3px;
+  margin-top: 20px;
+}
+
+.search-button {
+  /* position: relative !important; */
+  /* border-radius: 0 10px 10px 0 !important; */
+  cursor: pointer !important;
+  /* left: -5px !important; */
+  color: #e5e5e5;
+  background-color: white !important;
+  /* font-size: 20px; */
+  border: none !important;
+  /* display: flex; */
+  /* align-items: center;
+  justify-content: center; */
+}
+  
+  #booking-list {
+    list-style-type: none;
+  }
+  
+  ul#booking-list {
+    margin: 15px;
+  }
+  
+  .booking-list li {
+    margin-bottom: 5px;
+    cursor: pointer;
+  }
+  
+  .booking-list li:hover {
+    background-color: #f0f0f0;
+    /* Mengubah warna latar belakang saat diarahkan ke elemen daftar */
+  }
+  
+  .img-motor img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+  }
+  
+  .col {
+    border: none        ; 
+  }
+  
+  .selected {
+    background-color: #febc96;
+    border-radius: 40px;
+  }
+  
+  .search {
+    margin-bottom: 20px;
+  }
+  
+  #search-input {
+    border-bottom-color: #333;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .search-input input[type="text"]::placeholder {
+    color: #999;
+    font-style: italic;
+    color: #c7c7c7;
+    font-family: Poppins;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+  
+  .history-booking {
+    background-color: var(--white);
+    /* gap: 10px;  */
+    /* margin-bottom: 30px; */
+  }
+  
+
+  
+#kolom-2 {
+    border-bottom: 1px solid #a4a4a4;
+  }
+  
+  .info-pemilik td,
+  .info-invoice td,
+  .total-bayar td {
+    width: 20%;
+    padding: 3px;
+  }
+  
+  #kolom-2 {
+    color: #c9c9c9;
+  }
+  
+  .total-bayar #kolom-1 {
+    font-weight: bold;
+  }
+  
+  h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+  }
+  
+  hr {
+    margin-top: 25px;
+  }
+  
+  .info-pemilik tr td {
+    padding: 5px;
+  }
+
+#info-booking-pemilik {
+  grid-column: 2; /* Menempatkan elemen di kolom 2 */
+}
+
+.info-booking-invoice {
+  padding: 5px;
+}
+
+.total-bayar {
+  padding: 5px; 
+}
+
+.info-invoice tr td {
+  padding: 5px;
+}
+
+.info-pemilik td,
+.info-invoice td,
+.total-bayar td {
+  width: 20%;
+  padding: 5px;
+}
+
+.info-pemilik td:nth-child(2) {
+
+  
+}
+
+.info-invoice td:nth-child(2),
+.total-bayar td:nth-child(2){
+  text-align: end;
+}
+
+  
+  /*-----------------------------------*\
+    #MEDIA QUERIES
+  \*-----------------------------------*/
+  
+  /**
+   * responsive for large than 575px screen
+   */
+  
+  @media (min-width: 575px) {
+    /**
+     * CUSTOM PROPERTY
+     */
+  
+    :root {
+      /**
+       * typography
+       */
+  
+      --fs-2: 4rem;
+      --fs-3: 2.8rem;
+      --fs-4: 2rem;
+    }
+  
+    /**
+     * REUSED STYLE
+     */
+  
+    .container {
+      max-width: 540px;
+      width: 100%;
+      margin-inline: auto;
+    }
+  
+    .section-subtitle {
+      --fs-5: 1.6rem;
+    }
+  
+    .h2 {
+      font-weight: var(--fw-700);
+    }
+  
+    /**
+     * ABOUT
+     */
+  
+    .about-list {
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+  
+    .about-item {
+      padding-block: 20px;
+    }
+  
+    /**
+     * WORK
+     */
+  
+    .scrollbar-item {
+      min-width: calc(50% - 15px);
+    }
+  
+    /**
+     * FOOTER
+     */
+  
+    .footer-top {
+      position: relative;
+      overflow: hidden;
+    }
+  
+    .footer-top .container {
+      grid-template-columns: 1fr 1fr;
+    }
+  
+    .footer .shape-3 {
+      display: block;
+      position: absolute;
+      bottom: -30px;
+      right: 0;
+    }
+  }
+  
+  /**
+   * responsive for large than 768px screen
+   */
+  
+  @media (max-width: 768px) {
+    input[type="text"],
+    input[type="email"] {
+      width: -webkit-fill-available;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    /**
+     * CUSTOM PROPERTY
+     */
+  
+    :root {
+      /**
+       * typography
+       */
+  
+      --fs-1: 4rem;
+      --fs-2: 5rem;
+      --fs-3: 3.4rem;
+    }
+  
+    /**
+     * REUSED STYLE
+     */
+  
+    .container {
+      max-width: 720px;
+    }
+  
+    .btn {
+      padding: 16px 32px;
+    }
+  
+    .section-subtitle {
+      --fs-5: 1.8rem;
+    }
+  
+    .section-title:not(.h1) {
+      max-width: 500px;
+      margin-inline: auto;
+    }
+  
+    /**
+     * FOOTER
+     */
+  
+    .footer-top .container {
+      grid-template-columns: 1fr 0.9fr 0.9fr;
+    }
+  
+    .copyright {
+      --fs-6: 1.4rem;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    /**
+     * CUSTOM PROPERTY
+     */
+  
+    :root {
+      /**
+       * typography
+       */
+  
+      --fs-2: 4.4rem;
+      --fs-3: 3.8rem;
+      --fs-4: 2.2rem;
+  
+      /**
+       * spacing
+       */
+  
+      --section-padding: 100px;
+    }
+  
+    /**
+     * REUSED STYLE
+     */
+  
+    .container {
+      max-width: 960px;
+    }
+  
+    .section-text,
+    .card-text {
+      font-size: 1.8rem;
+    }
+  
+    /**
+     * HEADER
+     */
+  
+    .nav-toggle-btn {
+      display: none;
+    }
+  
+    .header .container {
+      /* gap: 3px; */
+    }
+  
+    .navbar,
+    .navbar.active {
+      all: unset;
+      display: block;
+      margin-inline-start: auto;
+    }
+  
+    .navbar-list {
+      display: flex;
+    }
+  
+    .navbar-link {
+      position: relative;
+      font-size: unset;
+      font-size: 1.29rem;
+    }
+  
+    .navbar-link:is(:hover, :focus-visible) {
+      background: none;
+      color: var(--white);
+    }
+  
+    .navbar-link::after {
+      content: url("../images/nav-before-img.png");
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+    }
+  
+    .navbar-link:is(:hover, :focus-visible)::after {
+      opacity: 1;
+    }
+  
+    .header .btn {
+      display: flex;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+    }
+  }
+  
+  /**
+   * responsive for large than 1200px screen
+   */
+  
+  @media (min-width: 1200px) {
+    /**
+     * CUSTOM PROPERTY
+     */
+  
+    :root {
+      /**
+       * typography
+       */
+  
+      --fs-2: 5rem;
+      --fs-3: 4.6rem;
+    }
+  
+    /**
+     * REUSED STYLE
+     */
+  
+    .container,
+    .hero .container {
+      max-width: 1140px;
+    }
+  
+    .btn {
+      padding: 18px 36px;
+    }
+  
+    .btn .material-symbols-rounded {
+      --fs: 1.3em;
+    }
+  
+    /**
+     * HEADER
+     */
+  
+    .header {
+      padding-block: 25px;
+    }
+  
+    .header .container {
+      gap: 9px;
+    }
+  
+    .logo img {
+      width: 128px;
+    }
+  
+    .header .btn {
+      font-size: unset;
+      padding-block: 15px;
+    }
+  
+    .navbar-link {
+      font-size: 1.55rem;
+    }
+  
+    .header .btn {
+      font-size: 1.55rem;
+    }
+  
+    /**
+     * WORK
+     */
+    .scrollbar-item {
+      min-width: calc(33.33% - 20px);
+    }
+  
+    /**
+     * FOOTER
+     */
+  
+    .footer-top {
+      padding-block: 150px;
+    }
+  
+    .footer-top .container {
+      padding-inline-start: 25%;
+    }
+  
+    .footer-bottom {
+      position: relative;
+      padding-block: 30px;
+      z-index: 1;
+    }
+  
+    .footer :is(.shape-1, .shape-2) {
+      display: block;
+      position: absolute;
+      bottom: 0;
+      width: 50%;
+      pointer-events: none;
+      z-index: -1;
+    }
+  
+    .footer .shape-1 {
+      left: -100px;
+    }
+  
+    .footer .shape-2 {
+      left: -50px;
+    }
+  }
+  
+  /**
+   * responsive for large than 1400px screen
+   */
+  
+  @media (min-width: 1400px) {
+    /**
+     * CUSTOM PROPERTY
+     */
+  
+    :root {
+      /**
+       * typography
+       */
+  
+      --fs-2: 6rem;
+  
+      /**
+       * spacing
+       */
+  
+      --section-padding: 140px;
+    }
+  
+    /**
+     * REUSED STYLE
+     */
+  
+    :is(.header, .hero) .container {
+      max-width: 1280px;
+    }
+  
+    .section-subtitle::before {
+      height: 20px;
+      margin-inline-end: 5px;
+    }
+  
+    /**
+     * HEADER
+     */
+  
+    .header .btn {
+      padding: 18px 36px;
+    }
+  
+    /**
+     * ABOUT
+     */
+  
+    .about::before {
+      width: 55%;
+    }
+  
+    .about-banner .w-100 {
+      width: 50%;
+    }
+  
+    /**
+     * WORK
+     */
+  
+    .has-scrollbar {
+      overflow-x: visible;
+    }
+  
+    .scrollbar-item {
+      min-width: calc(33.33% - 200px);
+    }
+  
+    /**
+     * FOOTER
+     */
+  
+    .footer-top .container {
+      padding-inline-start: 20%;
+    }
+  }

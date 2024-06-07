@@ -5,20 +5,18 @@ import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Link } from "@inertiajs/react";
 import { useState } from "react";
 import ReactSelect from "react-select";
+import { Head, useForm, router } from "@inertiajs/react";
 
-export default function TambahBooking({ users, katalogs }) {
+export default function TambahBooking({ katalogs, users }) {
     const [selectedUser, setSelectedUser] = useState("");
     const [selectedKatalog, setSelectedKatalog] = useState("");
     const [selectedJenisLayanan, setSelectedJenisLayanan] = useState("");
+
+    // DROP DOWN: ambil nama dari tabel users
     const [userList, setUserList] = useState(users);
 
-    const { data, setData, post, processing, errors } = useForm({
-        id: "",
-        jenis_layanan: "",
-        user_id: "",
-        katalog_id: "",
-        tgl_booking: "",
-    });
+    // DROP DOWN: ambil merk motor dari tabel katalogs
+    const [katalogList, setKatalogList] = useState(katalogs);
 
     const jenisLayananList = [
         { value: "Service Rutin", label: "Service Rutin" },
@@ -27,10 +25,13 @@ export default function TambahBooking({ users, katalogs }) {
         { value: "Cek Kendaraan", label: "Cek Kendaraan" },
     ];
 
-    const [katalogList, setKatalogList] = useState(katalogs);
+    const dataSelectJenisLayanan = jenisLayananList.map((layanan) => ({
+        value: layanan.value,
+        label: layanan.label,
+    }));
 
     const dataSelectUser = userList.map((user) => ({
-        value: user.name,
+        value: user.id,
         label: user.name,
     }));
 
@@ -39,17 +40,60 @@ export default function TambahBooking({ users, katalogs }) {
         label: katalog.merk + " " + katalog.model,
     }));
 
-    const dataSelectJenisLayanan = jenisLayananList.map((layanan) => ({
-        value: layanan.value,
-        label: layanan.label,
-    }));
+    const {
+        data,
+        setData,
+        put,
+        post,
+        delete: deleteRoute,
+        processing,
+        errors,
+    } = useForm({
+        id: "",
+        user_id: selectedUser.id,
+        jenis_layanan: selectedJenisLayanan,
+        katalog_id: selectedKatalog.id,
+        tahun_pembuatan: "",
+        nomor_polisi: "",
+        km_kendaraan: "",
+        jadwal_booking: "",
+        catatan: "",
+    });
+
+    // handleSubmit untuk tambah booking
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const routeName = "admin.booking.store";
+
+        const action = post;
+        action(route(routeName), {
+            preserveScroll: true,
+            data: data,
+            onSuccess: () => {
+                setReload(!reload); // Toggle state untuk memicu reload
+            },
+        });
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setData({
+            ...data,
+            [name]: value,
+        });
+    };
+
     return (
         <AdminLayout title="MANAJEMEN BOOKING">
             <div className={styles["form-wrapper"]}>
                 <h1 className={styles["title-form"] + " my-3"}>
                     Form Tambah Booking
                 </h1>
-                <form method="post" id="form" className={styles["form"]}>
+                <form
+                    id="form"
+                    onSubmit={handleSubmit}
+                    className={styles["form"]}
+                >
                     <Row className="justify-content-md-center mb-3">
                         <Col md={4}>
                             <label className={styles["label"]} htmlFor="nama">
@@ -61,9 +105,13 @@ export default function TambahBooking({ users, katalogs }) {
                                 value={dataSelectUser.find(
                                     (option) => option.value === selectedUser
                                 )}
-                                onChange={(selectedOption) =>
-                                    setSelectedUser(selectedOption.value)
-                                }
+                                onChange={(selectedOption) => {
+                                    setSelectedUser(selectedOption.value);
+                                    setData((prevData) => ({
+                                        ...prevData,
+                                        user_id: selectedOption.value,
+                                    }));
+                                }}
                                 placeholder="Pilih User"
                             />
                         </Col>
@@ -99,9 +147,13 @@ export default function TambahBooking({ users, katalogs }) {
                                 value={dataSelectKatalog.find(
                                     (option) => option.value === selectedKatalog
                                 )}
-                                onChange={(selectedOption) =>
-                                    setSelectedKatalog(selectedOption.value)
-                                }
+                                onChange={(selectedOption) => {
+                                    setSelectedKatalog(selectedOption.value);
+                                    setData((prevData) => ({
+                                        ...prevData,
+                                        katalog_id: selectedOption.value,
+                                    }));
+                                }}
                                 placeholder="Pilih Katalog"
                             />
                         </Col>
@@ -123,6 +175,8 @@ export default function TambahBooking({ users, katalogs }) {
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleInputChange}
+                                value={data.model}
                             />
                         </Col>
 
@@ -141,6 +195,8 @@ export default function TambahBooking({ users, katalogs }) {
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleInputChange}
+                                value={data.model}
                             />
                         </Col>
 
@@ -159,6 +215,8 @@ export default function TambahBooking({ users, katalogs }) {
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleInputChange}
+                                value={data.model}
                             />
                         </Col>
                     </Row>
@@ -179,6 +237,8 @@ export default function TambahBooking({ users, katalogs }) {
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
+                                onChange={handleInputChange}
+                                value={data.model}
                             />
                         </Col>
 
@@ -197,6 +257,8 @@ export default function TambahBooking({ users, katalogs }) {
                                 placeholder="catatan Tambahan"
                                 autoComplete="off"
                                 required
+                                onChange={handleInputChange}
+                                value={data.catatan}
                             ></textarea>
                         </Col>
                     </Row>

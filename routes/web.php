@@ -57,6 +57,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware'=> 'admin'], fu
     Route::get('/manajemen-booking/edit/{booking}', [BookingController::class, 'edit'])->name('booking.edit');
     Route::put("/manajemen-booking/{booking}", [BookingController::class, 'update'])->name('booking.update');
     Route::delete("/manajemen-booking/{booking}", [BookingController::class, 'destroy'])->name('booking.delete');
+    
 
     // Route Manajemen Katalog
     //tambahan
@@ -94,6 +95,14 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
 
     Route::get('/home', function () {
         return Inertia::render('User/Home');
+    })->name('home');
+
+    Route::get('/booking', function () {
+        return Inertia::render('User/Booking');
+    })->name('home');
+
+    Route::get('/riwayat', function () {
+        return Inertia::render('User/Riwayat');
     })->name('home');
 })->name('user.');
 
