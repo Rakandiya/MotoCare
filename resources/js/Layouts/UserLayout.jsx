@@ -31,12 +31,9 @@ export default function UserLayout({ children }) {
             external: true,
             url: "../booking/index.html",
         },
-        {
-            path: "/katalog",
-            label: "Katalog",
-            external: true,
-            url: "../katalog/index.html",
-        },
+
+        { path: "user.katalog", label: "Katalog", external: false },
+
         { path: "user.tutorial", label: "Tutorial", external: false },
         {
             path: "/riwayat",

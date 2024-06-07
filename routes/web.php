@@ -13,7 +13,6 @@ use App\Http\Controllers\Admin\ProdukController;
 
 
 
-
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     // Route Dashboard
     Route::get('/', function () {
@@ -62,6 +61,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::delete("/manajemen-booking/{booking}", [BookingController::class, 'destroy'])->name('booking.delete');
 
     // Route Manajemen Katalog
+    //tambahan
+    Route::resource('admin/katalog', KatalogController::class);
+    
     Route::get('/manajemen-katalog', [KatalogController::class, 'index'])->name('katalog.index');
     
     Route::post('/manajemen-katalog', [KatalogController::class, 'store'])->name('katalog.store');
@@ -92,6 +94,10 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
     Route::get('/ulasan', function () {
         return Inertia::render('User/Ulasan');
     })->name('ulasan');
+
+    Route::get('/katalog', function () {
+        return Inertia::render('User/Katalog');
+    })->name('katalog');
 })->name('user.');
 
 // Route::get('/dashboard', function () {

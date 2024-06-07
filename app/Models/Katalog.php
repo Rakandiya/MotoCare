@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Katalog extends Model
 {
     use HasFactory;
+
+    protected $fillable = ["merk", "model", "deskripsi", "gambar"];
 }
