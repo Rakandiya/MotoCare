@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId("user_id")->constrained();
             $table->foreignId("booking_id")->constrained();
             $table->date("tanggal");
-            $table->string("status");
+            $table->enum("status", ["Paid", "Unpaid"]);
             $table->text("catatan");
             $table->timestamps();
         });

@@ -14,7 +14,10 @@ class UlasanController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Admin/Ulasan');
+        $ulasans = Ulasan::with(['fotoUlasans', 'user'])->get();
+
+        
+        return Inertia::render('Admin/Ulasan', compact('ulasans'));
     }
 
     /**

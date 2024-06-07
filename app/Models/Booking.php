@@ -4,19 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Booking extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        "nama",
-        "jenis_layanan",
-        "merk_motor",
-        "tahun_pembuatan",
-        "nomor_polisi",
-        "km_kendaraan",
-        "jadwal_booking",
-        "catatan",
-    ];
+    protected $guarded = ["id"];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function katalog(): BelongsTo
+    {
+        return $this->belongsTo(Katalog::class);
+    }
+
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class);
+    }
 }

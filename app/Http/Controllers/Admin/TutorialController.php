@@ -33,10 +33,12 @@ class TutorialController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-        'judul' => 'required|max:255',
-        'deskripsi' => 'required',
-        'link' => 'required|url'
-    ]);
+            'judul' => 'required|max:255',
+            'deskripsi' => 'required',
+            'link' => 'required|url'
+        ]);
+
+        
 
     // var_dump($validatedData);
     // die;

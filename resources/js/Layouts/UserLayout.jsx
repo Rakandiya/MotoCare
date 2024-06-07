@@ -1,23 +1,37 @@
 import PropTypes from "prop-types";
 import "../../css/User/userGlobal.css";
-
 import styles from "../../css/User/LayoutStyles.module.css";
 import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
-// const location = useLocation();
+import { useEffect } from "react";
 
-// if (location.pathname === "/tutorial") {
-//   import globalStyles from "../assets/css/user/userGlobal.module.css";
-// }
 export default function UserLayout({ children }) {
-    // const location = useLocation();
+    useEffect(() => {
+        const navbar = document.querySelector("[data-navbar]");
+        const navToggler = document.querySelector("[data-nav-toggler]");
+
+        navToggler.addEventListener("click", function () {
+            navbar.classList.toggle("active");
+            this.classList.toggle("active");
+        });
+
+        // Clean up event listener on component unmount
+        return () => {
+            navToggler.removeEventListener("click", function () {
+                navbar.classList.toggle("active");
+                this.classList.toggle("active");
+            });
+        };
+    }, []);
+
+    console.log(auth);
 
     const navItems = [
         {
-            path: "/home",
+            path: "user.home",
             label: "Home",
             external: true,
-            url: "../home/index.html",
+            url: "../home",
         },
         {
             path: "/about",
@@ -32,10 +46,9 @@ export default function UserLayout({ children }) {
             url: "../booking/index.html",
         },
         {
-            path: "/katalog",
+            path: "user.katalog",
             label: "Katalog",
-            external: true,
-            url: "../katalog/index.html",
+            external: false,
         },
         { path: "user.tutorial", label: "Tutorial", external: false },
         {
@@ -52,7 +65,7 @@ export default function UserLayout({ children }) {
         <>
             <header className={styles["header"]}>
                 <div className={styles["container"]}>
-                    <a href="#" className={styles["logo"]}>
+                    <a href="../user/home" className={styles["logo"]}>
                         <img
                             src="/images/logo.png"
                             width="128"
@@ -92,17 +105,21 @@ export default function UserLayout({ children }) {
                         </ul>
                     </nav>
 
-                    <a
-                        href="../loginsignup/index.html"
-                        className={styles["button-login"]}
-                    >
-                        <span className="span">SIGN IN / SIGN UP</span>
+                    {auth && !auth.user ? (
+                        <Link
+                            href={route("auth")}
+                            className={styles["button-login"]}
+                        >
+                            <span className="span">SIGN IN / SIGN UP</span>
 
-                        <box-icon
-                            name="right-arrow-alt"
-                            color="#ffffff"
-                        ></box-icon>
-                    </a>
+                            <box-icon
+                                name="right-arrow-alt"
+                                color="#ffffff"
+                            ></box-icon>
+                        </Link>
+                    ) : (
+                        ""
+                    )}
 
                     <button
                         className={styles["nav-toggle-btn"]}

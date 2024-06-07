@@ -9,20 +9,8 @@ export const NavLink = ({
     children,
 }) => {
     return (
-        <Link
-            href={to}
-            className={
-                "navLink" +
-                (isActive ? " active" : "") +
-                (isLogout ? " logout" : "")
-            }
-        >
+        <Link href={to} className={"navLink" + (isActive ? " active" : "")}>
             <span className="navItem">{children}</span>
-            {isLogout && (
-                <div className="logoutIcon">
-                    <box-icon name="log-out" color="#fffafa"></box-icon>
-                </div>
-            )}
         </Link>
     );
 };
