@@ -34,7 +34,6 @@ export default function ManajemenProduk({ produks }) {
     const handleShowDetail = (produk) => {
         setShowDetail(true);
         setselectedProduk(produk);
-        console.log(produk);
     };
     const handleCloseDelete = () => setShowDelete(false);
     const handleShowDelete = (produk) => {

@@ -5,6 +5,7 @@ import { NavLink } from "@/Components/NavbarLink";
 import { route } from "ziggy-js";
 // import logo from "../assets/images/logo.png";
 // import { useLocation } from "react-router-dom";
+import { useForm, router } from "@inertiajs/react";
 
 export default function AdminLayout({ title, children }) {
     // const location = useLocation();
@@ -56,13 +57,29 @@ export default function AdminLayout({ title, children }) {
         //     subPaths: [],
         // },
         {
-            path: "#",
+            path: "auth.logout",
             label: "Log Out",
             className: "logout",
             isLogout: true,
             subPaths: [],
         },
     ];
+
+    const { data, setData, post, processing, errors, reset } = useForm();
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        router.visit(
+            route("logout"),
+            {
+                method: "POST",
+                headers: {
+                    "Content-type": "Application/json",
+                },
+            },
+            { preserveScroll: true }
+        );
+    };
 
     const isActive = (r) => {
         const matchExact = !!route().current(r.path); // Memastikan hasilnya adalah boolean
@@ -83,18 +100,37 @@ export default function AdminLayout({ title, children }) {
                 <ul className={styles["nav-admin-ul"]}>
                     {routeList.map((routeData, index) => (
                         <li key={index} className={styles["nav-admin-ul-li"]}>
-                            <NavLink
-                                to={
-                                    routeData.label !== "Log Out"
-                                        ? route(routeData.path)
-                                        : "#"
-                                }
-                                className={routeData.className || ""}
-                                isLogout={routeData.isLogout || false}
-                                isActive={isActive(routeData)}
-                            >
-                                {routeData.label}
-                            </NavLink>
+                            {routeData.isLogout ? (
+                                <form onSubmit={handleLogout}>
+                                    <button
+                                        type="submit"
+                                        className={styles["logout"]}
+                                        isLogout={routeData.isLogout || true}
+                                        isActive={isActive(routeData)}
+                                    >
+                                        <div className={styles["logout-text"]}>
+                                            {routeData.label}{" "}
+                                            <box-icon
+                                                name="log-out"
+                                                color="#fffafa"
+                                            ></box-icon>
+                                        </div>
+                                    </button>
+                                </form>
+                            ) : (
+                                <NavLink
+                                    to={
+                                        routeData.label !== "Log Out"
+                                            ? route(routeData.path)
+                                            : "#"
+                                    }
+                                    className={routeData.className || ""}
+                                    isLogout={routeData.isLogout || false}
+                                    isActive={isActive(routeData)}
+                                >
+                                    {routeData.label}
+                                </NavLink>
+                            )}
                         </li>
                     ))}
                 </ul>

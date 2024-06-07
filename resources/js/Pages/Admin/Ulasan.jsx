@@ -4,21 +4,24 @@ import DataTable from "react-data-table-component";
 import { Link } from "@inertiajs/react";
 import { Modal, Button, Table } from "react-bootstrap";
 import styles from "../../../css/Admin/Ulasan.module.css";
+import moment from "moment";
 
-export default function Ulasan() {
+export default function Ulasan({ ulasans }) {
     const [showDetail, setShowDetail] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [selectedUlasan, setSelectedUlasan] = useState(false);
+    const [data, setData] = useState(ulasans);
 
     const handleCloseDetail = () => setShowDetail(false);
-    const handleShowDetail = (katalog) => {
+    const handleShowDetail = (e, ulasan) => {
+        e.preventDefault();
         setShowDetail(true);
-        setSelectedUlasan(katalog);
+        setSelectedUlasan(ulasan);
     };
     const handleCloseDelete = () => setShowDelete(false);
-    const handleShowDelete = (katalog) => {
+    const handleShowDelete = (ulasan) => {
         setShowDelete(true);
-        setSelectedUlasan(katalog);
+        setSelectedUlasan(ulasan);
     };
 
     const renderRating = (rating, large = false) => {
@@ -40,7 +43,7 @@ export default function Ulasan() {
     const columns = [
         {
             name: "Nama",
-            selector: (row) => row.nama,
+            selector: (row) => row.user.username,
         },
         {
             name: "Jenis Layanan",
@@ -53,13 +56,14 @@ export default function Ulasan() {
         },
         {
             name: "tanggal",
-            selector: (row) => row.tanggal,
+            selector: (row) =>
+                moment(row.created_at).format("DD-MM-YYYY HH:mm:ss"),
         },
         {
             name: "Action",
             cell: (row) => (
                 <>
-                    <Link href="#" onClick={() => handleShowDetail(row)}>
+                    <Link href="#" onClick={(e) => handleShowDetail(e, row)}>
                         <box-icon
                             name="info-circle"
                             type="solid"
@@ -79,63 +83,6 @@ export default function Ulasan() {
                     </Link>
                 </>
             ),
-        },
-    ];
-
-    const data = [
-        {
-            id: 1,
-            jenis_layanan: "Pelayanan Motor",
-            rating: 5,
-            nama: "Olivia Hall",
-            tanggal: "12 Januari 2022",
-            reviewDesc: "Pelayanan motor yang sangat bagus",
-            foto: [
-                "/images/aerox.png",
-                "/images/beat.jpeg",
-                "/images/aerox.png",
-            ],
-        },
-
-        {
-            id: 2,
-            jenis_layanan: "Service Motor",
-            rating: 4,
-            nama: "James Taylor",
-            tanggal: "15 Februari 2022",
-            reviewDesc: "Hasil service motor sangat bagus",
-            foto: ["/images/beat.jpeg"],
-        },
-
-        {
-            id: 3,
-            jenis_layanan: "Ganti Oli Mesin",
-            rating: 3,
-            nama: "John Doe",
-            tanggal: "18 Maret 2022",
-            reviewDesc: "Ganti oli mesin sangat cepat",
-            foto: ["beat.jpeg"],
-        },
-
-        {
-            id: 4,
-            jenis_layanan: "Penggantian Ban",
-            rating: 5,
-            nama: "Jane Doe",
-            tanggal: "21 April 2022",
-            reviewDesc: "Penggantian ban sangat cepat dan bagus",
-            foto: ["cbr.png"],
-        },
-
-        {
-            id: 5,
-            jenis_layanan: "Penggantian Lampu Depan dan Belakang",
-            rating: 4,
-            nama: "Smith Doe",
-            tanggal: "24 Mei 2022",
-            reviewDesc:
-                "Penggantian lampu depan dan belakang sangat cepat dan bagus",
-            foto: ["nmax.png"],
         },
     ];
 
@@ -174,7 +121,9 @@ export default function Ulasan() {
                         <tr className={styles["tr"]}>
                             <th className={styles["th"]}>Nama</th>
                             <td>:</td>
-                            <td>{selectedUlasan && selectedUlasan.nama}</td>
+                            <td>
+                                {selectedUlasan && selectedUlasan.user.username}
+                            </td>
                         </tr>
                         <tr className={styles["tr"]}>
                             <th className={styles["th"]}>Jenis Layanan</th>
@@ -194,27 +143,31 @@ export default function Ulasan() {
                         <tr className={styles["tr"]}>
                             <th className={styles["th"]}>Tanggal</th>
                             <td className={styles["td"]}>:</td>
-                            <td>{selectedUlasan && selectedUlasan.tanggal}</td>
+                            <td>
+                                {selectedUlasan &&
+                                    moment(selectedUlasan.created_at).format(
+                                        "DD-MM-YYYY HH:mm:ss"
+                                    )}
+                            </td>
                         </tr>
                         <tr className={styles["tr"]}>
                             <th className={styles["th"]}>Review</th>
                             <td className={styles["td"]}>:</td>
-                            <td>
-                                {selectedUlasan && selectedUlasan.reviewDesc}
-                            </td>
+                            <td>{selectedUlasan && selectedUlasan.review}</td>
                         </tr>
                         <tr className={styles["tr"]}>
                             <th className={styles["th"]}>Foto</th>
                             <td className={styles["td"]}>:</td>
                             <td>
                                 {selectedUlasan &&
-                                    selectedUlasan.foto.map((foto) => (
+                                    selectedUlasan.foto_ulasans.map((foto) => (
                                         <img
                                             key={foto}
-                                            src={foto}
+                                            src={"/storage/" + foto.foto}
                                             alt={foto}
                                             className={styles["img"]}
                                             width={150}
+                                            style={{ display: "inline" }}
                                         />
                                     ))}
                             </td>
