@@ -60,6 +60,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::put("/manajemen-booking/{booking}", [BookingController::class, 'update'])->name('booking.update');
 
     Route::delete("/manajemen-booking/{booking}", [BookingController::class, 'destroy'])->name('booking.delete');
+    
 
     // Route Manajemen Katalog
     Route::get('/manajemen-katalog', [KatalogController::class, 'index'])->name('katalog.index');
@@ -81,6 +82,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::put("/manajemen-produk/{produk}", [ProdukController::class, 'update'])->name('produk.update');
 
     Route::delete("/manajemen-produk/{produk}", [ProdukController::class, 'destroy'])->name('produk.delete');
+    
 })->name('admin.');
 
 
@@ -92,6 +94,16 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
     Route::get('/ulasan', function () {
         return Inertia::render('User/Ulasan');
     })->name('ulasan');
+
+    Route::get('/booking', function () {
+        return Inertia::render('User/Booking');
+    })->name('booking');
+
+    Route::get('/riwayat', function () {
+        return Inertia::render('User/Riwayat');
+    })->name('riwayat');
+
+
 })->name('user.');
 
 // Route::get('/dashboard', function () {

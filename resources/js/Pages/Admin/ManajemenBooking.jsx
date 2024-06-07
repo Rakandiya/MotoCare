@@ -1,15 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import styles from "../../../css/Admin/ManajemenBooking.module.css";
 import DataTable from "react-data-table-component";
 import ButtonAdmin from "@/Components/ButtonAdmin";
-import { Link } from "@inertiajs/react";
+import { Link, useForm, Head, router } from "@inertiajs/react";
 import { Modal, Button } from "react-bootstrap";
 
-const ManajemenBooking = () => {
-    const [show, setShow] = useState(false);
+export default function ManajemenBooking({ bookings }) {
+    const [showDetail, setShowDetail] = useState(false);
+    const [showDelete, setShowDelete] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
-    const [bookings, setBookings] = useState([
+
+    const {
+        data,
+        setData,
+        put,
+        post,
+        delete: deleteRoute,
+        processing,
+        errors,
+    } = useForm({
+        id: "",
+        user_id: "",
+        jenis_layanan: "",
+        katalog_id: "",
+        merk_motor: "",
+        tahun_pembuatan: "",
+        nomor_polisi: "",
+        km_kendaraan: "",
+        jadwal_booking: "",
+        catatan: "",
+    });
+    /* const [bookings, setBookings] = useState([
         {
             id: 101,
             name: "John Doe",
@@ -81,12 +103,19 @@ const ManajemenBooking = () => {
             status: "diproses",
             status_pembayaran: "unpaid",
         },
-    ]);
+    ]); */
 
-    const handleClose = () => setShow(false);
-    const handleShow = (event, booking) => {
-        event.preventDefault();
-        setShow(true);
+    const [bookingList, setBookingList] = useState(bookings);
+    const handleCloseDetail = () => setShowDetail(false);
+    const handleShowDetail = (booking) => {
+        setShowDetail(true);
+        setSelectedBooking(booking);
+        console.log(booking);
+    };
+
+    const handleCloseDelete = () => setShowDelete(false);
+    const handleShowDelete = (booking) => {
+        setShowDelete(true);
         setSelectedBooking(booking);
     };
 
@@ -156,11 +185,12 @@ const ManajemenBooking = () => {
         },
         {
             name: "Name",
-            selector: (row) => row.name,
+            // ambil nama dari tabel user
+            selector: (row) => row.nama,
         },
         {
             name: "Service",
-            selector: (row) => row.service,
+            selector: (row) => row.jenis_layanan,
         },
         {
             name: "Status Booking",
@@ -175,7 +205,7 @@ const ManajemenBooking = () => {
         },
         {
             name: "Tanggal",
-            selector: (row) => row.tanggal,
+            selector: (row) => row.jadwal_booking,
         },
         {
             name: "Status Pembayaran",
@@ -224,10 +254,8 @@ const ManajemenBooking = () => {
                             color="#f16211"
                         ></box-icon>
                     </Link>
-                    <Link
-                        title="Hapus"
-                        href="#"
-                        onClick={(e) => handleShow(e, row)}
+                    <button
+                        onClick={() => handleShowDelete(row)}
                         style={{ color: "#f16211" }}
                     >
                         <box-icon
@@ -235,11 +263,71 @@ const ManajemenBooking = () => {
                             type="solid"
                             color="#f16211"
                         ></box-icon>
-                    </Link>
+                    </button>
                 </>
             ),
         },
     ];
+
+    /* const handleEditBooking = (booking) => {
+        setData({
+            id: booking.id,
+            name: booking.nama_booking,
+            harga: booking.harga,
+            stok: booking.stok,
+            deskripsi: booking.deskripsi,
+        });
+    }; */
+
+    /*function handleInputChange(e) {
+        const key = e.target.id;
+        const value = e.target.value;
+        setData((values) => ({
+            ...values,
+            [key]: value,
+        }));
+    } */
+
+    const [errorMessages, setErrorMessages] = useState({});
+    const [reload, setReload] = useState(false);
+    const handleDelete = (e) => {
+        e.preventDefault();
+        deleteRoute(
+            route("admin.booking.delete", { booking: selectedBooking.id }),
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setShowDelete(false); // Menutup modal setelah berhasil
+                    setReload(!reload); // Memicu reload data
+                },
+                onError: () => {
+                    console.error("Error deleting Booking");
+                },
+            }
+        );
+    };
+
+    useEffect(() => {
+        // Hanya membersihkan errorMessages jika form berhasil disubmit dan tidak ada error
+        setErrorMessages(errors);
+    }, [errors]);
+
+    useEffect(() => {
+        // Fungsi untuk memuat ulang data atau komponen
+        setBookingList(bookings); // Misalnya fungsi untuk memuat ulang data tutorial
+        setData({
+            id: "",
+            user_id: "",
+            jenis_layanan: "",
+            katalog_id: "",
+            merk_motor: "",
+            tahun_pembuatan: "",
+            nomor_polisi: "",
+            km_kendaraan: "",
+            jadwal_booking: "",
+            catatan: "",
+        });
+    }, [reload, bookingList]);
 
     return (
         <AdminLayout title="MANAJEMEN BOOKING">
@@ -271,7 +359,7 @@ const ManajemenBooking = () => {
                 <DataTable columns={columns} data={bookings} pagination />
             </div>
 
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={showDelete} onHide={handleCloseDelete}>
                 <Modal.Header closeButton>
                     <Modal.Title>Hapus Booking</Modal.Title>
                 </Modal.Header>
@@ -282,23 +370,25 @@ const ManajemenBooking = () => {
                     </p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
+                    <Button variant="secondary" onClick={handleCloseDelete}>
                         Close
                     </Button>
-                    <ButtonAdmin
-                        variant="primary"
-                        onClick={handleClose}
-                        style={{
-                            backgroundColor: "#f16211",
-                            borderColor: "#f16211",
-                        }}
-                    >
-                        Ya, Hapus
-                    </ButtonAdmin>
+                    <form onSubmit={handleDelete} action="#" method="post">
+                        <ButtonAdmin
+                            type="submit"
+                            variant="primary"
+                            onClick={handleCloseDelete}
+                            style={{
+                                backgroundColor: "#f16211",
+                                borderColor: "#f16211",
+                            }}
+                        >
+                            Ya, Hapus
+                        </ButtonAdmin>
+                    </form>
                 </Modal.Footer>
             </Modal>
         </AdminLayout>
     );
-};
 
-export default ManajemenBooking;
+}

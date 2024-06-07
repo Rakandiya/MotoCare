@@ -9,6 +9,7 @@ import ReactSelect from "react-select";
 export default function TambahBooking() {
     const [selectedUser, setSelectedUser] = useState("");
     const [selectedKatalog, setSelectedKatalog] = useState("");
+    const [selectedBooking, setSelectedBooking] = useState(false);
     const [userList, setUserList] = useState([
         {
             id: 1,
@@ -150,7 +151,46 @@ export default function TambahBooking() {
     const dataSelectKatalog = katalogList.map((katalog) => ({
         value: katalog.id,
         label: katalog.merk + " " + katalog.model,
-    }));
+    })); 
+
+    // const {
+    //     data,
+    //     setData,
+    //     put,
+    //     post,
+    //     delete: deleteRoute,
+    //     processing,
+    //     errors,
+    // } = useForm({
+        // id: "",
+        // user_id: "",
+        // jenis_layanan: "",
+        // merk_motor: "",
+        // tahun_pembuatan: "",
+        // nomor_polisi: "",
+        // km_kendaraan: "",
+        // jadwal_booking: "",
+        // catatan: "",
+
+    // });
+    // const [BookingList, setBookingList] = useState(bookings);
+
+    // handleSubmit untuk tambah booking
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const routeName = data.id
+            ? "admin.booking.update"
+            : "admin.booking.store";
+
+        const action = data.id ? put : post;
+        action(route(routeName, data.id), {
+            preserveScroll: true,
+            data: data,
+            onSuccess: () => {
+                setReload(!reload); // Toggle state untuk memicu reload
+            },
+        });
+    };
     return (
         <AdminLayout title="MANAJEMEN BOOKING">
             <div className={styles["form-wrapper"]}>
@@ -158,9 +198,8 @@ export default function TambahBooking() {
                     Form Tambah Booking
                 </h1>
                 <form
-                    action="#"
-                    method="post"
                     id="form"
+                    onSubmit={handleSubmit}
                     className={styles["form"]}
                 >
                     <Row className="justify-content-md-center mb-3">
@@ -199,7 +238,7 @@ export default function TambahBooking() {
                                     Service Rutin
                                 </option>
                                 <option value="Perbaikan Khusu">
-                                    Perbaikan Khusu
+                                    Perbaikan Khusus
                                 </option>
                                 <option value="Tune Up / Bore Up">
                                     Tune Up / Bore Up

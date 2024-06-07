@@ -1,14 +1,35 @@
-// import { useParams } from "react-router-dom";
-import { Row, Col, Table } from "react-bootstrap";
+import { useState, useEffect } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import styles from "../../../css/Admin/DetailBooking.module.css";
+import DataTable from "react-data-table-component";
+import { Row, Col, Table } from "react-bootstrap";
 import ButtonAdmin from "@/Components/ButtonAdmin";
-import { Link } from "@inertiajs/react";
+import { Link, useForm, Head, router } from "@inertiajs/react";
+
 
 export default function DetailBooking() {
-    // const { id } = useParams();
+    const [bookings, setBookings] = useState([]);
+    const [errorMessages, setErrorMessages] = useState({});
+    const [reload, setReload] = useState(false);
+
+    useEffect(() => {
+        // Fungsi untuk memuat data dari backend
+        const fetchBookings = async () => {
+            try {
+                const response = await axios.get(bookings); // Ganti dengan endpoint sesuai backend Anda
+                setBookings(response.data); // Memasukkan data dari response ke state bookings
+            } catch (error) {
+                console.error('Error fetching bookings:', error);
+                setErrorMessages({ message: 'Error fetching bookings' });
+            }
+        };
+
+        fetchBookings(); // Memanggil fungsi fetchBookings saat komponen dimuat atau reload berubah
+    }, [reload]);
+
+
     return (
-        <AdminLayout>
+        <AdminLayout show={showDetail} onHide={handleCloseDetail}>
             <h1 className={styles["title-page"] + " my-3"}>
                 Detail Booking John Doe
             </h1>
@@ -31,7 +52,7 @@ export default function DetailBooking() {
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Jenis Layanan</th>
                     <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>Service Rutin</td>
+                    <td className={styles["td"]}>{booking.jenis_layanan}</td>
                 </tr>
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Merk Motor</th>

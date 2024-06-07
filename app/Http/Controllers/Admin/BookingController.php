@@ -4,67 +4,105 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Tutorial;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BookingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // menampilkan daftar semua booking
     public function index()
     {
-        return Inertia::render("Admin/ManajemenBooking");
+        $bookings = Booking::all();
+        return Inertia::render('Admin/ManajemenBooking', compact('bookings'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // menampilkan form untuk tambah booking
     public function create()
     {
         return Inertia::render("Admin/TambahBooking");
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // menyimpan data booking baru ke dalam database
     public function store(Request $request)
     {
-        //
+        $validatedData = $request -> validate([
+            'nama' => 'required',
+            'jenis_layanan' => 'required',
+            'merk_motor' => 'required',
+            'tahun_pembuatan' => 'required|numeric',
+            'nomor_polisi' => 'required',
+            'km_kendaraan' => 'required|numeric',
+            'jadwal_booking' => 'required|date',
+            'catatan' => 'required',
+
+        ]);
+
+        $booking = Booking::create([
+            'nama' => $validatedData['nama'],
+            'jenis_layanan' => $validatedData['jenis_layanan'],
+            'merk_motor' => $validatedData['merk_motor'],
+            'tahun_pembuatan' => $validatedData['tahun_pembuatan'],
+            'nomor_polisi' => $validatedData['nomor_polisi'],
+            'km_kendaraan' => $validatedData['km_kendaraan'],
+            'jadwal_booking' => $validatedData['jadwal_booking'],
+            'catatan' => $validatedData['catatan'],
+        ]);
+
+        // return redirect()->route('admin.booking.index')->with('success', 'Data booking berhasil ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // menampilkan detail booking
     public function show(Booking $booking)
     {
         return Inertia::render("Admin/DetailBooking");
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    // menampilkan form untuk edit booking
     public function edit(Booking $booking)
     {
         return Inertia::render("Admin/EditBooking");
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // memperbarui/update data booking yang ada
     public function update(Request $request, Booking $booking)
     {
-        //
+        // untuk update
+        $validatedData = $request->validate([
+            'nama' => 'required',
+            'jenis_layanan' => 'required',
+            'merk_motor' => 'required',
+            'tahun_pembuatan' => 'required|numeric',
+            'nomor_polisi' => 'required',
+            'km_kendaraan' => 'required|numeric',
+            'jadwal_booking' => 'required|date',
+            'catatan' => 'nullable',
+        ]);
+
+        $booking->update([
+            'nama' => $validatedData['nama'],
+            'jenis_layanan' => $validatedData['jenis_layanan'],
+            'merk_motor' => $validatedData['merk_motor'],
+            'tahun_pembuatan' => $validatedData['tahun_pembuatan'],
+            'nomor_polisi' => $validatedData['nomor_polisi'],
+            'km_kendaraan' => $validatedData['km_kendaraan'],
+            'jadwal_booking' => $validatedData['jadwal_booking'],
+            'catatan' => $validatedData['catatan'],
+        ]);
+
+        return redirect()->back()->with('success', 'Data booking berhasil diperbarui');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // menghapus data booking
     public function destroy(Booking $booking)
     {
-        //
+        // untuk hapus
+        $booking->delete();
+        return redirect()->back();
     }
 
+    // menampilkan form tambah invoice
     public function createInvoice()
     {
         return Inertia::render("Admin/TambahInvoice");
