@@ -1,20 +1,37 @@
 import PropTypes from "prop-types";
 import "../../css/User/userGlobal.css";
-
 import styles from "../../css/User/LayoutStyles.module.css";
 import { Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
-export default function UserLayout({ auth, children }) {
-    // const location = useLocation();
+import { useEffect } from "react";
+
+export default function UserLayout({ children }) {
+    useEffect(() => {
+        const navbar = document.querySelector("[data-navbar]");
+        const navToggler = document.querySelector("[data-nav-toggler]");
+
+        navToggler.addEventListener("click", function () {
+            navbar.classList.toggle("active");
+            this.classList.toggle("active");
+        });
+
+        // Clean up event listener on component unmount
+        return () => {
+            navToggler.removeEventListener("click", function () {
+                navbar.classList.toggle("active");
+                this.classList.toggle("active");
+            });
+        };
+    }, []);
 
     console.log(auth);
 
     const navItems = [
         {
-            path: "/home",
+            path: "user.home",
             label: "Home",
             external: true,
-            url: "../home/index.html",
+            url: "../home",
         },
         {
             path: "/about",
@@ -47,7 +64,7 @@ export default function UserLayout({ auth, children }) {
         <>
             <header className={styles["header"]}>
                 <div className={styles["container"]}>
-                    <a href="#" className={styles["logo"]}>
+                    <a href="../user/home" className={styles["logo"]}>
                         <img
                             src="/images/logo.png"
                             width="128"

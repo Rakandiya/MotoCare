@@ -87,11 +87,11 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
         return Inertia::render('User/Katalog');
         
     })->name('katalog');
-
     
 
-    
-
+    Route::get('/home', function () {
+        return Inertia::render('User/Home');
+    })->name('home');
 })->name('user.');
 
 Route::get('/', function () {

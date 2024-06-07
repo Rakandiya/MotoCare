@@ -1,4 +1,4 @@
-// import { useParams } from "react-router-dom";
+import { usePage } from "@inertiajs/react";
 import { Row, Col, Table } from "react-bootstrap";
 import AdminLayout from "@/Layouts/AdminLayout";
 import styles from "../../../css/Admin/DetailUser.module.css";
@@ -11,49 +11,49 @@ export default function DetailUser({ auth, user }) {
     // const { id } = useParams();
     return (
         <AdminLayout title="MANAJEMEN USER">
-            <h1 className={styles["title-page"]}>Detail User John Doe</h1>
+            <h1 className={styles["title-page"]}>Detail User {user.name}</h1>
             <Table className={styles["table-detail"]}>
                 <tr className={styles["table-detail-tr"]}>
                     <th className={styles["table-detail-th"]}>Nama</th>
                     <td>:</td>
-                    <td>John Doe</td>
+                    <td>{user.name}</td>
                 </tr>
                 <tr className={styles["table-detail-tr"]}>
                     <th className={styles["table-detail-th"]}>Username</th>
                     <td>:</td>
-                    <td>john_doe123</td>
+                    <td>{user.username}</td>
                 </tr>
                 <tr className={styles["table-detail-tr"]}>
                     <th className={styles["table-detail-th"]}>Email</th>
                     <td>:</td>
-                    <td>john.doe@example.com</td>
+                    <td>{user.email}</td>
                 </tr>
                 <tr className={styles["table-detail-tr"]}>
                     <th className={styles["table-detail-th"]}>Tanggal Lahir</th>
                     <td>:</td>
-                    <td>01 Januari 2000</td>
+                    <td>{user.tanggal_lahir}</td>
                 </tr>
                 <tr className={styles["table-detail-tr"]}>
                     <th className={styles["table-detail-th"]}>No Telepon</th>
                     <td>:</td>
-                    <td>081234567890</td>
+                    <td>{user.no_telepon}</td>
                 </tr>
                 <tr className={styles["table-detail-tr"]}>
                     <th className={styles["table-detail-th"]}>Jenis Kelamin</th>
                     <td>:</td>
-                    <td>Laki-laki</td>
+                    <td>{user.jenis_kelamin}</td>
                 </tr>
                 <tr className={styles["table-detail-tr"]}>
                     <th className={styles["table-detail-th"]}>Role</th>
                     <td>:</td>
-                    <td>Admin</td>
+                    <td>{user.role}</td>
                 </tr>
                 <tr className={styles["table-detail-tr"]}>
                     <th className={styles["table-detail-th"]}>Foto Profil</th>
                     <td>:</td>
                     <td>
                         <img
-                            src="/images/avatar.png"
+                            src={user.foto || "/images/avatar.png"}
                             alt="Foto Profil"
                             className={styles["avatar"]}
                         />
@@ -93,7 +93,7 @@ export default function DetailUser({ auth, user }) {
                         }}
                     >
                         <Link
-                            href={route("admin.user.edit", [1])}
+                            href={route("admin.user.edit", [user.id])}
                             style={{
                                 textDecoration: "none",
                                 color: "inherit",
