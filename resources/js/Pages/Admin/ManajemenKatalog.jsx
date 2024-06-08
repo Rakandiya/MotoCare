@@ -14,6 +14,8 @@ export default function ManajemenKatalog({ katalogs }) {
     const [selectedKatalog, setSelectedKatalog] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
     const [isNewImage, setisNewImage] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredKatalog, setFilteredKatalog] = useState(katalogs);
     const {
         data,
         setData,
@@ -29,7 +31,14 @@ export default function ManajemenKatalog({ katalogs }) {
         model: "",
         deskripsi: "",
     });
-    const [katalogList, setKatalog] = useState(katalogs);
+
+    const [formData, setFormData] = useState({
+        id: "",
+        gambar: "",
+        merk: "",
+        model: "",
+        deskripsi: "",
+    });
 
     const handleCloseDetail = () => setShowDetail(false);
     const handleShowDetail = (e, katalog) => {
@@ -98,6 +107,11 @@ export default function ManajemenKatalog({ katalogs }) {
                 ...prevData,
                 gambar: file,
             }));
+
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                gambar: file,
+            }));
             const reader = new FileReader();
             reader.onloadend = () => {
                 setisNewImage(true);
@@ -109,7 +123,16 @@ export default function ManajemenKatalog({ katalogs }) {
 
     const handleEditKatalog = (e, katalog) => {
         e.preventDefault();
+        setisNewImage(false);
         setData({
+            id: katalog.id,
+            merk: katalog.merk,
+            model: katalog.model,
+            deskripsi: katalog.deskripsi,
+            gambar: "",
+        });
+
+        setFormData({
             id: katalog.id,
             merk: katalog.merk,
             model: katalog.model,
@@ -125,6 +148,11 @@ export default function ManajemenKatalog({ katalogs }) {
             ...data,
             [name]: value,
         });
+
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
     };
 
     const [errorMessages, setErrorMessages] = useState({});
@@ -135,53 +163,73 @@ export default function ManajemenKatalog({ katalogs }) {
         const routeName = data.id
             ? "admin.katalog.update"
             : "admin.katalog.store";
-        // Create a FormData object
 
         if (data.id) {
-            router.visit(route("admin.katalog.update", { katalog: data.id }), {
-                data: data,
+            router.post(route("admin.katalog.update", { katalog: data.id }), {
+                _method: "PUT",
                 method: "PUT",
-                preserveScroll: true,
+                data: data,
                 headers: {
-                    "X-HTTP-Method-Override": "PATCH",
+                    "Content-Type": "multipart/form-data",
+                    "Content-Type": "application/json",
                     "X-CSRF-TOKEN": document
                         .querySelector('meta[name="csrf-token"]')
                         .getAttribute("content"),
-                    "Content-Type": "multipart/form-data",
-                    "Content-Type": "application/json",
+                },
+                preserveScroll: true,
+                onBefore: () => {
+                    console.log(data);
                 },
                 onSuccess: () => {
-                    setReload(!reload); // Toggle state to trigger reload
-                    console.log(data);
+                    setReload(true); // Toggle state to trigger reload
+                    console.log(reload);
+                    setFilteredKatalog(response.data); // Update katalogList with updated data
                 },
                 onError: () => {
                     console.log(errors);
                     console.log(data);
+                    setErrorMessages(errors);
                 },
             });
+
+            setReload(true);
         } else {
             post(route(routeName), {
-                data: formData,
+                data: data,
                 preserveScroll: true,
                 onSuccess: () => {
-                    setReload(!reload); // Toggle state to trigger reload
+                    setReload(true); // Toggle state to trigger reload
                     console.log(data);
                 },
                 onError: () => {
                     console.log(errors);
                     console.log(data);
+                    setErrorMessages(errors);
                 },
             });
         }
-
-        console.log(data);
     };
 
     const handleDelete = () => {
-        deleteRoute(
+        router.post(
             route("admin.katalog.delete", { katalog: selectedKatalog.id }),
             {
                 preserveScroll: true,
+                method: "DELETE",
+                _method: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                    "Content-Type": "application/json",
+                    "Content-Type": "multipart/form-data",
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Access-Control-Allow-Origin": "*",
+                },
+                onBefore: () => {
+                    console.log(selectedKatalog);
+                },
                 onSuccess: () => {
                     setShowDelete(false); // Menutup modal setelah berhasil
                     setReload(!reload); // Memicu reload data
@@ -189,10 +237,39 @@ export default function ManajemenKatalog({ katalogs }) {
                 },
                 onError: () => {
                     console.log(errorMessages);
+                    console.log(selectedKatalog);
                 },
             }
         );
+
+        setReload(!reload);
     };
+
+    const handleSearch = (e) => {
+        setSearchQuery(e.target.value);
+
+        const filtered = katalogs.filter((katalog) => {
+            return (
+                katalog.merk
+                    .toLowerCase()
+                    .includes(e.target.value.toLowerCase()) ||
+                katalog.model
+                    .toLowerCase()
+                    .includes(e.target.value.toLowerCase()) ||
+                katalog.deskripsi
+                    .toLowerCase()
+                    .includes(e.target.value.toLowerCase())
+            );
+        });
+
+        console.log(filtered);
+
+        setFilteredKatalog(filtered);
+    };
+
+    useEffect(() => {
+        setFilteredKatalog(katalogs);
+    }, [katalogs]);
 
     useEffect(() => {
         // Hanya membersihkan errorMessages jika form berhasil disubmit dan tidak ada error
@@ -200,18 +277,33 @@ export default function ManajemenKatalog({ katalogs }) {
     }, [errors]);
 
     useEffect(() => {
+        setFilteredKatalog(katalogs);
+    }, [katalogs]);
+
+    useEffect(() => {
         // Fungsi untuk memuat ulang data atau komponen
-        setKatalog(katalogs); // Misalnya fungsi untuk memuat ulang data tutorial
-        setData({
-            id: "",
-            gambar: "",
-            merk: "",
-            model: "",
-            deskripsi: "",
-        });
-        setisNewImage(false);
-        setPreviewImage(null);
-    }, [reload, katalogList]);
+        if (reload) {
+            setFilteredKatalog(katalogs); // Misalnya fungsi untuk memuat ulang data tutorial
+            setData({
+                id: "",
+                gambar: "",
+                merk: "",
+                model: "",
+                deskripsi: "",
+            });
+
+            setFormData({
+                id: "",
+                gambar: "",
+                merk: "",
+                model: "",
+                deskripsi: "",
+            });
+            setisNewImage(false);
+            setPreviewImage(null);
+            setReload(false); // Setelah memuat ulang, kembalikan state reload ke false
+        }
+    }, [reload, filteredKatalog]);
 
     return (
         <AdminLayout title="Manajemen Katalog">
@@ -238,11 +330,13 @@ export default function ManajemenKatalog({ katalogs }) {
                             placeholder="Cari Katalog"
                             autoComplete="off"
                             className={styles["search"]}
+                            value={searchQuery}
+                            onChange={handleSearch}
                         />
                     </form>
                     <DataTable
                         columns={columns}
-                        data={katalogList}
+                        data={filteredKatalog}
                         pagination
                         responsive
                         striped
@@ -254,8 +348,6 @@ export default function ManajemenKatalog({ katalogs }) {
                         <h1 className={styles["title-form"]}>Form Katalog</h1>
                     </div>
                     <form
-                        action="#"
-                        method="post"
                         id="form"
                         onSubmit={handleSubmit}
                         className={styles["form"]}
@@ -279,6 +371,11 @@ export default function ManajemenKatalog({ katalogs }) {
                                     onChange={handleInputChange}
                                     className={styles["input-merk"]}
                                 />
+                                {errorMessages.merk && (
+                                    <small className="text-danger">
+                                        {errorMessages.merk}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
 
@@ -295,6 +392,11 @@ export default function ManajemenKatalog({ katalogs }) {
                                     onChange={handleInputChange}
                                     className={styles["input-model"]}
                                 />
+                                {errorMessages.model && (
+                                    <small className="text-danger">
+                                        {errorMessages.model}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
                         <Row className="d-flex justify-content-center align-items-center my-3">
@@ -322,6 +424,12 @@ export default function ManajemenKatalog({ katalogs }) {
                                     </div>
                                     Tambah Gambar
                                 </label>
+
+                                {errorMessages.gambar && (
+                                    <small className="text-danger">
+                                        {errorMessages.gambar}
+                                    </small>
+                                )}
                             </Col>
                             <Col md={6}>
                                 {previewImage ? (
@@ -361,6 +469,11 @@ export default function ManajemenKatalog({ katalogs }) {
                                 >
                                     {data.deskripsi}
                                 </textarea>
+                                {errorMessages.deskripsi && (
+                                    <small className="text-danger">
+                                        {errorMessages.deskripsi}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
 
@@ -476,7 +589,7 @@ export default function ManajemenKatalog({ katalogs }) {
                     <Button variant="secondary" onClick={handleCloseDelete}>
                         Close
                     </Button>
-                    <form onSubmit={handleDelete} method="post">
+                    <form onSubmit={handleDelete}>
                         <ButtonAdmin
                             type="submit"
                             variant="primary"

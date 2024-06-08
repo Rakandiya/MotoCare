@@ -6,8 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
@@ -22,10 +21,9 @@ class RegisterController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        
         try {
             $user = User::create([
                 'username' => $request->username,
@@ -33,14 +31,16 @@ class RegisterController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
-            return redirect()->back();
+            Auth::login($user);
 
-            
+            return redirect()->route('user.tambah-profil', ['id' => $user->id]);
         } catch (\Exception $e) {
             \Log::error($e);
-            return response()->json(['message' => $e->getMessage()], 500);
+            return redirect()->back()->with('error', 'Registration failed. Please try again.');
         }
     }
 }
+
+
 
 

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class KatalogController extends Controller
 {
@@ -75,9 +76,6 @@ class KatalogController extends Controller
      */
     public function update(Request $request, Katalog $katalog)
     {
-
-        
-        dd($request->all());
         $validation = [
             'merk' => 'required|string|max:255',
             'model' => 'string|max:255',
@@ -86,35 +84,38 @@ class KatalogController extends Controller
 
         $data = [];
 
-        if ($request->hasFile('gambar')) {
+        
+        if ($request->data["gambar"]) {
             $validation['gambar'] = 'image|mimes:jpeg,png,jpg,gif,svg|max:2048';
         }
 
-        $validated = $request->validate($validation);
+        $validated = Validator::make($request->data, $validation);
 
-        // var_dump($validated);
-        // die;
+        if ($validated->fails()) {
+            return response()->json($validated->errors(), 422);
+        }
 
-        // dd($validated);
+        // dd($request->data['merk']);
+        // $request->data->validate($validation);
 
-        if ($request->hasFile('gambar')) {
+
+        if ($request->data["gambar"]) {
             if (Storage::disk('public')->exists($katalog->gambar)) {
                 Storage::disk('public')->delete($katalog->gambar);
             }
-            $path = $request->file('gambar')->store('images/katalog', 'public');
+            $path = $request->data["gambar"]->store('images/katalog', 'public');
             $data['gambar'] = $path;
 
         }
-
         
+        $data['merk'] = $request->data["merk"];
+        $data['model'] = $request->data["model"];
+        $data['deskripsi'] = $request->data["deskripsi"];
 
-        
-        $data['merk'] = $request->merk;
-        $data['model'] = $request->model;
-        $data['deskripsi'] = $request->deskripsi;
+        // dd($data);
         $katalog->update($data);
 
-        return redirect()->route('admin.katalog.index')->with('success', 'Katalog updated successfully.');
+        return redirect()->back();
     }
 
     /**

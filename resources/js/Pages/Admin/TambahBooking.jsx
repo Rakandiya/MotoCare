@@ -3,7 +3,7 @@ import { Row, Col } from "react-bootstrap";
 import styles from "../../../css/Admin/TambahBooking.module.css";
 import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Link } from "@inertiajs/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactSelect from "react-select";
 import { Head, useForm, router } from "@inertiajs/react";
 
@@ -40,15 +40,7 @@ export default function TambahBooking({ katalogs, users }) {
         label: katalog.merk + " " + katalog.model,
     }));
 
-    const {
-        data,
-        setData,
-        put,
-        post,
-        delete: deleteRoute,
-        processing,
-        errors,
-    } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         id: "",
         user_id: selectedUser.id,
         jenis_layanan: selectedJenisLayanan,
@@ -60,10 +52,21 @@ export default function TambahBooking({ katalogs, users }) {
         catatan: "",
     });
 
+    useEffect(() => {
+        setData({
+            ...data,
+            jenis_layanan: selectedJenisLayanan,
+        });
+    }, [selectedJenisLayanan]);
+
+    const [errorMessages, setErrorMessages] = useState({});
+
     // handleSubmit untuk tambah booking
     const handleSubmit = (e) => {
         e.preventDefault();
         const routeName = "admin.booking.store";
+
+        console.log(data);
 
         const action = post;
         action(route(routeName), {
@@ -72,8 +75,16 @@ export default function TambahBooking({ katalogs, users }) {
             onSuccess: () => {
                 setReload(!reload); // Toggle state untuk memicu reload
             },
+            onError: () => {
+                console.log(errors);
+            },
         });
     };
+
+    useEffect(() => {
+        // Hanya membersihkan errorMessages jika form berhasil disubmit dan tidak ada error
+        setErrorMessages(errors);
+    }, [errors]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;

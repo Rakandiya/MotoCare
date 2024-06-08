@@ -12,6 +12,9 @@ import { Head, useForm, router } from "@inertiajs/react";
 export default function ManajemenTutorial({ tutorials }) {
     const [showDetail, setShowDetail] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredTutorials, setFilteredTutorials] = useState(tutorials);
+
     const [selectedTutorial, setSelectedTutorial] = useState(false);
 
     // const [formData, setFormData] = useState({
@@ -35,7 +38,6 @@ export default function ManajemenTutorial({ tutorials }) {
         link: "",
         deskripsi: "",
     });
-    const [tutorialList, setTutorialList] = useState(tutorials);
     const handleCloseDetail = () => setShowDetail(false);
     const handleShowDetail = (e, tutorial) => {
         e.preventDefault();
@@ -49,6 +51,16 @@ export default function ManajemenTutorial({ tutorials }) {
         setShowDelete(true);
         setSelectedTutorial(tutorial);
     };
+
+    const handleEditTutorial = (tutorial) => {
+        setData({
+            id: tutorial.id,
+            judul: tutorial.judul,
+            link: tutorial.link,
+            deskripsi: tutorial.deskripsi,
+        });
+    };
+
     const columns = [
         {
             name: "Judul",
@@ -59,7 +71,7 @@ export default function ManajemenTutorial({ tutorials }) {
             selector: (row) => (
                 <>
                     <button
-                        onClick={() => handleShowDetail(row)}
+                        onClick={(e) => handleShowDetail(e, row)}
                         style={{ color: "#f16211" }}
                     >
                         <box-icon
@@ -69,7 +81,7 @@ export default function ManajemenTutorial({ tutorials }) {
                         ></box-icon>
                     </button>
                     <button
-                        onClick={(e) => handleEditTutorial(e, row)}
+                        onClick={() => handleEditTutorial(row)}
                         className="mx-2"
                     >
                         <box-icon
@@ -92,15 +104,6 @@ export default function ManajemenTutorial({ tutorials }) {
             ),
         },
     ];
-
-    const handleEditTutorial = (tutorial) => {
-        setData({
-            id: tutorial.id,
-            judul: tutorial.judul,
-            link: tutorial.link,
-            deskripsi: tutorial.deskripsi,
-        });
-    };
 
     function handleInputChange(e) {
         const key = e.target.id;
@@ -125,7 +128,7 @@ export default function ManajemenTutorial({ tutorials }) {
             preserveScroll: true,
             data: data,
             onSuccess: () => {
-                setReload(!reload); // Toggle state untuk memicu reload
+                setReload(true); // Ubah state reload setelah sukses submit
             },
         });
     };
@@ -137,7 +140,7 @@ export default function ManajemenTutorial({ tutorials }) {
                 preserveScroll: true,
                 onSuccess: () => {
                     setShowDelete(false); // Menutup modal setelah berhasil
-                    setReload(!reload); // Memicu reload data
+                    setReload(true); // Ubah state reload setelah sukses delete
                     console.log("OK");
                 },
                 onError: () => {
@@ -147,21 +150,51 @@ export default function ManajemenTutorial({ tutorials }) {
         );
     };
 
+    const handleSearch = (e) => {
+        setSearchQuery(e.target.value);
+
+        const filtered = tutorials.filter((tutorial) => {
+            return (
+                tutorial.judul
+                    .toLowerCase()
+                    .includes(e.target.value.toLowerCase()) ||
+                tutorial.deskripsi
+                    .toLowerCase()
+                    .includes(e.target.value.toLowerCase())
+            );
+        });
+
+        console.log(filtered);
+
+        setFilteredTutorials(filtered);
+    };
+
+    useEffect(() => {
+        setFilteredTutorials(tutorials);
+    }, [tutorials]);
+
     useEffect(() => {
         // Hanya membersihkan errorMessages jika form berhasil disubmit dan tidak ada error
         setErrorMessages(errors);
     }, [errors]);
 
+    // useEffect(() => {
+    //     setTutorialList(filteredTutorials);
+    // }, [searchQuery]);
+
     useEffect(() => {
-        // Fungsi untuk memuat ulang data atau komponen
-        setTutorialList(tutorials); // Misalnya fungsi untuk memuat ulang data tutorial
-        setData({
-            id: "",
-            judul: "",
-            link: "",
-            deskripsi: "",
-        });
-    }, [reload, tutorialList]);
+        if (reload) {
+            // Fungsi untuk memuat ulang data atau komponen
+            setFilteredTutorials(tutorials); // Misalnya fungsi untuk memuat ulang data tutorial
+            setData({
+                id: "",
+                judul: "",
+                link: "",
+                deskripsi: "",
+            });
+            setReload(false); // Setelah memuat ulang, kembalikan state reload ke false
+        }
+    }, [reload, tutorials]);
 
     return (
         <AdminLayout title="Manajemen Tutorial">
@@ -170,7 +203,6 @@ export default function ManajemenTutorial({ tutorials }) {
                     <h1 className={styles["title-table"]}>Daftar Tutorial</h1>
 
                     <form
-                        action="#"
                         id="form-search"
                         className={
                             styles["form-search"] +
@@ -188,11 +220,13 @@ export default function ManajemenTutorial({ tutorials }) {
                             placeholder="Cari Tutorial"
                             autoComplete="off"
                             className={styles["search"]}
+                            value={searchQuery}
+                            onChange={handleSearch}
                         />
                     </form>
                     <DataTable
                         columns={columns}
-                        data={tutorialList}
+                        data={filteredTutorials}
                         pagination
                         responsive
                         striped
