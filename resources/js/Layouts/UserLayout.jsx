@@ -40,22 +40,16 @@ export default function UserLayout({ auth, children }) {
             url: "../about/index.html",
         },
         {
-            path: "/booking",
+            path: "user.booking",
             label: "Booking",
-            external: true,
-            url: "../booking/index.html",
-        },
-        {
-            path: "user.katalog",
-            label: "Katalog",
             external: false,
         },
+
+        { path: "user.katalog", label: "Katalog", external: false },
+
         { path: "user.tutorial", label: "Tutorial", external: false },
         {
-            path: "/riwayat",
-            label: "Riwayat Servis",
-            external: true,
-            url: "../riwayat/index.html",
+            path: "user.riwayat", label: "Riwayat Servis", external: false
         },
         { path: "user.ulasan", label: "Ulasan", external: false },
         

@@ -5,11 +5,7 @@ import styles from "../../../css/User/Home.module.css";
 const HeroSection = () => {
     return (
         <UserLayout>
-            <section
-                className={`${styles.hero} has-bg-image`}
-                aria-label="home"
-                style={{ backgroundImage: "url('./images/hero-banner.png')" }}
-            >
+            <section>
                 <div className="container">
                     <div className={styles.heroContent}>
                         <p className={`${styles.sectionSubtitle} :dark`}>Dengan Mekanik Berpengalaman</p>
@@ -23,7 +19,7 @@ const HeroSection = () => {
                             repot.
                         </p>
 
-                        <a href="../booking/index.html" className="btn">
+                        <a href="../booking/index.html" className={styles.btn}>
                             <span className="span">Booking Sekarang</span>
                         </a>
                     </div>

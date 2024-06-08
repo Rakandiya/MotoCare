@@ -3,12 +3,11 @@ import { Row, Col } from "react-bootstrap";
 import styles from "../../../css/Admin/TambahBooking.module.css";
 import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Link } from "@inertiajs/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactSelect from "react-select";
 import { Head, useForm, router } from "@inertiajs/react";
-import { useEffect } from 'react';
 
-export default function TambahBooking({katalogs, users}) {
+export default function TambahBooking({ katalogs, users }) {
     const [selectedUser, setSelectedUser] = useState("");
     const [selectedKatalog, setSelectedKatalog] = useState("");
     const [selectedJenisLayanan, setSelectedJenisLayanan] = useState("");
@@ -39,17 +38,9 @@ export default function TambahBooking({katalogs, users}) {
     const dataSelectKatalog = katalogList.map((katalog) => ({
         value: katalog.id,
         label: katalog.merk + " " + katalog.model,
-    })); 
+    }));
 
-    const {
-        data,
-        setData,
-        put,
-        post,
-        delete: deleteRoute,
-        processing,
-        errors,
-    } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         id: "",
         user_id: selectedUser.id,
         jenis_layanan: selectedJenisLayanan,
@@ -61,10 +52,21 @@ export default function TambahBooking({katalogs, users}) {
         catatan: "",
     });
 
+    useEffect(() => {
+        setData({
+            ...data,
+            jenis_layanan: selectedJenisLayanan,
+        });
+    }, [selectedJenisLayanan]);
+
+    const [errorMessages, setErrorMessages] = useState({});
+
     // handleSubmit untuk tambah booking
     const handleSubmit = (e) => {
         e.preventDefault();
-        const routeName = data.id ? "admin.booking.update" : "admin.booking.store";
+        const routeName = "admin.booking.store";
+
+        console.log(data);
 
         const action = post;
         action(route(routeName), {
@@ -73,9 +75,16 @@ export default function TambahBooking({katalogs, users}) {
             onSuccess: () => {
                 setReload(!reload); // Toggle state untuk memicu reload
             },
+            onError: () => {
+                console.log(errors);
+            },
         });
-
     };
+
+    useEffect(() => {
+        // Hanya membersihkan errorMessages jika form berhasil disubmit dan tidak ada error
+        setErrorMessages(errors);
+    }, [errors]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -85,14 +94,6 @@ export default function TambahBooking({katalogs, users}) {
         });
     };
 
-    useEffect(() => {
-        setData(prevData => ({
-            ...prevData,
-            jenis_layanan: selectedJenisLayanan
-        }));
-    }, [selectedJenisLayanan]);
-
-    
     return (
         <AdminLayout title="MANAJEMEN BOOKING">
             <div className={styles["form-wrapper"]}>
@@ -116,13 +117,12 @@ export default function TambahBooking({katalogs, users}) {
                                     (option) => option.value === selectedUser
                                 )}
                                 onChange={(selectedOption) => {
-                                    setSelectedUser(selectedOption.value)
+                                    setSelectedUser(selectedOption.value);
                                     setData((prevData) => ({
                                         ...prevData,
-                                        user_id: selectedOption.value
+                                        user_id: selectedOption.value,
                                     }));
                                 }}
-                        
                                 placeholder="Pilih User"
                             />
                         </Col>
@@ -130,7 +130,6 @@ export default function TambahBooking({katalogs, users}) {
                             <label
                                 className={styles["label"]}
                                 htmlFor="jenis_layanan"
-    
                             >
                                 Jenis Layanan
                             </label>
@@ -147,7 +146,7 @@ export default function TambahBooking({katalogs, users}) {
                                     )
                                 }
                                 placeholder="Pilih Jenis Layanan"
-                            />
+                            />
                         </Col>
                         <Col md={4}>
                             <label className={styles["label"]} htmlFor="merk">
@@ -160,10 +159,10 @@ export default function TambahBooking({katalogs, users}) {
                                     (option) => option.value === selectedKatalog
                                 )}
                                 onChange={(selectedOption) => {
-                                    setSelectedKatalog(selectedOption.value)
+                                    setSelectedKatalog(selectedOption.value);
                                     setData((prevData) => ({
                                         ...prevData,
-                                        katalog_id: selectedOption.value
+                                        katalog_id: selectedOption.value,
                                     }));
                                 }}
                                 placeholder="Pilih Katalog"

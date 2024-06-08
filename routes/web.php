@@ -18,20 +18,16 @@ use App\Http\Controllers\Auth\LoginController;
 // User Controller
 use App\Http\Controllers\User\TutorialController as UserTutorialController;
 use App\Http\Controllers\User\UlasanController as UserUlasanController;
+use App\Http\Controllers\User\BookingController as UserBookingController; // Corrected Controller
 
 //Middleware
 use App\Http\Middleware\AdminMiddleware;
 
-
-
-
-
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware'=> 'admin'], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function () {
     // Route Dashboard
     Route::get('/', function () {
         return Inertia::render('Admin/Dashboard');
     })->name('dashboard');
-
 
     // Route Manajemen Tutorial
     Route::get('/manajemen-tutorial', [TutorialController::class, 'index'])->name('tutorial.index');
@@ -60,6 +56,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware'=> 'admin'], fu
     
 
     // Route Manajemen Katalog
+    //tambahan
+    // Route::resource('admin/katalog', KatalogController::class);
+    
     Route::get('/manajemen-katalog', [KatalogController::class, 'index'])->name('katalog.index');
     Route::post('/manajemen-katalog', [KatalogController::class, 'store'])->name('katalog.store');
     Route::put("/manajemen-katalog/{katalog}", [KatalogController::class, 'update'])->name('katalog.update');
@@ -73,7 +72,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware'=> 'admin'], fu
     Route::post('/manajemen-produk', [ProdukController::class, 'store'])->name('produk.store');
     Route::put("/manajemen-produk/{produk}", [ProdukController::class, 'update'])->name('produk.update');
     Route::delete("/manajemen-produk/{produk}", [ProdukController::class, 'destroy'])->name('produk.delete');
-})->middleware(["admin, auth"])->name('admin.');
+})->middleware(["admin", "auth"])->name('admin.');
 
 
 Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
@@ -86,32 +85,39 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
     
     Route::get('/katalog', function () {
         return Inertia::render('User/Katalog');
-        
     })->name('katalog');
     
-
     Route::get('/home', function () {
         return Inertia::render('User/Home');
     })->name('home');
 
+    Route::get('/tambah-profil/{id}', function ($id) {
+        return Inertia::render('User/TambahProfil', ['userId' => $id]);
+    })->name('tambah-profil');
+
+    // route booking
     Route::get('/booking', function () {
         return Inertia::render('User/Booking');
-    })->name('home');
+    })->name('booking');
+    
+    Route::post('/booking', [UserBookingController::class, 'store'])->name('booking.store'); // Corrected Controller
 
     Route::get('/riwayat', function () {
         return Inertia::render('User/Riwayat');
-    })->name('home');
+    })->name('riwayat');
+
 })->name('user.');
 
 Route::get('/', function () {
-        return Inertia::render('Register');
-    })->name('auth');
-
+    return Inertia::render('Register');
+})->name('auth');
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/profile', [ProfileController::class, 'store'])->name('profile.store');
 
+// Uncomment if needed
 // Route::get('/dashboard', function () {
 //     return Inertia::render('Dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');

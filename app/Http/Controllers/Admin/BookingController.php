@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use App\Models\Tutorial;
 use App\Models\User;
 use App\Models\Katalog;
 use Illuminate\Http\Request;
@@ -23,9 +22,7 @@ class BookingController extends Controller
     // menampilkan form untuk tambah booking
     public function create()
     {
-        // direct tombolBooking ke tambahBooking
-        // return Inertia::render("Admin/TambahBooking");
-        // panggil data user
+        
         $users = User::all();
         $katalogs = Katalog::all();
         return Inertia::render("Admin/TambahBooking", compact("users", "katalogs"));
@@ -34,11 +31,11 @@ class BookingController extends Controller
     // menyimpan data booking baru ke dalam database
     public function store(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $validatedData = $request -> validate([
-            'nama' => 'required',
+            'user_id' => 'required',
             'jenis_layanan' => 'required',
-            'merk_motor' => 'required',
+            'katalog_id' => 'required',
             'tahun_pembuatan' => 'required|numeric',
             'nomor_polisi' => 'required',
             'km_kendaraan' => 'required|numeric',
@@ -48,17 +45,18 @@ class BookingController extends Controller
         ]);
 
         $booking = Booking::create([
-            'nama' => $validatedData['nama'],
+            'user_id' => $validatedData['user_id'],
             'jenis_layanan' => $validatedData['jenis_layanan'],
-            'merk_motor' => $validatedData['merk_motor'],
+            'katalog_id' => $validatedData['katalog_id'],
             'tahun_pembuatan' => $validatedData['tahun_pembuatan'],
             'nomor_polisi' => $validatedData['nomor_polisi'],
             'km_kendaraan' => $validatedData['km_kendaraan'],
             'jadwal_booking' => $validatedData['jadwal_booking'],
+            'status' => 'diproses',
             'catatan' => $validatedData['catatan'],
         ]);
 
-        // return redirect()->route('admin.booking.index')->with('success', 'Data booking berhasil ditambahkan');
+        return redirect()->route('admin.booking.index')->with('success', 'Data booking berhasil ditambahkan');
     }
 
     // menampilkan detail booking

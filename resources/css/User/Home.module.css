@@ -257,11 +257,11 @@
   
   .btn {
     background-color: var(--international-orange-engineering);
-    color: var(--o);
+    color: var(--white);
     max-width: max-content;
     font-family: var(--ff-Poppins);
     font-weight: var(--fw-600);
-    text-transform: lowercase;
+    text-transform: uppercase;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -469,11 +469,11 @@
     gap: 30px;
   }
   
-  .hero .section-subtitle {
+  .hero .sectionSubtitle {
     text-transform: unset;
   }
   
-  .hero .section-text {
+  .hero .sectionText {
     color: var(--white);
     margin-block: 14px 18px;
   }

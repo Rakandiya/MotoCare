@@ -1,122 +1,59 @@
+import React, { useState, useEffect } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import styles from "../../../css/Admin/ManajemenKatalog.module.css";
 import { Row, Col, Modal, Button, Table } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { Link } from "@inertiajs/react";
-import { useState } from "react";
 import ButtonAdmin from "@/Components/ButtonAdmin";
+import { Head, useForm, router } from "@inertiajs/react";
+import { route } from "ziggy-js";
 
-export default function ManajemenKatalog() {
+export default function ManajemenKatalog({ katalogs }) {
     const [showDetail, setShowDetail] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [selectedKatalog, setSelectedKatalog] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
-    const [formData, setFormData] = useState({
+    const [isNewImage, setisNewImage] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredKatalog, setFilteredKatalog] = useState(katalogs);
+    const {
+        data,
+        setData,
+        put,
+        post,
+        delete: deleteRoute,
+        processing,
+        errors,
+    } = useForm({
         id: "",
+        gambar: "",
         merk: "",
         model: "",
         deskripsi: "",
-        gambar: "",
     });
-    const [katalogList, setKatalog] = useState([
-        {
-            id: "1",
-            merk: "Honda",
-            model: "BeAT",
-            deskripsi:
-                'Untuk menjaga performa dan memastikan umur panjang kendaraan, berikut adalah beberapa tips perawatan untuk Honda Beat 2024: <br style="page-break-before: always;"> 1. Periksa dan Ganti Oli Mesin Secara Berkala: Pastikan oli mesin diganti sesuai dengan jadwal yang direkomendasikan oleh pabrikan, biasanya setiap 2.000-4.000 km, untuk menjaga mesin tetap terlubrikasi dengan baik.<br style="page-break-before: always;"> 2. Cek Tekanan Angin Ban: Ban dengan tekanan angin yang tepat tidak hanya meningkatkan efisiensi bahan bakar tetapi juga memperpanjang umur ban dan meningkatkan keamanan berkendara. Periksa tekanan ban secara berkala, idealnya sekali seminggu. <br>3. Bersihkan Filter Udara: Filter udara yang bersih memastikan aliran udara yang baik ke mesin, yang penting untuk menjaga performa motor. Bersihkan filter udara secara teratur dan ganti jika sudah terlalu kotor atau rusak.',
-            gambar: "ahm-gaul-sideview-deluxe-black-7-01022023-085330.webp",
-        },
-        {
-            id: "2",
-            merk: "Honda",
-            model: "PCX160",
-            deskripsi:
-                "Untuk menjaga performa dan memastikan umur panjang kendaraan, berikut adalah beberapa tips perawatan untuk Honda PCX 160: <br> 1. Perawatan Baterai: PCX 160 menggunakan sistem start-stop yang otomatis, yang membuat penggunaan baterai lebih intensif. Pastikan baterai selalu dalam kondisi terisi penuh dan periksa secara berkala untuk memastikan tidak ada kerusakan atau kebocoran. <br>  2. Cek dan Bersihkan Filter Udara: Sistem intake udara yang bersih sangat penting untuk efisiensi bahan bakar dan performa motor. Bersihkan filter udara secara berkala dan ganti jika sudah terlalu kotor atau rusak. <br> 3. Perawatan CVT (Continuous Variable Transmission): Karena menggunakan transmisi CVT, penting untuk memeriksa dan memastikan bahwa sabuk transmisi dalam kondisi baik dan tidak aus. Ganti sabuk CVT sesuai interval yang direkomendasikan oleh pabrikan atau lebih awal jika diperlukan.",
-            gambar: "pcx.png",
-        },
-        {
-            id: "3",
-            merk: "Honda",
-            model: "Vario 160",
-            deskripsi:
-                "Untuk menjaga performa dan memastikan umur panjang kendaraan, berikut adalah beberapa tips perawatan untuk Honda Vario 160: <br> 1. Cek Tekanan Angin Ban: Ban dengan tekanan yang tepat penting untuk menjaga kestabilan dan efisiensi bahan bakar. Periksa tekanan angin ban secara rutin dan sesuaikan sesuai spesifikasi pabrikan. <br> 2. Lubrikasi Rantai dan Sprocket: Meskipun Vario 160 adalah skuter matik, memastikan komponen transmisi seperti sprocket penggerak roda belakang terlubrikasi dengan baik dapat memperpanjang umur komponen dan mengurangi keausan. <br> 3. Periksa dan Ganti Cairan Rem: Untuk menjaga performa sistem pengereman, penting untuk memeriksa level cairan rem secara berkala dan menggantinya setiap 12.000 km atau sesuai anjuran pabrikan.",
-            gambar: "vario.png",
-        },
 
-        {
-            id: "4",
-            merk: "Honda",
-            model: "CBR150R",
-            deskripsi:
-                "Untuk menjaga performa dan memastikan umur panjang kendaraan, berikut adalah beberapa tips perawatan untuk Honda CBR 150R: <br> 1. Perawatan Sistem Pendinginan: CBR150R menggunakan sistem pendinginan cairan untuk menjaga suhu mesin. Pastikan level cairan pendingin sesuai dan ganti cairan pendingin sesuai jadwal yang direkomendasikan untuk menghindari overheating. <br> 2. Cek dan Atur Ketegangan Rantai: Rantai yang terlalu kendor atau terlalu kencang bisa mempengaruhi performa berkendara dan umur rantai. Pastikan rantai memiliki ketegangan yang tepat dan terlubrikasi dengan baik. <br> 3. Pemeliharaan Suspensi: Cek kondisi oli suspensi depan dan karet seal untuk mencegah kebocoran. Suspensi yang terawat dengan baik penting untuk kenyamanan dan stabilitas saat berkendara, terutama pada motor sport seperti CBR150R.",
-            gambar: "cbr.png",
-        },
+    const [formData, setFormData] = useState({
+        id: "",
+        gambar: "",
+        merk: "",
+        model: "",
+        deskripsi: "",
+    });
 
-        {
-            id: "5",
-            merk: "Yamaha",
-            model: "NMAX 155",
-            deskripsi:
-                "Untuk menjaga performa dan memastikan umur panjang kendaraan, berikut adalah beberapa tips perawatan untuk Yamaha NMAX 155: <br> 1. Periksa dan Ganti Oli Mesin secara Berkala: Oli mesin yang berkualitas dan diganti secara berkala adalah kunci untuk menjaga mesin tetap dalam kondisi terbaik. Pastikan untuk mengganti oli mesin setiap 2.000-3.000 km atau sesuai dengan rekomendasi pabrikan. <br> 2. Cek Sistem VVA (Variable Valve Actuation): Nmax 155 dilengkapi dengan teknologi VVA yang meningkatkan performa mesin. Pastikan sistem VVA berfungsi dengan baik melalui servis berkala di bengkel resmi. <br> 3. Perawatan Sistem Pengereman ABS: Jika Nmax Anda dilengkapi dengan ABS, pastikan sistem ini diperiksa secara berkala oleh teknisi yang berkualifikasi untuk memastikan keamanan maksimal saat berkendara.",
-            gambar: "nmax.png",
-        },
-
-        {
-            id: "6",
-            merk: "Yamaha",
-            model: "Aerox",
-            deskripsi:
-                "Untuk menjaga performa dan memastikan umur panjang kendaraan, berikut adalah beberapa tips perawatan untuk Yamaha Aerox 155: <br> 1. Bersihkan Filter Udara secara Rutin: Aerox 155 memerlukan aliran udara yang optimal untuk performa mesin yang efisien. Bersihkan filter udara secara berkala dan ganti bila diperlukan untuk menjaga performa mesin.<br> 2.Cek dan Atur Tekanan Angin Ban: Pastikan ban selalu dalam kondisi tekanan yang ideal. Ban dengan tekanan yang tepat tidak hanya memperpanjang umur ban tetapi juga meningkatkan efisiensi bahan bakar dan kestabilan saat berkendara.<br> 3. Periksa Sabuk CVT dan Roller: Sebagai skuter matik, kondisi sabuk CVT dan roller sangat penting untuk transmisi yang halus dan efisien. Periksa dan ganti komponen-komponen ini sesuai kebutuhan atau sesuai interval yang disarankan oleh pabrikan.",
-            gambar: "aerox.png",
-        },
-
-        {
-            id: "7",
-            merk: "Yamaha",
-            model: "Xmax",
-            deskripsi:
-                "Untuk menjaga performa dan memastikan umur panjang kendaraan, berikut adalah beberapa tips perawatan untuk Honda CBR 150R:<br> 1. Perawatan Sistem Pendinginan: Xmax 250 menggunakan sistem pendinginan cairan yang memerlukan perhatian khusus. Pastikan untuk memeriksa level cairan pendingin secara berkala dan mengganti cairan pendingin setiap 20.000 km atau sesuai dengan petunjuk pabrikan. <br> 2. Periksa dan Ganti Filter Oli Mesin: Selain oli mesin, filter oli juga perlu diganti secara berkala untuk menjaga mesin bekerja dengan lancar. Pastikan untuk mengganti filter oli setiap kali Anda mengganti oli mesin.",
-            gambar: "xmax.png",
-        },
-
-        {
-            id: "8",
-            merk: "Yamaha",
-            model: "XSR 155",
-            deskripsi:
-                "Untuk menjaga performa dan memastikan umur panjang kendaraan, berikut adalah beberapa tips perawatan untuk Yamaha XSR 155:<br> 1. Ganti Oli Mesin Secara Berkala: Oli mesin berperan vital dalam menjaga mesin tetap bersih dan terlubrikasi dengan baik. Pastikan untuk mengganti oli mesin XSR 155 Anda sesuai interval yang disarankan oleh Yamaha, yaitu setiap 3.000 hingga 5.000 km, tergantung pada kondisi penggunaan.<br> 2.Periksa Level Oli: Selalu periksa level oli mesin secara rutin, minimal sekali sebulan atau sebelum melakukan perjalanan jauh, untuk memastikan mesin selalu terlubrikasi dengan baik.<br> 3. Lubrikasi Rantai: Rantai yang kering bisa menyebabkan keausan cepat dan mengurangi efisiensi transmisi. Lubrikasi rantai secara teratur, idealnya setiap 500 km atau setelah terpapar hujan, dapat membantu memperpanjang umur rantai dan sprocket.",
-            gambar: "xsr.png",
-        },
-
-        {
-            id: "9",
-            merk: "Suzuki",
-            model: "GSX-R150",
-            deskripsi:
-                "Untuk menjaga performa dan memastikan umur panjang kendaraan, berikut adalah beberapa tips perawatan untuk Suzuki GSX-R150: <br> 1. Lakukan perawatan rutin seperti penggantian oli dan filter sesuai jadwal.<br> 2. Jaga kebersihan motor dengan membersihkan secara teratur. 3. Pelumasan rantai secara teratur untuk menghindari keausan berlebihan.",
-            gambar: "gsx-r150.webp",
-        },
-
-        {
-            id: "10",
-            merk: "Suzuki",
-            model: "NEX II",
-            deskripsi:
-                "Untuk menjaga performa dan memastikan umur panjang kendaraan, berikut adalah beberapa tips perawatan untuk Suzuki NEX II: <br> 1. Lakukan perawatan rutin seperti penggantian oli, servis, dan pembersihan secara teratur.<br> 3.Perhatikan tekanan ban dan lakukan pelumasan rantai secara berkala.<br> 3. Periksa sistem rem dan suspensi secara teratur untuk menjaga kinerja optimal.",
-            gambar: "next_2.webp",
-        },
-    ]);
     const handleCloseDetail = () => setShowDetail(false);
-    const handleShowDetail = (katalog) => {
+    const handleShowDetail = (e, katalog) => {
+        e.preventDefault();
         setShowDetail(true);
         setSelectedKatalog(katalog);
     };
+
     const handleCloseDelete = () => setShowDelete(false);
-    const handleShowDelete = (katalog) => {
+    const handleShowDelete = (e, katalog) => {
+        e.preventDefault();
         setShowDelete(true);
         setSelectedKatalog(katalog);
     };
+
     const columns = [
         {
             name: "Merk Motor",
@@ -128,7 +65,7 @@ export default function ManajemenKatalog() {
                 <>
                     <Link
                         href="#"
-                        onClick={() => handleShowDetail(row)}
+                        onClick={(e) => handleShowDetail(e, row)}
                         style={{ color: "#f16211" }}
                     >
                         <box-icon
@@ -139,7 +76,7 @@ export default function ManajemenKatalog() {
                     </Link>
                     <Link
                         href="#"
-                        onClick={() => handleEditKatalog(row)}
+                        onClick={(e) => handleEditKatalog(e, row)}
                         className="mx-2"
                     >
                         <box-icon
@@ -148,9 +85,8 @@ export default function ManajemenKatalog() {
                             color="#f16211"
                         ></box-icon>
                     </Link>
-                    <Link
-                        href="#"
-                        onClick={() => handleShowDelete(row)}
+                    <button
+                        onClick={(e) => handleShowDelete(e, row)}
                         style={{ color: "#f16211" }}
                     >
                         <box-icon
@@ -158,7 +94,7 @@ export default function ManajemenKatalog() {
                             type="solid"
                             color="#f16211"
                         ></box-icon>
-                    </Link>
+                    </button>
                 </>
             ),
         },
@@ -167,38 +103,207 @@ export default function ManajemenKatalog() {
     const handleFotoChange = (event) => {
         const file = event.target.files[0];
         if (file) {
+            setData((prevData) => ({
+                ...prevData,
+                gambar: file,
+            }));
+
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                gambar: file,
+            }));
             const reader = new FileReader();
             reader.onloadend = () => {
+                setisNewImage(true);
                 setPreviewImage(reader.result);
             };
             reader.readAsDataURL(file);
         }
     };
 
-    const handleEditKatalog = (katalog) => {
+    const handleEditKatalog = (e, katalog) => {
+        e.preventDefault();
+        setisNewImage(false);
+        setData({
+            id: katalog.id,
+            merk: katalog.merk,
+            model: katalog.model,
+            deskripsi: katalog.deskripsi,
+            gambar: "",
+        });
+
         setFormData({
             id: katalog.id,
             merk: katalog.merk,
             model: katalog.model,
             deskripsi: katalog.deskripsi,
-            gambar: katalog.gambar,
+            gambar: "",
         });
         setPreviewImage(katalog.gambar);
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        setData({
+            ...data,
+            [name]: value,
+        });
+
         setFormData({
             ...formData,
             [name]: value,
         });
     };
 
+    const [errorMessages, setErrorMessages] = useState({});
+    const [reload, setReload] = useState(false);
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Lakukan update katalog atau operasi yang diperlukan
-        console.log("Form Data:", formData);
+        const routeName = data.id
+            ? "admin.katalog.update"
+            : "admin.katalog.store";
+
+        if (data.id) {
+            router.post(route("admin.katalog.update", { katalog: data.id }), {
+                _method: "PUT",
+                method: "PUT",
+                data: data,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                },
+                preserveScroll: true,
+                onBefore: () => {
+                    console.log(data);
+                },
+                onSuccess: () => {
+                    setReload(true); // Toggle state to trigger reload
+                    console.log(reload);
+                    setFilteredKatalog(response.data); // Update katalogList with updated data
+                },
+                onError: () => {
+                    console.log(errors);
+                    console.log(data);
+                    setErrorMessages(errors);
+                },
+            });
+
+            setReload(true);
+        } else {
+            post(route(routeName), {
+                data: data,
+                preserveScroll: true,
+                onSuccess: () => {
+                    setReload(true); // Toggle state to trigger reload
+                    console.log(data);
+                },
+                onError: () => {
+                    console.log(errors);
+                    console.log(data);
+                    setErrorMessages(errors);
+                },
+            });
+        }
     };
+
+    const handleDelete = () => {
+        router.post(
+            route("admin.katalog.delete", { katalog: selectedKatalog.id }),
+            {
+                preserveScroll: true,
+                method: "DELETE",
+                _method: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                    "Content-Type": "application/json",
+                    "Content-Type": "multipart/form-data",
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Access-Control-Allow-Origin": "*",
+                },
+                onBefore: () => {
+                    console.log(selectedKatalog);
+                },
+                onSuccess: () => {
+                    setShowDelete(false); // Menutup modal setelah berhasil
+                    setReload(!reload); // Memicu reload data
+                    console.log("OK");
+                },
+                onError: () => {
+                    console.log(errorMessages);
+                    console.log(selectedKatalog);
+                },
+            }
+        );
+
+        setReload(!reload);
+    };
+
+    const handleSearch = (e) => {
+        setSearchQuery(e.target.value);
+
+        const filtered = katalogs.filter((katalog) => {
+            return (
+                katalog.merk
+                    .toLowerCase()
+                    .includes(e.target.value.toLowerCase()) ||
+                katalog.model
+                    .toLowerCase()
+                    .includes(e.target.value.toLowerCase()) ||
+                katalog.deskripsi
+                    .toLowerCase()
+                    .includes(e.target.value.toLowerCase())
+            );
+        });
+
+        console.log(filtered);
+
+        setFilteredKatalog(filtered);
+    };
+
+    useEffect(() => {
+        setFilteredKatalog(katalogs);
+    }, [katalogs]);
+
+    useEffect(() => {
+        // Hanya membersihkan errorMessages jika form berhasil disubmit dan tidak ada error
+        setErrorMessages(errors);
+    }, [errors]);
+
+    useEffect(() => {
+        setFilteredKatalog(katalogs);
+    }, [katalogs]);
+
+    useEffect(() => {
+        // Fungsi untuk memuat ulang data atau komponen
+        if (reload) {
+            setFilteredKatalog(katalogs); // Misalnya fungsi untuk memuat ulang data tutorial
+            setData({
+                id: "",
+                gambar: "",
+                merk: "",
+                model: "",
+                deskripsi: "",
+            });
+
+            setFormData({
+                id: "",
+                gambar: "",
+                merk: "",
+                model: "",
+                deskripsi: "",
+            });
+            setisNewImage(false);
+            setPreviewImage(null);
+            setReload(false); // Setelah memuat ulang, kembalikan state reload ke false
+        }
+    }, [reload, filteredKatalog]);
 
     return (
         <AdminLayout title="Manajemen Katalog">
@@ -225,11 +330,13 @@ export default function ManajemenKatalog() {
                             placeholder="Cari Katalog"
                             autoComplete="off"
                             className={styles["search"]}
+                            value={searchQuery}
+                            onChange={handleSearch}
                         />
                     </form>
                     <DataTable
                         columns={columns}
-                        data={katalogList}
+                        data={filteredKatalog}
                         pagination
                         responsive
                         striped
@@ -241,8 +348,6 @@ export default function ManajemenKatalog() {
                         <h1 className={styles["title-form"]}>Form Katalog</h1>
                     </div>
                     <form
-                        action="#"
-                        method="post"
                         id="form"
                         onSubmit={handleSubmit}
                         className={styles["form"]}
@@ -251,7 +356,7 @@ export default function ManajemenKatalog() {
                             type="hidden"
                             name="id"
                             id="id"
-                            value={formData.id}
+                            value={data.id}
                         />
                         <Row className="mb-3">
                             <Col md={{ span: 9, offset: 1 }}>
@@ -262,10 +367,15 @@ export default function ManajemenKatalog() {
                                     placeholder="Merk Motor"
                                     autoComplete="off"
                                     required
-                                    value={formData.merk}
+                                    value={data.merk}
                                     onChange={handleInputChange}
                                     className={styles["input-merk"]}
                                 />
+                                {errorMessages.merk && (
+                                    <small className="text-danger">
+                                        {errorMessages.merk}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
 
@@ -278,10 +388,15 @@ export default function ManajemenKatalog() {
                                     placeholder="Model Motor"
                                     autoComplete="off"
                                     required
-                                    value={formData.model}
+                                    value={data.model}
                                     onChange={handleInputChange}
                                     className={styles["input-model"]}
                                 />
+                                {errorMessages.model && (
+                                    <small className="text-danger">
+                                        {errorMessages.model}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
                         <Row className="d-flex justify-content-center align-items-center my-3">
@@ -290,7 +405,6 @@ export default function ManajemenKatalog() {
                                     type="file"
                                     name="gambar"
                                     id="gambar"
-                                    required
                                     accept="image/*"
                                     style={{ display: "none" }}
                                     onChange={handleFotoChange}
@@ -310,11 +424,21 @@ export default function ManajemenKatalog() {
                                     </div>
                                     Tambah Gambar
                                 </label>
+
+                                {errorMessages.gambar && (
+                                    <small className="text-danger">
+                                        {errorMessages.gambar}
+                                    </small>
+                                )}
                             </Col>
                             <Col md={6}>
                                 {previewImage ? (
                                     <img
-                                        src={previewImage}
+                                        src={
+                                            isNewImage
+                                                ? previewImage
+                                                : "/storage/" + previewImage
+                                        }
                                         className={styles["img-preview"]}
                                         id="img-preview"
                                         alt=""
@@ -339,12 +463,17 @@ export default function ManajemenKatalog() {
                                     placeholder="Deskripsi"
                                     autoComplete="off"
                                     required
-                                    value={formData.deskripsi}
+                                    value={data.deskripsi}
                                     onChange={handleInputChange}
                                     className={styles["deskripsi"]}
                                 >
-                                    {formData.deskripsi}
+                                    {data.deskripsi}
                                 </textarea>
+                                {errorMessages.deskripsi && (
+                                    <small className="text-danger">
+                                        {errorMessages.deskripsi}
+                                    </small>
+                                )}
                             </Col>
                         </Row>
 
@@ -417,7 +546,10 @@ export default function ManajemenKatalog() {
                                     {selectedKatalog &&
                                     selectedKatalog.gambar ? (
                                         <img
-                                            src={selectedKatalog.gambar}
+                                            src={
+                                                "/storage/" +
+                                                selectedKatalog.gambar
+                                            }
                                             alt="Image Preview Gambar Motor"
                                             className="img-preview-modal"
                                         />
@@ -457,16 +589,19 @@ export default function ManajemenKatalog() {
                     <Button variant="secondary" onClick={handleCloseDelete}>
                         Close
                     </Button>
-                    <ButtonAdmin
-                        variant="primary"
-                        onClick={handleCloseDelete}
-                        style={{
-                            backgroundColor: "#f16211",
-                            borderColor: "#f16211",
-                        }}
-                    >
-                        Ya, Hapus
-                    </ButtonAdmin>
+                    <form onSubmit={handleDelete}>
+                        <ButtonAdmin
+                            type="submit"
+                            variant="primary"
+                            onClick={handleCloseDelete}
+                            style={{
+                                backgroundColor: "#f16211",
+                                borderColor: "#f16211",
+                            }}
+                        >
+                            Ya, Hapus
+                        </ButtonAdmin>
+                    </form>
                 </Modal.Footer>
             </Modal>
         </AdminLayout>
