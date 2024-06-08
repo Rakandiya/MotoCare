@@ -16,16 +16,15 @@ class ProfileController extends Controller
             'tanggal_lahir' => 'required|date',
             'no_telepon' => 'required|string|max:15',
             'jenis_kelamin' => 'required|string|max:20',
-            'role' => 'required|string|max:20',
             'foto' => 'nullable|image|max:2048',
         ]);
 
         $user = User::findOrFail($id);
 
-        $data = $request->only('nama', 'tanggal_lahir', 'no_telepon', 'jenis_kelamin', 'role');
+        $data = $request->only('nama', 'tanggal_lahir', 'no_telepon', 'jenis_kelamin');
 
         if ($request->hasFile('foto')) {
-            $path = $request->file('foto')->store('public/foto_profil');
+            $path = $request->file('foto')->store('images/foto_profil', 'public');
             $data['foto'] = Storage::url($path);
         }
 
