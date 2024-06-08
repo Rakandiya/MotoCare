@@ -6,6 +6,7 @@ import { Link } from "@inertiajs/react";
 import { useState } from "react";
 import ReactSelect from "react-select";
 import { Head, useForm, router } from "@inertiajs/react";
+import { useEffect } from 'react';
 
 export default function TambahBooking({katalogs, users}) {
     const [selectedUser, setSelectedUser] = useState("");
@@ -63,8 +64,7 @@ export default function TambahBooking({katalogs, users}) {
     // handleSubmit untuk tambah booking
     const handleSubmit = (e) => {
         e.preventDefault();
-        const routeName = 
-            : "admin.booking.store";
+        const routeName = data.id ? "admin.booking.update" : "admin.booking.store";
 
         const action = post;
         action(route(routeName), {
@@ -85,7 +85,12 @@ export default function TambahBooking({katalogs, users}) {
         });
     };
 
-    
+    useEffect(() => {
+        setData(prevData => ({
+            ...prevData,
+            jenis_layanan: selectedJenisLayanan
+        }));
+    }, [selectedJenisLayanan]);
 
     
     return (
