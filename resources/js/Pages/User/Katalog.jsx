@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "../../../css/User/katalog.module.css";
+import styles from "../../../css/User/Katalog.module.css";
 import UserLayout from "@/Layouts/UserLayout";
 
 export default function Katalog({ katalogs, auth }) {
