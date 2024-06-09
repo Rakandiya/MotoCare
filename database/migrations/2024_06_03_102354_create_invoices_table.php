@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId("user_id")->constrained();
             $table->foreignId("booking_id")->constrained();
-            $table->date("tanggal");
-            $table->enum("status", ["Paid", "Unpaid"]);
-            $table->text("catatan");
+            $table->date("tanggal")->nullable();
+            $table->enum("status", ["Paid", "Unpaid"])->default("Unpaid");
+            $table->text("catatan")->nullable();
+            $table->integer("total_harga")->nullable();
             $table->timestamps();
         });
     }

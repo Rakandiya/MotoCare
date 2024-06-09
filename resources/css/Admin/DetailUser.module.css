@@ -1,27 +1,27 @@
 .title-page {
-  font-size: 25px;
-  font-weight: 700;
-  text-align: left;
+    font-size: 25px;
+    font-weight: 700;
+    text-align: left;
 }
 
 .table-detail {
-  margin-top: 10px;
-  width: 50%;
+    margin-top: 10px;
+    width: 50%;
 }
 
 .table-detail .table-detail-tr {
-  height: 35px;
+    height: 35px;
 }
 
 .table-detail .table-detail-th {
-  text-align: left;
-  width: 13%;
+    text-align: left;
+    width: 26%;
 }
 
 .table-detail tr td {
-  padding-left: 0;
+    padding-right: 5px;
 }
 
 .avatar {
-  width: 100px;
+    width: 100px;
 }

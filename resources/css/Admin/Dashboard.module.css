@@ -1,14 +1,14 @@
 .title-content {
-  color: #000000;
-  font-family: Poppins;
-  font-size: 22px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  margin-bottom: 10px;
+    color: #000000;
+    font-family: Poppins;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-bottom: 10px;
 }
 
 .card-text {
-  font-size: 16px !important;
-  font-weight: 400 !important;
+    font-size: 15px !important;
+    font-weight: 400 !important;
 }

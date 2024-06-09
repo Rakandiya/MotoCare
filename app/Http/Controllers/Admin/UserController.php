@@ -4,10 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Ulasan;
+use App\Models\FotoUlasan;
+use App\Models\Booking;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -33,7 +40,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+
+        $validation = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
@@ -41,12 +49,17 @@ class UserController extends Controller
             'no_telepon' => 'required|string|max:15',
             'jenis_kelamin' => ['required', Rule::in(['Laki-laki', 'Perempuan', 'Lainnya'])],
             'password' => 'required|string|confirmed|min:8',
-            'role' => ['required', Rule::in(['Admin', 'User'])],
+            'role' => ['required', Rule::in(['admin', 'user'])],
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+        
+
+        if ($validation->fails()) {
+            return redirect()->back()->withErrors($validation->messages())->withInput();
+        }
 
         $user = new User();
-        $user->name = $request->nama;
+        $user->nama = $request->nama;
         $user->username = $request->username;
         $user->email = $request->email;
         $user->tanggal_lahir = $request->tanggal_lahir;
@@ -56,15 +69,13 @@ class UserController extends Controller
         $user->role = $request->role;
 
         if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $filename = time().'_'.$file->getClientOriginalName();
-            $file->storeAs('public/fotos', $filename);
-            $user->foto = $filename;
+            $path = $request->file('foto')->store('images/foto', 'public');
+            $user->foto = $path;
         }
 
         $user->save();
 
-        return response()->json(['message' => 'User created successfully!', 'user' => $user]);
+        return redirect()->route('admin.user.index')->with('success', 'User created successfully!');
     }
 
     /**
@@ -80,7 +91,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return Inertia::render('Admin/EditUser', ['user' => $user]);
+        return Inertia::render('Admin/EditUser', compact('user'));
     }
 
     /**
@@ -88,47 +99,97 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $request->validate([
+
+        // dd($user->id);
+
+        $validation = [
             'nama' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users,username,' . $user->id,
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'tanggal_lahir' => 'required|date',
             'no_telepon' => 'required|string|max:15',
-            'jenis_kelamin' => ['required', Rule::in(['Laki-laki', 'Perempuan', 'Lainnya'])],
-            'role' => ['required', Rule::in(['Admin', 'User'])],
+            'jenis_kelamin' => ['required', Rule::in(['Laki-laki', 'Perempuan'])],
+            'role' => ['required', Rule::in(['admin', 'user'])],
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        ];
 
-        $user->name = $request->nama;
-        $user->username = $request->username;
-        $user->email = $request->email;
-        $user->tanggal_lahir = $request->tanggal_lahir;
-        $user->no_telepon = $request->no_telepon;
-        $user->jenis_kelamin = $request->jenis_kelamin;
-        $user->role = $request->role;
+        $data = [];
 
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $filename = time().'_'.$file->getClientOriginalName();
-            $file->storeAs('public/fotos', $filename);
-            $user->foto = $filename;
+        $validated = Validator::make($request->data, $validation);
+
+
+        if ($validated->fails()) {
+            return redirect()->back()->withErrors($validated->messages())->withInput();
         }
 
-        $user->save();
+        
 
-        return response()->json(['message' => 'User updated successfully!', 'user' => $user]);
+        $data['nama'] = $request->data['nama'];
+        $data['username'] = $request->data['username'];
+        $data['email'] = $request->data['email'];
+        $data['tanggal_lahir'] = $request->data['tanggal_lahir'];
+        $data['no_telepon'] = $request->data['no_telepon'];
+        $data['jenis_kelamin'] = $request->data['jenis_kelamin'];
+        $data['role'] = $request->data['role'];
+
+        if ($request->data['foto']) {
+            if (Storage::disk('public')->exists($user->foto)) {
+                Storage::disk('public')->delete($user->foto);
+            }
+            $path = $request->data['foto']->store('images/foto', 'public');
+            $data['foto'] = $path;
+        }
+
+        User::where('id', $user->id)->update($data);
+
+        return redirect()->route('admin.user.index')->with('success', 'User updated successfully!');
         
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        $user = User::findOrFail($id);
+        $ulasans = Ulasan::where('user_id', $user->id)->get();
+
+        if($ulasans->count() > 0){
+            foreach($ulasans as $ulasan){
+                $fotoUlasans = FotoUlasan::where('ulasan_id', $ulasan->id)->get();
+                if($fotoUlasans->count() > 0){
+                    foreach($fotoUlasans as $fotoUlasan){
+                        Storage::disk('public')->delete($fotoUlasan->foto);
+                        $fotoUlasan->delete();
+                    }
+                }
+                $ulasan->delete();
+            }
+        }
+
+        $bookings = Booking::where('user_id', $user->id)->get();
+
+        if($bookings->count() > 0){
+            foreach($bookings as $booking){
+                $invoice = Invoice::where('booking_id', $booking->id)->first();
+
+                $invoiceItems = InvoiceItem::where('invoice_id', $invoice->id)->get();
+                if($invoiceItems->count() > 0){
+                    foreach($invoiceItems as $invoiceItem){
+                        $invoiceItem->delete();
+                    }
+                }
+
+                $invoice->delete();
+                $booking->delete();
+            }
+        }
+
+        if($user->foto) {
+            Storage::disk('public')->delete($user->foto);
+        }
         $user->delete();
 
-        return response()->json(['message' => 'User deleted successfully'], 200);
+        return redirect()->route('admin.user.index')->with('success', 'User deleted successfully!');
     }
 }
 

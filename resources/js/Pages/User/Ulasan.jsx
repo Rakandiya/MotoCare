@@ -5,8 +5,18 @@ import { Row, Col, Modal, Button } from "react-bootstrap";
 import { Head, useForm, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import moment from "moment";
-export default function Ulasan({ auth, ulasans }) {
+export default function Ulasan({
+    auth,
+    ulasans,
+    oneStar,
+    twoStar,
+    threeStar,
+    fourStar,
+    fiveStar,
+    totalUlasan,
+}) {
     const [selectedRating, setSelectedRating] = useState(0);
+    const [averageRating, setAverageRating] = useState(0);
 
     const [ulasan, setUlasan] = useState(ulasans);
 
@@ -81,12 +91,14 @@ export default function Ulasan({ auth, ulasans }) {
         { id: 5, color: selectedRating >= 5 ? "#ffdd00" : "#dddddd" },
     ];
 
+    console.log(oneStar, twoStar, threeStar, fourStar, fiveStar, totalUlasan);
+
     const ratings = [
-        { id: "five", count: 50, stars: 5 },
-        { id: "four", count: 25, stars: 4 },
-        { id: "three", count: 15, stars: 3 },
-        { id: "two", count: 10, stars: 2 },
-        { id: "one", count: 0, stars: 1 },
+        { id: "five", count: fiveStar, stars: 5 },
+        { id: "four", count: fourStar, stars: 4 },
+        { id: "three", count: threeStar, stars: 3 },
+        { id: "two", count: twoStar, stars: 2 },
+        { id: "one", count: oneStar, stars: 1 },
     ];
 
     const renderStars = (count) => {
@@ -103,11 +115,23 @@ export default function Ulasan({ auth, ulasans }) {
         return stars;
     };
 
+    const [reload, setReload] = useState(false);
+
     function handleSubmit(e) {
         e.preventDefault();
         if (auth.user) {
             console.log(data);
-            post(route("user.ulasan.create"));
+            router.post(route("user.ulasan.create"), data);
+            setReload(true);
+            // setUlasan([...ulasan, data]);
+            setTimeout(() => {
+                setUlasan(ulasans);
+                setReload(true);
+                // router.reload({
+                //     preserveState: true,
+                //     preserveScroll: true,
+                // });
+            }, 1000);
             e.target.reset();
 
             setSelectedFiles([]);
@@ -129,6 +153,14 @@ export default function Ulasan({ auth, ulasans }) {
         }
     }
 
+    useEffect(() => {
+        if (reload) {
+            console.log(ulasans);
+            setUlasan(ulasans);
+            setReload(false);
+        }
+    }, [reload, ulasans]);
+
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         const newSelectedFiles = [...selectedFiles, ...files];
@@ -143,14 +175,14 @@ export default function Ulasan({ auth, ulasans }) {
         })); // use callback function to ensure latest state value
     }, [selectedFiles, selectedRating]);
 
-    // useEffect(() => {
-    //     setData((prevData) => ({
-    //         ...prevData,
-    //         foto: selectedFiles,
-    //     })); // use callback function to ensure latest state value
-
-    //     setData("rating", selectedRating);
-    // }, [selectedFiles, selectedRating]);
+    useEffect(() => {
+        const totalRating = ulasans.reduce(
+            (acc, ulasan) => acc + parseInt(ulasan.rating),
+            0
+        );
+        const avgRating = totalRating / ulasans.length;
+        setAverageRating(avgRating);
+    }, [ulasans]);
 
     const handleDeleteFile = (index) => {
         const updatedFiles = selectedFiles.filter((_, i) => i !== index);
@@ -180,7 +212,8 @@ export default function Ulasan({ auth, ulasans }) {
                                         ></box-icon>
                                     </div>
                                     <p className={styles["count-rate"]}>
-                                        4.5 / 5.0 - 100 ratings
+                                        {averageRating.toFixed(2)} / 5.0 -{" "}
+                                        {totalUlasan} ratings
                                     </p>
                                 </div>
 
@@ -420,7 +453,7 @@ export default function Ulasan({ auth, ulasans }) {
                                                 }
                                             >
                                                 {review.jenis_layanan} -{" "}
-                                                {review.user.username}
+                                                {review.user.nama}
                                             </h3>
                                             <div
                                                 className={

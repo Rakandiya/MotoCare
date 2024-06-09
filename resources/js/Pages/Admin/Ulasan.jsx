@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import DataTable from "react-data-table-component";
 import { Link } from "@inertiajs/react";
 import { Modal, Button, Table } from "react-bootstrap";
 import styles from "../../../css/Admin/Ulasan.module.css";
 import moment from "moment";
+import axios from "axios";
 
 export default function Ulasan({ ulasans }) {
     const [showDetail, setShowDetail] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [selectedUlasan, setSelectedUlasan] = useState(false);
     const [data, setData] = useState(ulasans);
+
+    const [search, setSearch] = useState("");
 
     const handleCloseDetail = () => setShowDetail(false);
     const handleShowDetail = (e, ulasan) => {
@@ -19,7 +22,8 @@ export default function Ulasan({ ulasans }) {
         setSelectedUlasan(ulasan);
     };
     const handleCloseDelete = () => setShowDelete(false);
-    const handleShowDelete = (ulasan) => {
+    const handleShowDelete = (e, ulasan) => {
+        e.preventDefault();
         setShowDelete(true);
         setSelectedUlasan(ulasan);
     };
@@ -72,7 +76,7 @@ export default function Ulasan({ ulasans }) {
                     </Link>
                     <Link
                         href="#"
-                        onClick={() => handleShowDelete(row)}
+                        onClick={(e) => handleShowDelete(e, row)}
                         style={{ color: "#f16211" }}
                     >
                         <box-icon
@@ -86,15 +90,52 @@ export default function Ulasan({ ulasans }) {
         },
     ];
 
+    const [errorMessages, setErrorMessages] = useState(null);
+
+    const handleDelete = async () => {
+        try {
+            const response = await axios.delete(
+                route("admin.ulasan.delete", { ulasan: selectedUlasan.id }),
+                {
+                    headers: {
+                        "X-CSRF-TOKEN": document
+                            .querySelector('meta[name="csrf-token"]')
+                            .getAttribute("content"),
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    },
+                }
+            );
+            console.log("Berhasil dihapus", response);
+            setShowDelete(false); // Menutup modal setelah berhasil
+            const updatedUlasans = data.filter(
+                (ulasan) => ulasan.id !== selectedUlasan.id
+            );
+            setData(updatedUlasans);
+        } catch (error) {
+            console.error("Gagal menghapus", error);
+        }
+    };
+
+    useEffect(() => {
+        const results = ulasans.filter(
+            (ulasan) =>
+                ulasan.user.nama.toLowerCase().includes(search.toLowerCase()) ||
+                ulasan.jenis_layanan
+                    .toLowerCase()
+                    .includes(search.toLowerCase()) ||
+                ulasan.rating.toString().includes(search) ||
+                (ulasan.review &&
+                    ulasan.review.toLowerCase().includes(search.toLowerCase()))
+        );
+        setData(results);
+    }, [search, ulasans]);
+
     return (
         <AdminLayout title="Ulasan Pengguna">
             <div className="table-wrapper">
                 <div className="sub-wrapper">
-                    <form
-                        action="#"
-                        id="form-search"
-                        className={styles["form-search"]}
-                    >
+                    <form action="#" className={styles["form-search"]}>
                         <span className={styles["icon-search"]}>
                             <box-icon name="search" color="#f16211"></box-icon>
                         </span>
@@ -102,9 +143,11 @@ export default function Ulasan({ ulasans }) {
                             type="text"
                             name="search"
                             id="search"
-                            placeholder="Cari Ulasan"
+                            placeholder="Cari Booking"
                             autoComplete="off"
                             className={styles["search"]}
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
                         />
                     </form>
                 </div>
@@ -122,7 +165,7 @@ export default function Ulasan({ ulasans }) {
                             <th className={styles["th"]}>Nama</th>
                             <td>:</td>
                             <td>
-                                {selectedUlasan && selectedUlasan.user.username}
+                                {selectedUlasan && selectedUlasan.user.nama}
                             </td>
                         </tr>
                         <tr className={styles["tr"]}>
@@ -189,23 +232,26 @@ export default function Ulasan({ ulasans }) {
                 <Modal.Body>
                     <p>
                         Apakah anda yakin ingin menghapus ulasan:{" "}
-                        <b>{selectedUlasan && selectedUlasan.nama}</b>?
+                        <b>{selectedUlasan && selectedUlasan.user.nama}</b>?
                     </p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleCloseDelete}>
                         Tutup
                     </Button>
-                    <Button
-                        variant="primary"
-                        onClick={handleCloseDelete}
-                        style={{
-                            backgroundColor: "#f16211",
-                            borderColor: "#f16211",
-                        }}
-                    >
-                        Ya, Hapus
-                    </Button>
+                    <form onSubmit={handleDelete}>
+                        <Button
+                            type="submit"
+                            variant="primary"
+                            onClick={handleCloseDelete}
+                            style={{
+                                backgroundColor: "#f16211",
+                                borderColor: "#f16211",
+                            }}
+                        >
+                            Ya, Hapus
+                        </Button>
+                    </form>
                 </Modal.Footer>
             </Modal>
         </AdminLayout>

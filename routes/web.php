@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // Admin Controller
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TutorialController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\UserController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Auth\LoginController;
 // User Controller
 use App\Http\Controllers\User\TutorialController as UserTutorialController;
 use App\Http\Controllers\User\UlasanController as UserUlasanController;
+use App\Http\Controllers\User\KatalogController as UserKatalogController;
 
 
 //Middleware
@@ -25,9 +27,7 @@ use App\Http\Middleware\AdminMiddleware;
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function () {
     // Route Dashboard
-    Route::get('/', function () {
-        return Inertia::render('Admin/Dashboard');
-    })->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Route Manajemen Tutorial
     Route::get('/manajemen-tutorial', [TutorialController::class, 'index'])->name('tutorial.index');
@@ -48,11 +48,16 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], f
     Route::get('/manajemen-booking', [BookingController::class, 'index'])->name('booking.index');
     Route::get('/manajemen-booking/detail/{booking}', [BookingController::class, 'show'])->name('booking.show');
     Route::get('/manajemen-booking/tambah', [BookingController::class, 'create'])->name('booking.create');
-    Route::get('/manajemen-booking/tambah-invoice', [BookingController::class, 'createInvoice'])->name('booking.createInvoice');
     Route::post('/manajemen-booking', [BookingController::class, 'store'])->name('booking.store');
     Route::get('/manajemen-booking/edit/{booking}', [BookingController::class, 'edit'])->name('booking.edit');
     Route::put("/manajemen-booking/{booking}", [BookingController::class, 'update'])->name('booking.update');
+    Route::put("/manajemen-booking/{booking}/update-status-booking", [BookingController::class, 'updateStatusBooking'])->name('booking.updateStatusBooking');
     Route::delete("/manajemen-booking/{booking}", [BookingController::class, 'destroy'])->name('booking.delete');
+
+    // Route Tambah Invoice
+    Route::get('/manajemen-booking/{booking}/tambah-invoice', [BookingController::class, 'createInvoice'])->name('booking.createInvoice');
+    Route::put('/manajemen-booking/{booking}/tambah-invoice', [BookingController::class, 'updateInvoice'])->name('booking.updateInvoice');
+    Route::put('/manajemen-booking/{booking}/update-status-pembayaran', [BookingController::class, 'updateStatusPembayaran'])->name('booking.updateStatusPembayaran');
     
 
     // Route Manajemen Katalog
@@ -66,6 +71,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], f
 
     // Route Manajemen Ulasan
     Route::get('/manajemen-ulasan', [UlasanController::class, 'index'])->name('ulasan.index');
+    Route::delete("/manajemen-ulasan/{ulasan}", [UlasanController::class, 'destroy'])->name('ulasan.delete');
 
     // Route Manajemen Produk
     Route::get('/manajemen-produk', [ProdukController::class, 'index'])->name('produk.index');
@@ -83,9 +89,7 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
 
     Route::post('/ulasan', [UserUlasanController::class, 'store'])->name('ulasan.create');
     
-    Route::get('/katalog', function () {
-        return Inertia::render('User/Katalog');
-    })->name('katalog');
+    Route::get('/katalog', [UserKatalogController::class, 'index'])->name('katalog');
     
     Route::get('/home', function () {
         return Inertia::render('User/Home');
@@ -111,7 +115,7 @@ Route::get('/', function () {
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::post('/profile', [ProfileController::class, 'store'])->name('profile.store');
+Route::put('/profile/{id}', [ProfileController::class, 'store'])->name('profile.store');
 
 // Uncomment if needed
 // Route::get('/dashboard', function () {

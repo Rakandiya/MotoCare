@@ -18,9 +18,15 @@ class UlasanController extends Controller
      */
     public function index()
     {
+        $oneStar = Ulasan::where('rating', 1)->count();
+        $twoStar = Ulasan::where('rating', 2)->count();
+        $threeStar = Ulasan::where('rating', 3)->count();
+        $fourStar = Ulasan::where('rating', 4)->count();
+        $fiveStar = Ulasan::where('rating', 5)->count();
+        $totalUlasan = Ulasan::count();
         $ulasans = Ulasan::with(['fotoUlasans', 'user'])->get();
         // dd($ulasans);
-        return Inertia::render('User/Ulasan', compact('ulasans'));
+        return Inertia::render('User/Ulasan', compact('ulasans', 'oneStar', 'twoStar', 'threeStar', 'fourStar', 'fiveStar', 'totalUlasan'));
     }
 
     /**
@@ -38,19 +44,13 @@ class UlasanController extends Controller
     {
 
         
-        $validator = Validator::make($request->all(), [
+        $validator = $request->validate([
             'jenis_layanan' => 'required|string|max:255',
             'rating' => 'required|numeric|min:1|max:5',
             'review' => 'required|string',
-            'foto' => 'array',
-            'foto.*' => 'mimetypes:image/jpeg,image/png',
+            'foto' => 'nullable|array',
+            'foto.*' => 'nullable|mimetypes:image/jpeg,image/png,image/jpg,image/webp',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-
 
         
         try {
@@ -74,11 +74,13 @@ class UlasanController extends Controller
                 }
             }
 
+            return to_route('user.ulasan');
 
 
-            return redirect()->back()->with([
-                'message' => 'Ulasan created successfully',
-            ]);
+
+            // return redirect()->back()->with([
+            //     'ulasans' => Ulasan::with(['fotoUlasans', 'user'])->get(),
+            // ]);
 
             
         } catch (\Exception $e) {

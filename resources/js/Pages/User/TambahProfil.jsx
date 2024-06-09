@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { useForm, Link } from "@inertiajs/react";
+import React, { useState, useEffect } from "react";
+import { useForm, Link, router, usePage } from "@inertiajs/react";
 import UserLayout from "@/Layouts/UserLayout";
 import styles from "../../../css/User/TambahProfil.module.css";
 
-export default function TambahProfil({ userId }) {
+export default function TambahProfil({ auth, userId }) {
+    const errMessage = usePage().props.errors;
     const { data, setData, post, errors } = useForm({
         userId,
         nama: "",
@@ -14,6 +15,12 @@ export default function TambahProfil({ userId }) {
     });
 
     const [previewImage, setPreviewImage] = useState(null);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        console.log(errMessage);
+        setError(errMessage);
+    }, [errMessage]);
 
     const handleFotoChange = (event) => {
         const file = event.target.files[0];
@@ -34,7 +41,11 @@ export default function TambahProfil({ userId }) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        post(route("user.profile.store", { id: userId }), {
+        console.log(data);
+        router.post(route("profile.store", { id: userId }), {
+            _method: "PUT",
+            method: "PUT",
+            data: data,
             onSuccess: () => {
                 console.log("Profile updated successfully");
             },
@@ -45,7 +56,7 @@ export default function TambahProfil({ userId }) {
     };
 
     return (
-        <UserLayout>
+        <UserLayout auth={auth}>
             <section className={styles.content}>
                 <h1 className={styles.title}>LENGKAPI PROFIL ANDA</h1>
                 <div className={styles.contentWrapper}>
@@ -68,7 +79,7 @@ export default function TambahProfil({ userId }) {
                                         value={data.nama}
                                         onChange={handleChange}
                                     />
-                                    {errors.nama && <p>{errors.nama}</p>}
+                                    {error && <p>{error.nama}</p>}
                                 </div>
                                 <div>
                                     <label htmlFor="tanggal_lahir">
@@ -81,9 +92,7 @@ export default function TambahProfil({ userId }) {
                                         value={data.tanggal_lahir}
                                         onChange={handleChange}
                                     />
-                                    {errors.tanggal_lahir && (
-                                        <p>{errors.tanggal_lahir}</p>
-                                    )}
+                                    {error && <p>{error.tanggal_lahir}</p>}
                                 </div>
                             </div>
 
@@ -102,9 +111,7 @@ export default function TambahProfil({ userId }) {
                                         value={data.no_telepon}
                                         onChange={handleChange}
                                     />
-                                    {errors.no_telepon && (
-                                        <p>{errors.no_telepon}</p>
-                                    )}
+                                    {error && <p>{error.no_telepon}</p>}
                                 </div>
 
                                 <div>
@@ -130,9 +137,7 @@ export default function TambahProfil({ userId }) {
                                             Perempuan
                                         </option>
                                     </select>
-                                    {errors.jenis_kelamin && (
-                                        <p>{errors.jenis_kelamin}</p>
-                                    )}
+                                    {error && <p>{error.jenis_kelamin}</p>}
                                 </div>
                             </div>
 
@@ -159,7 +164,7 @@ export default function TambahProfil({ userId }) {
                                         />
                                     ) : (
                                         <img
-                                            src="assets/img/preview.png"
+                                            src="/images/preview.png"
                                             className={styles.imgPreview}
                                             id="img-preview"
                                             alt=""
@@ -171,7 +176,7 @@ export default function TambahProfil({ userId }) {
 
                             <div className={styles.btnWrapper}>
                                 <Link
-                                    href={route("admin.user.index")}
+                                    href={route("auth")}
                                     className={styles.btnBack}
                                 >
                                     <i className="bx bx-arrow-back"></i> KEMBALI

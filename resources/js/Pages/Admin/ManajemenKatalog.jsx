@@ -5,8 +5,9 @@ import { Row, Col, Modal, Button, Table } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { Link } from "@inertiajs/react";
 import ButtonAdmin from "@/Components/ButtonAdmin";
-import { Head, useForm, router } from "@inertiajs/react";
+import { Head, useForm, router, usePage } from "@inertiajs/react";
 import { route } from "ziggy-js";
+import axios from "axios";
 
 export default function ManajemenKatalog({ katalogs }) {
     const [showDetail, setShowDetail] = useState(false);
@@ -16,6 +17,7 @@ export default function ManajemenKatalog({ katalogs }) {
     const [isNewImage, setisNewImage] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredKatalog, setFilteredKatalog] = useState(katalogs);
+    const errMessage = usePage().props.errors;
     const {
         data,
         setData,
@@ -39,6 +41,12 @@ export default function ManajemenKatalog({ katalogs }) {
         model: "",
         deskripsi: "",
     });
+
+    useEffect(() => {
+        if (errMessage) {
+            setErrorMessages(errMessage);
+        }
+    }, [errMessage]);
 
     const handleCloseDetail = () => setShowDetail(false);
     const handleShowDetail = (e, katalog) => {
@@ -210,39 +218,32 @@ export default function ManajemenKatalog({ katalogs }) {
         }
     };
 
-    const handleDelete = () => {
-        router.post(
-            route("admin.katalog.delete", { katalog: selectedKatalog.id }),
-            {
-                preserveScroll: true,
-                method: "DELETE",
-                _method: "DELETE",
-                headers: {
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute("content"),
-                    "Content-Type": "application/json",
-                    "Content-Type": "multipart/form-data",
-                    Accept: "application/json",
-                    "X-Requested-With": "XMLHttpRequest",
-                    "Access-Control-Allow-Origin": "*",
-                },
-                onBefore: () => {
-                    console.log(selectedKatalog);
-                },
-                onSuccess: () => {
-                    setShowDelete(false); // Menutup modal setelah berhasil
-                    setReload(!reload); // Memicu reload data
-                    console.log("OK");
-                },
-                onError: () => {
-                    console.log(errorMessages);
-                    console.log(selectedKatalog);
-                },
-            }
-        );
-
-        setReload(!reload);
+    const handleDelete = async () => {
+        try {
+            const response = await axios.delete(
+                route("admin.katalog.delete", { katalog: selectedKatalog.id }),
+                {
+                    headers: {
+                        "X-CSRF-TOKEN": document
+                            .querySelector('meta[name="csrf-token"]')
+                            .getAttribute("content"),
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    },
+                }
+            );
+            console.log("Berhasil dihapus", response);
+            setShowDelete(false); // Menutup modal setelah berhasil
+            // Filter out the deleted katalog from the filteredKatalog state
+            const updatedKatalogs = filteredKatalog.filter(
+                (katalog) => katalog.id !== selectedKatalog.id
+            );
+            setFilteredKatalog(updatedKatalogs);
+            setReload(!reload); // Memicu reload data
+        } catch (error) {
+            console.error("Gagal menghapus", error.response.data);
+            setErrorMessages(error.response.data.errors);
+        }
     };
 
     const handleSearch = (e) => {

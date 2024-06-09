@@ -3,23 +3,31 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import { Row, Col } from "react-bootstrap";
 import styles from "../../../css/Admin/EditUser.module.css";
 import ButtonAdmin from "@/Components/ButtonAdmin";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, useForm, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 
-export default function EditUser({ userId }) {
+export default function EditUser({ user }) {
+    const errMessage = usePage().props.errors;
     const { props } = usePage();
-    const user = props.user;
+    // const user = props.user;
 
-    const [userData, setUserData] = useState({
-        id: user?.id || '',
-        name: user?.name || '',
-        username: user?.username || '',
-        email: user?.email || '',
-        tanggal_lahir: user?.tanggal_lahir || '',
-        no_telepon: user?.no_telepon || '',
-        jenis_kelamin: user?.jenis_kelamin || '',
-        role: user?.role || '',
+    const { data, setData, post, errors } = useForm({
+        id: user?.id || "",
+        nama: user?.nama || "",
+        username: user?.username || "",
+        email: user?.email || "",
+        tanggal_lahir: user?.tanggal_lahir || "",
+        no_telepon: user?.no_telepon || "",
+        jenis_kelamin: user?.jenis_kelamin || "",
+        role: user?.role || "",
+        foto: user?.foto || "",
     });
+
+    useEffect(() => {
+        if (errMessage) {
+            setErrorMessages(errMessage);
+        }
+    }, [errMessage]);
 
     const [previewImage, setPreviewImage] = useState(null);
     const [passwordType, setPasswordType] = useState("password");
@@ -27,25 +35,32 @@ export default function EditUser({ userId }) {
 
     useEffect(() => {
         if (user) {
-            setUserData({
-                id: user.id,
-                name: user.name,
-                username: user.username,
-                email: user.email,
-                tanggal_lahir: user.tanggal_lahir,
-                no_telepon: user.no_telepon,
-                jenis_kelamin: user.jenis_kelamin,
-                role: user.role,
+            setData({
+                id: user?.id || "",
+                nama: user?.nama || "",
+                username: user?.username || "",
+                email: user?.email || "",
+                tanggal_lahir: user?.tanggal_lahir || "",
+                no_telepon: user?.no_telepon || "",
+                jenis_kelamin: user?.jenis_kelamin || "",
+                role: user?.role || "",
+                foto: user?.foto || "",
             });
         }
     }, [user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setUserData({
-            ...userData,
+        setData({
+            ...data,
             [name]: value,
         });
+
+        if (name === "jenis_kelamin") {
+            setData({ ...data, jenis_kelamin: value });
+        } else {
+            setData({ ...data, [name]: value });
+        }
     };
 
     const handleFotoChange = (event) => {
@@ -56,62 +71,58 @@ export default function EditUser({ userId }) {
                 setPreviewImage(reader.result);
             };
             reader.readAsDataURL(file);
-            setUserData({ ...userData, foto: file });
+            setData({ ...data, foto: file });
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-    
+
         // Buat objek data yang akan dikirim
         const dataToSend = {
-            id: userData.id,
-            nama: userData.name,
-            username: userData.username,
-            email: userData.email,
-            tanggal_lahir: userData.tanggal_lahir,
-            no_telepon: userData.no_telepon,
-            jenis_kelamin: userData.jenis_kelamin,
-            role: userData.role,
+            id: data.id,
+            nama: data.nama,
+            username: data.username,
+            email: data.email,
+            tanggal_lahir: data.tanggal_lahir,
+            no_telepon: data.no_telepon,
+            jenis_kelamin: data.jenis_kelamin,
+            role: data.role,
             // Jika ada foto yang di-upload, sertakan juga dalam formData
-            foto: userData.foto
+            foto: data.foto,
         };
-    
-        fetch(route('admin.user.update', userData.id), {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+
+        router.post(route("admin.user.update", { user: user.id }), {
+            method: "put",
+            _method: "PUT",
+            data: dataToSend,
+            preserveScroll: true,
+            onSuccess: () => {
+                console.log("User updated successfully");
             },
-            body: JSON.stringify(dataToSend)
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(errorData => {
-                    throw new Error(JSON.stringify(errorData));
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Success:', data);
-            alert('User berhasil diperbarui!');
-            window.location.href = route('admin.user.index');
-        })
-        .catch((error) => {
-            console.error('Error:', error.message);
-            alert('Terjadi kesalahan: ' + error.message);
+            onError: (err) => {
+                console.log(err);
+                console.log(errors);
+            },
         });
+
+        setErrorMessages({}); // Clear errors if no validation errors
     };
-    
+    const [errorMessages, setErrorMessages] = useState({});
+
+    useEffect(() => {
+        // Hanya membersihkan errorMessages jika form berhasil disubmit dan tidak ada error
+        setErrorMessages(errors);
+    }, [errors]);
 
     const togglePasswordVisibility = () => {
         setPasswordType(passwordType === "password" ? "text" : "password");
     };
 
     const toggleConfirmPasswordVisibility = () => {
-        setConfirmPasswordType(confirmPasswordType === "password" ? "text" : "password");
+        setConfirmPasswordType(
+            confirmPasswordType === "password" ? "text" : "password"
+        );
     };
 
     return (
@@ -132,29 +143,42 @@ export default function EditUser({ userId }) {
                             </label>
                             <input
                                 type="text"
-                                name="name"
-                                id="name"
-                                value={userData.name}
+                                name="nama"
+                                id="nama"
+                                value={data.nama}
                                 onChange={handleChange}
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
                             />
+                            {errorMessages.nama && (
+                                <p className={styles.error}>
+                                    {errorMessages.nama}
+                                </p>
+                            )}
                         </Col>
                         <Col md={6}>
-                            <label className={styles["label"]} htmlFor="username">
+                            <label
+                                className={styles["label"]}
+                                htmlFor="username"
+                            >
                                 Username
                             </label>
                             <input
                                 type="text"
                                 name="username"
                                 id="username"
-                                value={userData.username}
+                                value={data.username}
                                 onChange={handleChange}
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
                             />
+                            {errorMessages.username && (
+                                <p className={styles.error}>
+                                    {errorMessages.username}
+                                </p>
+                            )}
                         </Col>
                     </Row>
                     <Row className="justify-content-md-center mb-3">
@@ -166,62 +190,94 @@ export default function EditUser({ userId }) {
                                 type="text"
                                 name="email"
                                 id="email"
-                                value={userData.email}
+                                value={data.email}
                                 onChange={handleChange}
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
                             />
+                            {errorMessages.email && (
+                                <p className={styles.error}>
+                                    {errorMessages.email}
+                                </p>
+                            )}
                         </Col>
                         <Col md={6}>
-                            <label className={styles["label"]} htmlFor="tanggal_lahir">
+                            <label
+                                className={styles["label"]}
+                                htmlFor="tanggal_lahir"
+                            >
                                 Tanggal Lahir
                             </label>
                             <input
                                 type="date"
                                 name="tanggal_lahir"
                                 id="tanggal_lahir"
-                                value={userData.tanggal_lahir}
+                                value={data.tanggal_lahir}
                                 onChange={handleChange}
                                 className={styles["input"]}
                             />
+                            {errorMessages.tanggal_lahir && (
+                                <p className={styles.error}>
+                                    {errorMessages.tanggal_lahir}
+                                </p>
+                            )}
                         </Col>
                     </Row>
                     <Row className="justify-content-md-center mb-3">
                         <Col md={6}>
-                            <label className={styles["label"]} htmlFor="no_telepon">
+                            <label
+                                className={styles["label"]}
+                                htmlFor="no_telepon"
+                            >
                                 No Telepon
                             </label>
                             <input
                                 type="text"
                                 name="no_telepon"
                                 id="no_telepon"
-                                value={userData.no_telepon}
+                                value={data.no_telepon}
                                 onChange={handleChange}
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
                             />
+                            {errorMessages.no_telepon && (
+                                <p className={styles.error}>
+                                    {errorMessages.no_telepon}
+                                </p>
+                            )}
                         </Col>
                         <Col md={6}>
-                            <label className={styles["label"]} htmlFor="jenis_kelamin">
+                            <label
+                                className={styles["label"]}
+                                htmlFor="jenis_kelamin"
+                            >
                                 Jenis Kelamin
                             </label>
                             <select
                                 name="jenis_kelamin"
                                 id="jenis_kelamin"
-                                value={userData.jenis_kelamin}
+                                value={data.jenis_kelamin}
                                 onChange={handleChange}
                                 className={styles["select"]}
                             >
                                 <option value="Laki-laki">Laki-laki</option>
                                 <option value="Perempuan">Perempuan</option>
                             </select>
+                            {errorMessages.jenis_kelamin && (
+                                <p className={styles.error}>
+                                    {errorMessages.jenis_kelamin}
+                                </p>
+                            )}
                         </Col>
                     </Row>
                     <Row className="justify-content-md-center mb-3">
                         <Col md={6}>
-                            <label className={styles["label"]} htmlFor="password">
+                            <label
+                                className={styles["label"]}
+                                htmlFor="password"
+                            >
                                 Password <small>(opsional)</small>
                             </label>
                             <div className={styles["input-with-icon"]}>
@@ -233,13 +289,23 @@ export default function EditUser({ userId }) {
                                     className={styles["input"]}
                                 />
                                 <span onClick={togglePasswordVisibility}>
-                                    {passwordType === "password" ? "Show" : "Hide"}
+                                    {passwordType === "password"
+                                        ? "Show"
+                                        : "Hide"}
                                 </span>
                             </div>
+                            {errorMessages.password && (
+                                <p className={styles.error}>
+                                    {errorMessages.password}
+                                </p>
+                            )}
                         </Col>
 
                         <Col md={6}>
-                            <label className={styles["label"]} htmlFor="konfirmasi_password">
+                            <label
+                                className={styles["label"]}
+                                htmlFor="konfirmasi_password"
+                            >
                                 Konfirmasi Password
                             </label>
                             <div className={styles["input-with-icon"]}>
@@ -251,9 +317,16 @@ export default function EditUser({ userId }) {
                                     className={styles["input"]}
                                 />
                                 <span onClick={toggleConfirmPasswordVisibility}>
-                                    {confirmPasswordType === "password" ? "Show" : "Hide"}
+                                    {confirmPasswordType === "password"
+                                        ? "Show"
+                                        : "Hide"}
                                 </span>
                             </div>
+                            {errorMessages.password_confirmation && (
+                                <p className={styles.error}>
+                                    {errorMessages.password_confirmation}
+                                </p>
+                            )}
                         </Col>
                     </Row>
                     <Row className="justify-content-md-center mb-3">
@@ -264,18 +337,26 @@ export default function EditUser({ userId }) {
                             <select
                                 name="role"
                                 id="role"
-                                value={userData.role}
+                                value={data.role}
                                 onChange={handleChange}
                                 className={styles["select"]}
                             >
-                                <option value="Admin">Admin</option>
-                                <option value="User">User</option>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
                             </select>
+                            {errorMessages.role && (
+                                <p className={styles.error}>
+                                    {errorMessages.role}
+                                </p>
+                            )}
                         </Col>
                         <Col md={6}>
                             <Row>
                                 <Col md={8}>
-                                    <label className={styles["label"]} htmlFor="foto">
+                                    <label
+                                        className={styles["label"]}
+                                        htmlFor="foto"
+                                    >
                                         Foto Profil
                                     </label>
                                     <input
@@ -337,7 +418,8 @@ export default function EditUser({ userId }) {
                         <Col md={{ span: 2, offset: 4 }}>
                             <ButtonAdmin
                                 style={{
-                                    background: "linear-gradient(90deg, #f16211 -14.33%, #e59a6f 85.67%)",
+                                    background:
+                                        "linear-gradient(90deg, #f16211 -14.33%, #e59a6f 85.67%)",
                                     fontSize: "20px",
                                 }}
                                 type="submit"

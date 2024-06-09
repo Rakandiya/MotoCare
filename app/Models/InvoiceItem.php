@@ -10,7 +10,7 @@ class InvoiceItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ["invoice_id", "product_id", "quantity", "price"];
+    protected $fillable = ["invoice_id", "produk_id", "jumlah", "harga"];
 
     public function invoice(): BelongsTo
     {

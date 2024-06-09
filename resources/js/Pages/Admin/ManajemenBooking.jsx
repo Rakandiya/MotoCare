@@ -11,6 +11,41 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
     const [showDelete, setShowDelete] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
 
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredBookings, setFilteredBookings] = useState(bookings);
+
+    useEffect(() => {
+        const results = bookings.filter(
+            (booking) =>
+                booking.user.nama
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                booking.katalog.merk
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                booking.katalog.model
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                booking.tahun_pembuatan
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                booking.nomor_polisi
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                booking.jenis_layanan
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                booking.jadwal_booking
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                booking.catatan
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                booking.status.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredBookings(results);
+    }, [searchTerm, bookings]);
+
     const {
         data,
         setData,
@@ -31,79 +66,6 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
         jadwal_booking: "",
         catatan: "",
     });
-    /* const [bookings, setBookings] = useState([
-        {
-            id: 101,
-            name: "John Doe",
-            service: "Service rutin",
-            status: "diproses",
-            tanggal: "01 Januari 2022",
-            status_pembayaran: "unpaid",
-        },
-        {
-            id: 102,
-            name: "Jane Smith",
-            service: "perbaikan khusus",
-            status: "diproses",
-            status_pembayaran: "paid",
-        },
-        {
-            id: 103,
-            name: "David Johnson",
-            service: "tune up/bore up",
-            status: "diproses",
-            status_pembayaran: "paid",
-        },
-        {
-            id: 104,
-            name: "Alice Brown",
-            service: "cek kendaraan",
-            status: "diproses",
-            status_pembayaran: "unpaid",
-        },
-        {
-            id: 105,
-            name: "Sarah Wilson",
-            service: "Service rutin",
-            status: "diproses",
-            status_pembayaran: "paid",
-        },
-        {
-            id: 106,
-            name: "Michael Lee",
-            service: "perbaikan khusus",
-            status: "diproses",
-            status_pembayaran: "unpaid",
-        },
-        {
-            id: 107,
-            name: "Emily Clark",
-            service: "tune up/bore up",
-            status: "diproses",
-            status_pembayaran: "unpaid",
-        },
-        {
-            id: 108,
-            name: "Christopher Rodriguez",
-            service: "cek kendaraan",
-            status: "diproses",
-            status_pembayaran: "unpaid",
-        },
-        {
-            id: 109,
-            name: "Olivia Hall",
-            service: "Service rutin",
-            status: "diproses",
-            status_pembayaran: "unpaid",
-        },
-        {
-            id: 110,
-            name: "James Taylor",
-            service: "perbaikan khusus",
-            status: "diproses",
-            status_pembayaran: "unpaid",
-        },
-    ]); */
 
     const [bookingList, setBookingList] = useState(bookings);
     const handleCloseDetail = () => setShowDetail(false);
@@ -120,7 +82,7 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
     };
 
     const toggleStatus = (id) => {
-        setBookings((prevBookings) =>
+        setBookingList((prevBookings) =>
             prevBookings.map((booking) =>
                 booking.id === id
                     ? {
@@ -138,7 +100,7 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
     };
 
     const togglePaymentStatus = (id) => {
-        setBookings((prevBookings) =>
+        setBookingList((prevBookings) =>
             prevBookings.map((booking) =>
                 booking.id === id
                     ? {
@@ -168,9 +130,9 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
 
     const getPaymentStatusStyle = (status) => {
         switch (status) {
-            case "paid":
+            case "Paid":
                 return { backgroundColor: "#1fe71b", color: "white" }; // Hijau untuk paid
-            case "unpaid":
+            case "Unpaid":
                 return { backgroundColor: "#ff0000", color: "white" }; // Merah untuk unpaid
             default:
                 return {};
@@ -186,7 +148,7 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
         {
             name: "Name",
             // ambil data name dari tabel users
-            selector: (row) => row.name,
+            selector: (row) => row.user.nama,
         },
         {
             name: "Service",
@@ -211,10 +173,10 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
             name: "Status Pembayaran",
             selector: (row) => (
                 <ButtonAdmin
-                    style={getPaymentStatusStyle(row.status_pembayaran)}
+                    style={getPaymentStatusStyle(row.invoice.status)}
                     onClick={() => togglePaymentStatus(row.id)}
                 >
-                    {row.status_pembayaran}
+                    {row.invoice.status}
                 </ButtonAdmin>
             ),
             width: "17%",
@@ -225,7 +187,9 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
                 <>
                     <Link
                         title="Invoice"
-                        href={route("admin.booking.createInvoice")}
+                        href={route("admin.booking.createInvoice", {
+                            booking: row.id,
+                        })}
                     >
                         <box-icon
                             name="file"
@@ -268,25 +232,6 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
             ),
         },
     ];
-
-    /* const handleEditBooking = (booking) => {
-        setData({
-            id: booking.id,
-            name: booking.nama_booking,
-            harga: booking.harga,
-            stok: booking.stok,
-            deskripsi: booking.deskripsi,
-        });
-    }; */
-
-    /*function handleInputChange(e) {
-        const key = e.target.id;
-        const value = e.target.value;
-        setData((values) => ({
-            ...values,
-            [key]: value,
-        }));
-    } */
 
     const [errorMessages, setErrorMessages] = useState({});
     const [reload, setReload] = useState(false);
@@ -350,13 +295,19 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
                             type="text"
                             name="search"
                             id="search"
-                            placeholder="Cari Pengguna"
+                            placeholder="Cari Booking"
                             autoComplete="off"
                             className={styles["search"]}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </form>
                 </div>
-                <DataTable columns={columns} data={bookings} pagination />
+                <DataTable
+                    columns={columns}
+                    data={filteredBookings}
+                    pagination
+                />
             </div>
 
             <Modal show={showDelete} onHide={handleCloseDelete}>
@@ -390,5 +341,4 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
             </Modal>
         </AdminLayout>
     );
-
 }

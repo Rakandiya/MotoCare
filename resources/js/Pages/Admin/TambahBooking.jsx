@@ -32,7 +32,7 @@ export default function TambahBooking({ katalogs, users }) {
 
     const dataSelectUser = userList.map((user) => ({
         value: user.id,
-        label: user.name,
+        label: user.nama,
     }));
 
     const dataSelectKatalog = katalogList.map((katalog) => ({
@@ -125,6 +125,11 @@ export default function TambahBooking({ katalogs, users }) {
                                 }}
                                 placeholder="Pilih User"
                             />
+                            {errorMessages.user_id && (
+                                <small className="text-danger">
+                                    {errorMessages.user_id}
+                                </small>
+                            )}
                         </Col>
                         <Col md={4}>
                             <label
@@ -147,6 +152,11 @@ export default function TambahBooking({ katalogs, users }) {
                                 }
                                 placeholder="Pilih Jenis Layanan"
                             />
+                            {errorMessages.jenis_layanan && (
+                                <small className="text-danger">
+                                    {errorMessages.jenis_layanan}
+                                </small>
+                            )}
                         </Col>
                         <Col md={4}>
                             <label className={styles["label"]} htmlFor="merk">
@@ -167,6 +177,11 @@ export default function TambahBooking({ katalogs, users }) {
                                 }}
                                 placeholder="Pilih Katalog"
                             />
+                            {errorMessages.katalog_id && (
+                                <small className="text-danger">
+                                    {errorMessages.katalog_id}
+                                </small>
+                            )}
                         </Col>
                     </Row>
 
@@ -187,8 +202,13 @@ export default function TambahBooking({ katalogs, users }) {
                                 required
                                 className={styles["input"]}
                                 onChange={handleInputChange}
-                                value={data.model}
+                                value={data.tahun_pembuatan}
                             />
+                            {errorMessages.tahun_pembuatan && (
+                                <small className="text-danger">
+                                    {errorMessages.tahun_pembuatan}
+                                </small>
+                            )}
                         </Col>
 
                         <Col md={4}>
@@ -202,13 +222,18 @@ export default function TambahBooking({ katalogs, users }) {
                                 type="text"
                                 name="nomor_polisi"
                                 id="nomor_polisi"
-                                placeholder="Honda"
+                                placeholder="B 1234 ABC"
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
                                 onChange={handleInputChange}
-                                value={data.model}
+                                value={data.nomor_polisi}
                             />
+                            {errorMessages.nomor_polisi && (
+                                <small className="text-danger">
+                                    {errorMessages.nomor_polisi}
+                                </small>
+                            )}
                         </Col>
 
                         <Col md={4}>
@@ -222,13 +247,18 @@ export default function TambahBooking({ katalogs, users }) {
                                 type="text"
                                 name="km_kendaraan"
                                 id="km_kendaraan"
-                                placeholder="CBR 250R"
+                                placeholder="10000"
                                 autoComplete="off"
                                 required
                                 className={styles["input"]}
                                 onChange={handleInputChange}
-                                value={data.model}
+                                value={data.km_kendaraan}
                             />
+                            {errorMessages.km_kendaraan && (
+                                <small className="text-danger">
+                                    {errorMessages.km_kendaraan}
+                                </small>
+                            )}
                         </Col>
                     </Row>
 
@@ -249,8 +279,13 @@ export default function TambahBooking({ katalogs, users }) {
                                 required
                                 className={styles["input"]}
                                 onChange={handleInputChange}
-                                value={data.model}
+                                value={data.jadwal_booking}
                             />
+                            {errorMessages.jadwal_booking && (
+                                <small className="text-danger">
+                                    {errorMessages.jadwal_booking}
+                                </small>
+                            )}
                         </Col>
 
                         <Col md={6}>
@@ -271,6 +306,11 @@ export default function TambahBooking({ katalogs, users }) {
                                 onChange={handleInputChange}
                                 value={data.catatan}
                             ></textarea>
+                            {errorMessages.catatan && (
+                                <small className="text-danger">
+                                    {errorMessages.catatan}
+                                </small>
+                            )}
                         </Col>
                     </Row>
 

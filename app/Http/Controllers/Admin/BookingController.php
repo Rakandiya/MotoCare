@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\Katalog;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
+use App\Models\Produk;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,7 +18,7 @@ class BookingController extends Controller
     // menampilkan daftar semua booking
     public function index()
     {
-        $bookings = Booking::all();
+        $bookings = Booking::with(['user', 'katalog', 'invoice'])->where('user_id', auth()->user()->id)->get();
         return Inertia::render('Admin/ManajemenBooking', compact('bookings'));
     }
 
@@ -56,19 +59,29 @@ class BookingController extends Controller
             'catatan' => $validatedData['catatan'],
         ]);
 
+
+        Invoice::create([
+            'user_id' => $validatedData['user_id'],
+            'booking_id' => $booking->id,
+            'status' => 'Unpaid',
+        ]);
         return redirect()->route('admin.booking.index')->with('success', 'Data booking berhasil ditambahkan');
     }
 
     // menampilkan detail booking
     public function show(Booking $booking)
     {
-        return Inertia::render("Admin/DetailBooking");
+        $dataBooking = Booking::with(['user', 'katalog', 'invoice.items.produk'])->find($booking->id);
+        return Inertia::render("Admin/DetailBooking", compact('dataBooking'));
     }
 
     // menampilkan form untuk edit booking
     public function edit(Booking $booking)
     {
-        return Inertia::render("Admin/EditBooking");
+        $booking = Booking::with(['user', 'katalog', 'invoice'])->find($booking->id);
+        $users = User::all();
+        $katalogs = Katalog::all();
+        return Inertia::render("Admin/EditBooking", compact('booking', 'users', 'katalogs'));
     }
 
     // memperbarui/update data booking yang ada
@@ -76,41 +89,129 @@ class BookingController extends Controller
     {
         // untuk update
         $validatedData = $request->validate([
-            'nama' => 'required',
+            'user_id' => 'required',
             'jenis_layanan' => 'required',
-            'merk_motor' => 'required',
+            'katalog_id' => 'required',
             'tahun_pembuatan' => 'required|numeric',
             'nomor_polisi' => 'required',
             'km_kendaraan' => 'required|numeric',
             'jadwal_booking' => 'required|date',
+            'status' => 'required',
             'catatan' => 'nullable',
         ]);
 
         $booking->update([
-            'nama' => $validatedData['nama'],
+            'user_id' => $validatedData['user_id'],
             'jenis_layanan' => $validatedData['jenis_layanan'],
-            'merk_motor' => $validatedData['merk_motor'],
+            'katalog_id' => $validatedData['katalog_id'],
             'tahun_pembuatan' => $validatedData['tahun_pembuatan'],
             'nomor_polisi' => $validatedData['nomor_polisi'],
             'km_kendaraan' => $validatedData['km_kendaraan'],
             'jadwal_booking' => $validatedData['jadwal_booking'],
+            'status' => $validatedData['status'],
             'catatan' => $validatedData['catatan'],
         ]);
 
-        return redirect()->back()->with('success', 'Data booking berhasil diperbarui');
+        return redirect()->route('admin.booking.index')->with('success', 'Data booking berhasil diperbarui');
     }
 
     // menghapus data booking
     public function destroy(Booking $booking)
     {
-        // untuk hapus
+
+        $invoice = Invoice::where('booking_id', $booking->id)->first();
+
+        $invoiceItems = InvoiceItem::where('invoice_id', $invoice->id)->get();
+        
+
+        if($invoiceItems->count() > 0){
+            foreach($invoiceItems as $invoiceItem){
+                $invoiceItem->delete();
+            }
+        }
+        $invoice->delete();
         $booking->delete();
         return redirect()->back();
     }
 
     // menampilkan form tambah invoice
-    public function createInvoice()
+    public function createInvoice(Booking $booking)
     {
-        return Inertia::render("Admin/TambahInvoice");
+        $produks = Produk::all();
+        $booking = Booking::with(['user', 'katalog', 'invoice.items.produk'])->where('id', $booking->id)->first();
+        return Inertia::render("Admin/TambahInvoice", compact('produks', 'booking'));
+    }
+
+    public function updateInvoice(Request $request, Booking $booking)
+    {
+
+        $validatedData = $request->validate([
+            'user_id' => 'required',
+            'booking_id' => 'required',
+            'tanggal' => 'required|date',
+            'status' => 'required',
+            'catatan' => 'nullable',
+        ]);
+
+        $totalHarga = 0;
+
+        foreach($request->produk as $produk){
+            $totalHarga += $produk['harga'] * $produk['jumlah'];
+        }
+
+        $invoice = Invoice::where('booking_id', $booking->id)->first();
+        $invoice->update([
+            'user_id' => $validatedData['user_id'],
+            'booking_id' => $validatedData['booking_id'],
+            'tanggal' => $validatedData['tanggal'],
+            'status' => $validatedData['status'],
+            'catatan' => $validatedData['catatan'],
+            // 'total_harga' => $validatedData['total_harga'],
+        ]);
+
+        $invoiceItems = InvoiceItem::where('invoice_id', $invoice->id)->get();
+
+        if($invoiceItems->count() > 0){
+            foreach($invoiceItems as $invoiceItem){
+                $invoiceItem->delete();
+            }
+        }
+
+        foreach($request->produk as $produk){
+            InvoiceItem::create([
+                'invoice_id' => $invoice->id,
+                'produk_id' => $produk['id'],
+                'jumlah' => $produk['jumlah'],
+                'harga' => $produk['harga'],
+            ]);
+        }
+
+        return redirect()->route('admin.booking.index')->with('success', 'Data invoice berhasil diperbarui');
+    }
+
+    public function updateStatusBooking(Request $request, Booking $booking)
+    {
+        $validatedData = $request->validate([
+            'status' => 'required',
+        ]);
+
+        $booking->update([
+            'status' => $validatedData['status'],
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function updateStatusPembayaran(Request $request, Invoice $invoice)
+    {
+        $validatedData = $request->validate([
+            'status' => 'required',
+        ]);
+
+        $invoice->update([
+            'status' => $validatedData['status'],
+        ]);
+
+        return redirect()->back();
     }
 }

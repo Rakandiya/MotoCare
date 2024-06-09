@@ -3,12 +3,15 @@ import { Row, Col } from "react-bootstrap";
 import styles from "../../../css/Admin/TambahUser.module.css";
 import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Link } from "@inertiajs/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { route } from "ziggy-js";
+import { Head, useForm, router, usePage } from "@inertiajs/react";
 
 export default function TambahUser() {
+    const errMessage = usePage().props.errors;
     const [previewImage, setPreviewImage] = useState(null);
-    const [formData, setFormData] = useState({
+
+    const { data, setData, post, errors } = useForm({
         nama: "",
         username: "",
         email: "",
@@ -21,17 +24,18 @@ export default function TambahUser() {
         foto: null,
     });
 
-    const [errors, setErrors] = useState({});
+    useEffect(() => {
+        if (errMessage) {
+            setErrorMessages(errMessage);
+        }
+    }, [errMessage]);
+
     const [passwordType, setPasswordType] = useState("password");
     const [confirmPasswordType, setConfirmPasswordType] = useState("password");
 
-    const csrfToken = document
-        .querySelector('meta[name="csrf-token"]')
-        .getAttribute("content");
-
     const handleFotoChange = (event) => {
         const file = event.target.files[0];
-        setFormData({ ...formData, foto: file });
+        setData({ ...data, foto: file });
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -43,7 +47,11 @@ export default function TambahUser() {
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+        if (name === "jenis_kelamin") {
+            setData({ ...data, jenis_kelamin: value });
+        } else {
+            setData({ ...data, [name]: value });
+        }
     };
 
     const togglePasswordVisibility = () => {
@@ -61,69 +69,41 @@ export default function TambahUser() {
 
         // Validasi
         const newErrors = {};
-        if (!formData.nama) newErrors.nama = "Nama tidak boleh kosong";
-        if (!formData.username)
-            newErrors.username = "Username tidak boleh kosong";
-        if (!formData.email) newErrors.email = "Email tidak boleh kosong";
-        if (!formData.tanggal_lahir)
+        if (!data.nama) newErrors.nama = "Nama tidak boleh kosong";
+        if (!data.username) newErrors.username = "Username tidak boleh kosong";
+        if (!data.email) newErrors.email = "Email tidak boleh kosong";
+        if (!data.tanggal_lahir)
             newErrors.tanggal_lahir = "Tanggal lahir tidak boleh kosong";
-        if (!formData.no_telepon)
+        if (!data.no_telepon)
             newErrors.no_telepon = "No Telepon tidak boleh kosong";
-        if (formData.jenis_kelamin === "Pilih Jenis Kelamin")
+        if (data.jenis_kelamin === "Pilih Jenis Kelamin")
             newErrors.jenis_kelamin = "Jenis kelamin tidak boleh kosong";
-        if (!formData.password)
-            newErrors.password = "Password tidak boleh kosong";
-        if (!formData.password_confirmation)
+        if (!data.password) newErrors.password = "Password tidak boleh kosong";
+        if (!data.password_confirmation)
             newErrors.password_confirmation =
                 "Konfirmasi password tidak boleh kosong";
-        if (formData.password !== formData.password_confirmation)
+        if (data.password !== data.password_confirmation)
             newErrors.password_confirmation =
                 "Konfirmasi password tidak sesuai";
-        if (formData.role === "Pilih Role")
+        if (data.role === "Pilih Role")
             newErrors.role = "Role tidak boleh kosong";
 
         if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
+            setErrorMessages(newErrors);
             return;
         }
 
-        setErrors({}); // Clear errors if no validation errors
+        setErrorMessages({}); // Clear errors if no validation errors
 
-        const formDataToSend = new FormData();
-        Object.keys(formData).forEach((key) => {
-            formDataToSend.append(key, formData[key]);
-        });
-
-        fetch(route("admin.user.store"), {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "X-CSRF-TOKEN": csrfToken, // Sertakan CSRF token di header
-            },
-            body: formDataToSend,
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    return response.json().then((errorData) => {
-                        throw new Error(JSON.stringify(errorData));
-                    });
-                }
-                return response.json();
-            })
-            .then((data) => {
-                console.log("Success:", data);
-                alert("Form telah berhasil di-submit!");
-                window.location.href = route("admin.user.index"); // Redirect setelah submit berhasil
-            })
-            .catch((error) => {
-                console.error("Error:", error.message);
-                const parsedError = JSON.parse(error.message);
-                if (parsedError.errors) {
-                    setErrors(parsedError.errors);
-                }
-                alert("Terjadi kesalahan: " + parsedError.message);
-            });
+        post(route("admin.user.store"));
     };
+
+    const [errorMessages, setErrorMessages] = useState({});
+
+    useEffect(() => {
+        // Hanya membersihkan errorMessages jika form berhasil disubmit dan tidak ada error
+        setErrorMessages(errors);
+    }, [errors]);
 
     return (
         <AdminLayout title="MANAJEMEN USER">
@@ -151,10 +131,12 @@ export default function TambahUser() {
                                 required
                                 className={styles["input"]}
                                 onChange={handleChange}
-                                value={formData.nama}
+                                value={data.nama}
                             />
-                            {errors.nama && (
-                                <p className={styles.error}>{errors.nama}</p>
+                            {errorMessages.nama && (
+                                <p className={styles.error}>
+                                    {errorMessages.nama}
+                                </p>
                             )}
                         </Col>
 
@@ -174,11 +156,11 @@ export default function TambahUser() {
                                 required
                                 className={styles["input"]}
                                 onChange={handleChange}
-                                value={formData.username}
+                                value={data.username}
                             />
-                            {errors.username && (
+                            {errorMessages.username && (
                                 <p className={styles.error}>
-                                    {errors.username}
+                                    {errorMessages.username}
                                 </p>
                             )}
                         </Col>
@@ -198,10 +180,12 @@ export default function TambahUser() {
                                 required
                                 className={styles["input"]}
                                 onChange={handleChange}
-                                value={formData.email}
+                                value={data.email}
                             />
-                            {errors.email && (
-                                <p className={styles.error}>{errors.email}</p>
+                            {errorMessages.email && (
+                                <p className={styles.error}>
+                                    {errorMessages.email}
+                                </p>
                             )}
                         </Col>
 
@@ -218,11 +202,11 @@ export default function TambahUser() {
                                 id="tanggal_lahir"
                                 className={styles["input"]}
                                 onChange={handleChange}
-                                value={formData.tanggal_lahir}
+                                value={data.tanggal_lahir}
                             />
-                            {errors.tanggal_lahir && (
+                            {errorMessages.tanggal_lahir && (
                                 <p className={styles.error}>
-                                    {errors.tanggal_lahir}
+                                    {errorMessages.tanggal_lahir}
                                 </p>
                             )}
                         </Col>
@@ -245,11 +229,11 @@ export default function TambahUser() {
                                 required
                                 className={styles["input"]}
                                 onChange={handleChange}
-                                value={formData.no_telepon}
+                                value={data.no_telepon}
                             />
-                            {errors.no_telepon && (
+                            {errorMessages.no_telepon && (
                                 <p className={styles.error}>
-                                    {errors.no_telepon}
+                                    {errorMessages.no_telepon}
                                 </p>
                             )}
                         </Col>
@@ -266,18 +250,17 @@ export default function TambahUser() {
                                 id="jenis_kelamin"
                                 className={styles["select"]}
                                 onChange={handleChange}
-                                value={formData.jenis_kelamin}
+                                value={data.jenis_kelamin}
                             >
                                 <option value="Pilih Jenis Kelamin" disabled>
                                     Pilih Jenis Kelamin
                                 </option>
                                 <option value="Laki-laki">Laki-laki</option>
                                 <option value="Perempuan">Perempuan</option>
-                                <option value="Lainnya">Lainnya</option>
                             </select>
-                            {errors.jenis_kelamin && (
+                            {errorMessages.jenis_kelamin && (
                                 <p className={styles.error}>
-                                    {errors.jenis_kelamin}
+                                    {errorMessages.jenis_kelamin}
                                 </p>
                             )}
                         </Col>
@@ -301,7 +284,7 @@ export default function TambahUser() {
                                     className={styles["input"]}
                                     placeholder="********"
                                     onChange={handleChange}
-                                    value={formData.password}
+                                    value={data.password}
                                 />
                                 <span onClick={togglePasswordVisibility}>
                                     {passwordType === "password"
@@ -309,9 +292,9 @@ export default function TambahUser() {
                                         : "Hide"}
                                 </span>
                             </div>
-                            {errors.password && (
+                            {errorMessages.password && (
                                 <p className={styles.error}>
-                                    {errors.password}
+                                    {errorMessages.password}
                                 </p>
                             )}
                         </Col>
@@ -333,7 +316,7 @@ export default function TambahUser() {
                                     className={styles["input"]}
                                     placeholder="********"
                                     onChange={handleChange}
-                                    value={formData.password_confirmation}
+                                    value={data.password_confirmation}
                                 />
                                 <span onClick={toggleConfirmPasswordVisibility}>
                                     {confirmPasswordType === "password"
@@ -341,9 +324,9 @@ export default function TambahUser() {
                                         : "Hide"}
                                 </span>
                             </div>
-                            {errors.password_confirmation && (
+                            {errorMessages.password_confirmation && (
                                 <p className={styles.error}>
-                                    {errors.password_confirmation}
+                                    {errorMessages.password_confirmation}
                                 </p>
                             )}
                         </Col>
@@ -359,16 +342,18 @@ export default function TambahUser() {
                                 id="role"
                                 className={styles["select"]}
                                 onChange={handleChange}
-                                value={formData.role}
+                                value={data.role}
                             >
                                 <option value="Pilih Role" disabled>
                                     Pilih Role
                                 </option>
-                                <option value="Admin">Admin</option>
-                                <option value="User">User</option>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
                             </select>
-                            {errors.role && (
-                                <p className={styles.error}>{errors.role}</p>
+                            {errorMessages.role && (
+                                <p className={styles.error}>
+                                    {errorMessages.role}
+                                </p>
                             )}
                         </Col>
 

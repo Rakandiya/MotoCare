@@ -24,8 +24,5 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItem::class);
     }
 
-    public function booking(): HasOne
-    {
-        return $this->hasOne(Booking::class);
-    }
+    
 }

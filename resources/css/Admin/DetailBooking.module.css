@@ -1,23 +1,23 @@
 .title-page {
-  font-size: 20px;
-  font-weight: 700;
-  text-align: left;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: left;
 }
 
 .table {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .table .tr {
-  height: 35px;
+    height: 35px;
 }
 
 .table .tr .th {
-  text-align: left;
-  width: 22%;
+    text-align: left;
+    width: 22%;
 }
 
 .table .tr .td {
-  padding-left: 5px;
-  text-align: justify;
+    width: 1px;
+    text-align: justify;
 }

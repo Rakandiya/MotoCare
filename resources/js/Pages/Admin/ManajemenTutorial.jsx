@@ -178,10 +178,6 @@ export default function ManajemenTutorial({ tutorials }) {
         setErrorMessages(errors);
     }, [errors]);
 
-    // useEffect(() => {
-    //     setTutorialList(filteredTutorials);
-    // }, [searchQuery]);
-
     useEffect(() => {
         if (reload) {
             // Fungsi untuk memuat ulang data atau komponen

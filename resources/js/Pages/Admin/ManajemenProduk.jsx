@@ -13,6 +13,22 @@ export default function ManajemenProduk({ produks }) {
     const [showDelete, setShowDelete] = useState(false);
     const [selectedProduk, setselectedProduk] = useState(false);
 
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredProduks, setFilteredProduks] = useState(produks);
+
+    useEffect(() => {
+        const results = produks.filter(
+            (produk) =>
+                produk.nama_produk
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                produk.deskripsi
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())
+        );
+        setFilteredProduks(results);
+    }, [searchTerm, produks]);
+
     const {
         data,
         setData,
@@ -195,11 +211,13 @@ export default function ManajemenProduk({ produks }) {
                             placeholder="Cari Produk"
                             autoComplete="off"
                             className={styles["search"]}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </form>
                     <DataTable
                         columns={columns}
-                        data={produkList}
+                        data={filteredProduks}
                         pagination
                         responsive
                         striped

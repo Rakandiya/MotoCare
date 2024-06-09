@@ -92,7 +92,7 @@ class KatalogController extends Controller
         $validated = Validator::make($request->data, $validation);
 
         if ($validated->fails()) {
-            return response()->json($validated->errors(), 422);
+            return redirect()->back()->withErrors($validated->messages())->withInput();
         }
 
         // dd($request->data['merk']);

@@ -21,6 +21,10 @@ class AdminMiddleware
             return $next($request);
         }
 
-        return redirect(route('user.tutorial'))->with('error', 'You do not have admin access.');
+        if(Auth::check() && Auth::user()->role === 'user') {
+            return redirect()->route('user.home');
+        }
+
+        return redirect()->route('auth');
     }
 }

@@ -487,3 +487,28 @@ body {
         padding-inline-start: 20%;
     }
 }
+
+.logout-text {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 10px;
+}
+
+.logout {
+    color: white;
+    font-size: 20px;
+    display: table;
+    text-transform: uppercase;
+    padding: 10px;
+    text-decoration: none;
+    text-align: left;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #f16211 -14.33%, #e59a6f 85.67%);
+}
+
+.logout:hover {
+    background: #8b380a;
+    box-shadow: -3px 8px 4px 0px rgba(0, 0, 0, 0.25);
+    transition: ease-in-out;
+}

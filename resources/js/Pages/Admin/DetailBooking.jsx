@@ -6,48 +6,62 @@ import { Row, Col, Table } from "react-bootstrap";
 import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Link, useForm, Head, router } from "@inertiajs/react";
 
+export default function DetailBooking({ dataBooking }) {
+    const [booking, setBooking] = useState(dataBooking);
 
-export default function DetailBooking() {
-    const [bookings, setBookings] = useState([]);
+    const [produkData, setProdukData] = useState([]);
     const [errorMessages, setErrorMessages] = useState({});
     const [reload, setReload] = useState(false);
 
+    const addDataToProdukData = (newData) => {
+        // console.log(newData);
+        if (
+            newData.invoice &&
+            newData.invoice.items &&
+            newData.invoice.items.length > 0
+        ) {
+            const newItems = newData.invoice.items.map((item) => ({
+                id: item.produk.id,
+                nama_produk: item.produk.nama_produk,
+                jumlah: item.jumlah,
+                harga: item.produk.harga,
+                totalHarga: item.jumlah * item.produk.harga,
+            }));
+            console.log(newItems);
+            setProdukData((prevData) => [...prevData, ...newItems]);
+        } else {
+            console.error("No items found in the invoice");
+        }
+    };
+
     useEffect(() => {
-        // Fungsi untuk memuat data dari backend
-        const fetchBookings = async () => {
-            try {
-                const response = await axios.get(bookings); // Ganti dengan endpoint sesuai backend Anda
-                setBookings(response.data); // Memasukkan data dari response ke state bookings
-            } catch (error) {
-                console.error('Error fetching bookings:', error);
-                setErrorMessages({ message: 'Error fetching bookings' });
-            }
-        };
-
-        fetchBookings(); // Memanggil fungsi fetchBookings saat komponen dimuat atau reload berubah
-    }, [reload]);
-
+        // This will run after the component is mounted
+        addDataToProdukData(booking);
+    }, [booking]);
 
     return (
-        <AdminLayout show={showDetail} onHide={handleCloseDetail}>
+        <AdminLayout title="MANAJEMEN BOOKING">
             <h1 className={styles["title-page"] + " my-3"}>
-                Detail Booking John Doe
+                Detail Booking {booking.user.nama}
             </h1>
-            <Table className={styles["table"]}>
+            <Table
+                className={styles["table"]}
+                style={{ borderBottom: "1px solid #000" }}
+            >
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Nama</th>
                     <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>John Doe</td>
+                    <td className={styles["td"]}>{booking.user.nama}</td>
                 </tr>
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>No Telepon</th>
                     <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>081234567890</td>
+                    <td className={styles["td"]}>{booking.user.no_telepon}</td>
                 </tr>
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Email</th>
                     <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>john.doe@example.com</td>
+                    <td className={styles["td"]}>{booking.user.email}</td>
                 </tr>
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Jenis Layanan</th>
@@ -57,50 +71,104 @@ export default function DetailBooking() {
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Merk Motor</th>
                     <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>Honda</td>
+                    <td className={styles["td"]}>
+                        {booking.katalog.merk + " " + booking.katalog.model}
+                    </td>
                 </tr>
-                <tr className={styles["tr"]}>
-                    <th className={styles["th"]}>Model Motor</th>
-                    <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>CBR 250R</td>
-                </tr>
+
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Tahun pembuatan</th>
                     <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>2019</td>
+                    <td className={styles["td"]}>{booking.tahun_pembuatan}</td>
                 </tr>
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Nomor Polisi / Nomor Plat</th>
                     <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>B 1234 AB</td>
+                    <td className={styles["td"]}>{booking.nomor_polisi}</td>
                 </tr>
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Kilometer Kendaraan</th>
                     <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>10000</td>
+                    <td className={styles["td"]}>{booking.km_kendaraan}</td>
                 </tr>
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Jadwal Booking</th>
                     <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>1 Januari 2022</td>
+                    <td className={styles["td"]}>
+                        {new Date(booking.jadwal_booking).toLocaleDateString(
+                            "id-ID",
+                            { day: "numeric", month: "long", year: "numeric" }
+                        )}
+                    </td>
+                </tr>
+                <tr className={styles["tr"]}>
+                    <th className={styles["th"]}>Status</th>
+                    <td className={styles["td"]}>:</td>
+                    <td className={styles["td"]}>{booking.status}</td>
                 </tr>
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Catatan</th>
                     <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>
-                        Pada saat servis motor, pastikan untuk memeriksa semua
-                        bagian penting, termasuk sistem rem, suspensi, dan
-                        sistem kelistrikan. Periksa juga kondisi oli mesin,
-                        filter udara, dan sistem pendinginan untuk memastikan
-                        kinerja optimal. Selain itu, lakukan pemeriksaan rutin
-                        terhadap kondisi rantai, roda gigi, dan ban untuk
-                        menjaga keamanan dan kenyamanan saat berkendara.
-                        Pastikan untuk membersihkan dan merawat motor secara
-                        menyeluruh untuk menjaga penampilan dan umur pakainya.
-                        Jangan lupa untuk mencatat semua pekerjaan yang telah
-                        dilakukan serta rekomendasi untuk perawatan selanjutnya.
+                    <td className={styles["td"]}>{booking.catatan}</td>
+                </tr>
+            </Table>
+
+            <h1 className={styles["title-page"] + " my-3"}>Data Invoice</h1>
+
+            <Table
+                className={styles["table"]}
+                style={{ borderTop: "1px solid #000" }}
+            >
+                <tr className={styles["tr"]}>
+                    <th className={styles["th"]}>Status Pembayaran</th>
+                    <td style={{ width: "15px" }}>:</td>
+                    <td>{booking.invoice.status}</td>
+                </tr>
+                <tr className={styles["tr"]}>
+                    <th className={styles["th"]}>Tanggal Pembayaran</th>
+                    <td style={{ width: "15px" }}>:</td>
+                    <td>
+                        {new Date(booking.invoice.tanggal).toLocaleDateString(
+                            "id-ID",
+                            { day: "numeric", month: "long", year: "numeric" }
+                        )}
                     </td>
                 </tr>
+                <tr className={styles["tr"]}>
+                    <th className={styles["th"]}>Catatan Tambahan</th>
+                    <td style={{ width: "15px" }}>:</td>
+                    <td>{booking.invoice.catatan}</td>
+                </tr>
+                {/* <tr className={styles["tr"]}>
+                    <th className={styles["th"]}>Total Pembayaran</th>
+                    <td className={styles["td"]}>:</td>
+                    <td className={styles["td"]}>
+                        Rp. {booking.invoice.total_pembayaran.toFixed(2)}
+                    </td>
+                </tr> */}
+            </Table>
+
+            <Table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Produk</th>
+                        <th>Harga</th>
+                        <th>Jumlah</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {produkData.map((item, index) => (
+                        <tr>
+                            <td>{index + 1}</td>
+                            <td>{item.nama_produk}</td>
+                            <td>{item.harga}</td>
+                            <td>{item.jumlah}</td>
+                            <td>{item.harga * item.jumlah}</td>
+                        </tr>
+                    ))}
+                </tbody>
             </Table>
 
             <Row className="mb-3">
@@ -135,7 +203,9 @@ export default function DetailBooking() {
                         }}
                     >
                         <Link
-                            href={route("admin.booking.edit", [1])}
+                            href={route("admin.booking.edit", {
+                                booking: booking.id,
+                            })}
                             style={{
                                 textDecoration: "none",
                                 color: "inherit",

@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import "../../css/User/userGlobal.css";
 import styles from "../../css/User/LayoutStyles.module.css";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import { useEffect } from "react";
 
@@ -23,8 +23,6 @@ export default function UserLayout({ auth, children }) {
             });
         };
     }, []);
-
-    console.log(auth);
 
     const navItems = [
         {
@@ -56,8 +54,21 @@ export default function UserLayout({ auth, children }) {
             url: "../riwayat/index.html",
         },
         { path: "user.ulasan", label: "Ulasan", external: false },
-        
     ];
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        router.visit(
+            route("logout"),
+            {
+                method: "POST",
+                headers: {
+                    "Content-type": "Application/json",
+                },
+            },
+            { preserveScroll: true }
+        );
+    };
 
     return (
         <>
@@ -115,8 +126,31 @@ export default function UserLayout({ auth, children }) {
                                 color="#ffffff"
                             ></box-icon>
                         </Link>
+                    ) : route().current("user.tambah-profil") ? (
+                        <form onSubmit={handleLogout}>
+                            <button type="submit" className={styles["logout"]}>
+                                <div className={styles["logout-text"]}>
+                                    {"Log Out"}{" "}
+                                    <box-icon
+                                        name="log-out"
+                                        color="#fffafa"
+                                    ></box-icon>
+                                </div>
+                            </button>
+                        </form>
                     ) : (
-                        ""
+                        <Link
+                            href={route("user.tambah-profil", {
+                                id: auth.user.id,
+                            })}
+                            className={styles["button-login"]}
+                        >
+                            <span className="span">Profile</span>
+                            <box-icon
+                                name="right-arrow-alt"
+                                color="#ffffff"
+                            ></box-icon>
+                        </Link>
                     )}
 
                     <button

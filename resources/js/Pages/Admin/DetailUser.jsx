@@ -11,12 +11,12 @@ export default function DetailUser({ auth, user }) {
     // const { id } = useParams();
     return (
         <AdminLayout title="MANAJEMEN USER">
-            <h1 className={styles["title-page"]}>Detail User {user.name}</h1>
+            <h1 className={styles["title-page"]}>Detail User {user.nama}</h1>
             <Table className={styles["table-detail"]}>
                 <tr className={styles["table-detail-tr"]}>
                     <th className={styles["table-detail-th"]}>Nama</th>
                     <td>:</td>
-                    <td>{user.name}</td>
+                    <td>{user.nama}</td>
                 </tr>
                 <tr className={styles["table-detail-tr"]}>
                     <th className={styles["table-detail-th"]}>Username</th>
@@ -53,7 +53,11 @@ export default function DetailUser({ auth, user }) {
                     <td>:</td>
                     <td>
                         <img
-                            src={user.foto || "/images/avatar.png"}
+                            src={
+                                user.foto
+                                    ? "/storage/" + user.foto
+                                    : "/images/avatar.png"
+                            }
                             alt="Foto Profil"
                             className={styles["avatar"]}
                         />
