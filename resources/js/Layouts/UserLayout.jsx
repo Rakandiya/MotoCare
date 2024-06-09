@@ -33,7 +33,7 @@ export default function UserLayout({ auth, children }) {
         {
             path: "user.about",
             label: "Tentang Kami",
-            external: true,
+            external: false,
         },
         {
             path: "user.booking",

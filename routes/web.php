@@ -54,13 +54,15 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], f
     Route::post('/manajemen-booking', [BookingController::class, 'store'])->name('booking.store');
     Route::get('/manajemen-booking/edit/{booking}', [BookingController::class, 'edit'])->name('booking.edit');
     Route::put("/manajemen-booking/{booking}", [BookingController::class, 'update'])->name('booking.update');
-    Route::put("/manajemen-booking/{booking}/update-status-booking", [BookingController::class, 'updateStatusBooking'])->name('booking.updateStatusBooking');
+    
     Route::delete("/manajemen-booking/{booking}", [BookingController::class, 'destroy'])->name('booking.delete');
+
+    Route::put("/manajemen-booking/{booking}/update-status-booking", [BookingController::class, 'updateStatusBooking'])->name('booking.updateStatusBooking');
 
     // Route Tambah Invoice
     Route::get('/manajemen-booking/{booking}/tambah-invoice', [BookingController::class, 'createInvoice'])->name('booking.createInvoice');
     Route::put('/manajemen-booking/{booking}/tambah-invoice', [BookingController::class, 'updateInvoice'])->name('booking.updateInvoice');
-    Route::put('/manajemen-booking/{booking}/update-status-pembayaran', [BookingController::class, 'updateStatusPembayaran'])->name('booking.updateStatusPembayaran');
+    Route::put('/manajemen-booking/{invoice}/update-status-pembayaran', [BookingController::class, 'updateStatusPembayaran'])->name('booking.updateStatusPembayaran');
     
 
     // Route Manajemen Katalog
@@ -98,15 +100,16 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
         return Inertia::render('User/Home');
     })->name('home');
 
+    Route::get('/about', function () {
+        return Inertia::render('User/About');
+    })->name('about');
+
     Route::get('/tambah-profil/{id}', function ($id) {
         return Inertia::render('User/TambahProfil', ['userId' => $id]);
     })->name('tambah-profil');
 
     // route booking
-    Route::get('/booking', function () {
-        return Inertia::render('User/Booking');
-    })->name('booking');
-    
+    Route::get('/booking', [UserBookingController::class, 'index'])->name('booking');
     Route::post('/booking', [UserBookingController::class, 'store'])->name('booking.store'); // Corrected Controller
     
 
@@ -120,6 +123,10 @@ Route::get('/', function () {
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login'])->name('login');
+Route::post('/forgot', [LoginController::class, 'forgot'])->name('forgot');
+
+Route::get('/change-password', [LoginController::class, 'changePasswordPage'])->name('changePasswordPage');
+Route::put('/change-password', [LoginController::class, 'changePassword'])->name('changePassword');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::put('/profile/{id}', [ProfileController::class, 'store'])->name('profile.store');
 

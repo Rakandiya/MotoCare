@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react"; // Import React agar dapat m
 import { Col, Row } from "react-bootstrap";
 import { data } from "autoprefixer";
 import { Head, useForm, router } from "@inertiajs/react";
+import ReactSelect from "react-select";
 
 export default function Booking({ users, katalogs, auth }) {
     const [selectedJenisLayanan, setSelectedJenisLayanan] = useState("");
@@ -11,9 +12,7 @@ export default function Booking({ users, katalogs, auth }) {
         users && users.length > 0 ? users[0].id : null
     );
 
-    const [selectedKatalog, setSelectedKatalog] = useState(
-        katalogs && katalogs.length > 0 ? katalogs[0].id : null
-    );
+    const [selectedKatalog, setSelectedKatalog] = useState("");
     const [errorMessages, setErrorMessages] = useState({});
     const [reload, setReload] = useState(false); // Define state to manage reload
     const { data, setData, post, processing, errors } = useForm({
@@ -27,6 +26,13 @@ export default function Booking({ users, katalogs, auth }) {
         jadwal_booking: "",
         catatan: "",
     });
+
+    const [katalogList, setKatalogList] = useState(katalogs);
+
+    const dataSelectKatalog = katalogList.map((katalog) => ({
+        value: katalog.id,
+        label: katalog.merk + " " + katalog.model,
+    }));
 
     // handleSubmit untuk tambah booking
     const handleSubmit = (e) => {
@@ -111,13 +117,6 @@ export default function Booking({ users, katalogs, auth }) {
                                                         Service Rutin
                                                     </td>
                                                 </tr>
-                                                {errorMessages.jenis_layanan && (
-                                                    <p className={styles.error}>
-                                                        {
-                                                            errorMessages.jenis_layanan
-                                                        }
-                                                    </p>
-                                                )}
 
                                                 <tr>
                                                     <td>
@@ -136,13 +135,6 @@ export default function Booking({ users, katalogs, auth }) {
                                                         Perbaikan Khusus
                                                     </td>
                                                 </tr>
-                                                {errorMessages.jenis_layanan && (
-                                                    <p className={styles.error}>
-                                                        {
-                                                            errorMessages.jenis_layanan
-                                                        }
-                                                    </p>
-                                                )}
 
                                                 <tr>
                                                     <td>
@@ -161,13 +153,6 @@ export default function Booking({ users, katalogs, auth }) {
                                                         Tune Up/Bore Up
                                                     </td>
                                                 </tr>
-                                                {errorMessages.jenis_layanan && (
-                                                    <p className={styles.error}>
-                                                        {
-                                                            errorMessages.jenis_layanan
-                                                        }
-                                                    </p>
-                                                )}
 
                                                 <tr>
                                                     <td>
@@ -186,21 +171,56 @@ export default function Booking({ users, katalogs, auth }) {
                                                         Cek Kendaraan
                                                     </td>
                                                 </tr>
-                                                {errorMessages.jenis_layanan && (
-                                                    <p className={styles.error}>
-                                                        {
-                                                            errorMessages.jenis_layanan
-                                                        }
-                                                    </p>
-                                                )}
                                             </tbody>
                                         </table>
+                                        {errorMessages.jenis_layanan && (
+                                            <p className={styles.error}>
+                                                {errorMessages.jenis_layanan}
+                                            </p>
+                                        )}
                                     </Col>
 
                                     <Col className="form-container-col">
                                         <h3>Informasi Motor</h3>
                                         <table className={styles["form-table"]}>
                                             <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <ReactSelect
+                                                            id="katalog"
+                                                            options={
+                                                                dataSelectKatalog
+                                                            }
+                                                            value={dataSelectKatalog.find(
+                                                                (option) =>
+                                                                    option.value ===
+                                                                    selectedKatalog
+                                                            )}
+                                                            onChange={(
+                                                                selectedOption
+                                                            ) => {
+                                                                setSelectedKatalog(
+                                                                    selectedOption.value
+                                                                );
+                                                                setData(
+                                                                    (
+                                                                        prevData
+                                                                    ) => ({
+                                                                        ...prevData,
+                                                                        katalog_id:
+                                                                            selectedOption.value,
+                                                                    })
+                                                                );
+                                                            }}
+                                                            placeholder="Pilih Katalog"
+                                                        />
+                                                    </td>
+                                                </tr>
+                                                {errorMessages.katalog_id && (
+                                                    <p className={styles.error}>
+                                                        Katalog is required
+                                                    </p>
+                                                )}
                                                 <tr>
                                                     <td>
                                                         <input

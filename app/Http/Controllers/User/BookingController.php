@@ -15,46 +15,49 @@ class BookingController extends Controller
     public function index()
     {
         $bookings = Booking::all();
-        return Inertia::render('User/Booking', compact('bookings'));
+        $katalogs = Katalog::all();
+        return Inertia::render('User/Booking', compact('bookings', 'katalogs'));
     }
 
     // menampilkan form untuk tambah booking
-    public function create()
-    {
-        $users = User::all();
-        $katalogs = Katalog::all();
-        return Inertia::render("User/Booking", compact("users", "katalogs"));
-    }
+    
 
     public function store(Request $request)
     {
         // dd($request->all());
         $validatedData = $request->validate([
             'jenis_layanan' => 'required',
-            'tahun_pembuatan' => 'required|numeric',
-            'nomor_polisi' => 'required',
-            'km_kendaraan' => 'required|numeric',
+            'katalog_id' => 'required',
+            'tahun_pembuatan' => 'nullable|numeric',
+            'nomor_polisi' => 'nullable|string',
+            'km_kendaraan' => 'nullable|numeric',
             'jadwal_booking' => 'required|date',
-            'catatan' => 'required',
+            'catatan' => 'nullable',
         ]);
 
         $user = Auth::user(); // Get the currently authenticated user
 
-        $katalog = Katalog::first(); // Mengambil katalog pertama sebagai default jika tidak ada yang dipilih
+        
 
         $booking = Booking::create([
-            'user_id' => $user->id, // Use the id of the authenticated user
+            'user_id' => $user->id || $request->user_id, // Use the id of the authenticated user
             'jenis_layanan' => $validatedData['jenis_layanan'],
-            'katalog_id' => $request->katalog_id ?? $katalog->id, // Menggunakan katalog_id dari request jika ada, jika tidak menggunakan id dari katalog pertama
+            'katalog_id' => $request->katalog_id, // Menggunakan katalog_id dari request jika ada, jika tidak menggunakan id dari katalog pertama
             'tahun_pembuatan' => $validatedData['tahun_pembuatan'],
             'nomor_polisi' => $validatedData['nomor_polisi'],
             'km_kendaraan' => $validatedData['km_kendaraan'],
             'jadwal_booking' => $validatedData['jadwal_booking'],
-            'status' => 'diproses',
+            'status' => 'Diproses',
             'catatan' => $validatedData['catatan'],
         ]);
 
-        return redirect()->route('user.booking')->with('success', 'Data booking berhasil ditambahkan');
+        Invoice::create([
+            'user_id' => $validatedData['user_id'],
+            'booking_id' => $booking->id,
+            'status' => 'Unpaid',
+        ]);
+
+        return redirect()->route('user.riwayat')->with('success', 'Data booking berhasil ditambahkan');
     }
 }
 ?>

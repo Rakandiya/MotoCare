@@ -6,8 +6,10 @@ import { Button, Col, Row } from "react-bootstrap";
 
 export default function Riwayat({ bookings, users, invoices, auth }) {
     const [selectedBookingId, setSelectedBookingId] = useState(null);
+    const [selectedBooking, setSelectedBooking] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [bookingList, setBookingList] = useState(bookings);
+    const [number, setNumber] = useState(1);
 
     useEffect(() => {
         if (auth.user) {
@@ -26,6 +28,8 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
 
     const handleBookingClick = (id) => {
         setSelectedBookingId(id);
+
+        setSelectedBooking(bookings.find((booking) => booking.id === id));
     };
 
     const handleSearchChange = (e) => {
@@ -42,17 +46,18 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
     }, [bookings]);
 
     return (
-        <UserLayout>
+        <UserLayout auth={auth}>
             <main>
                 <article>
                     {/* <h1 className={styles["user"]}>
             <i className="bx bxs-user" style={{ color: '#ffffff' }}></i> Hi 
           </h1> */}
                     <div className={styles["container"]}>
+                        <h1 className={styles["title"]}>RIWAYAT SERVICE</h1>
                         <section className={styles["history-booking"]}>
                             <Row>
                                 <Col
-                                    md={{ span: 4, offset: 1 }}
+                                    md={{ span: 6 }}
                                     className={styles["laporan-kondisi"]}
                                 >
                                     <h3>Laporan Kondisi Motor</h3>
@@ -96,7 +101,7 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
                                                         )
                                                     }
                                                 >
-                                                    Booking {booking.id}
+                                                    Booking {number}
                                                 </li>
                                             ))}
                                         </ul>
@@ -104,60 +109,52 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
                                 </Col>
 
                                 <Col
-                                    md={{ span: 4, offset: 1 }}
+                                    md={{ span: 6 }}
                                     id={styles["info-booking-pemilik"]}
                                 >
-                                    <h3>Booking {selectedBookingId}</h3>
+                                    <h3>
+                                        {selectedBooking &&
+                                            selectedBooking.katalog.merk +
+                                                " " +
+                                                selectedBooking.katalog.model +
+                                                " - " +
+                                                selectedBooking.jenis_layanan}
+                                    </h3>
                                     <table className={styles["info-pemilik"]}>
                                         <tbody>
                                             <tr>
                                                 <td>Nama Pemilik</td>
                                                 {/* AMBIL DARI TABEL USERS */}
                                                 <td>
-                                                    {
-                                                        bookings.find(
-                                                            (booking) =>
-                                                                booking.id ===
-                                                                selectedBookingId
-                                                        )?.user.name
-                                                    }
+                                                    {selectedBooking &&
+                                                        selectedBooking.user
+                                                            .nama}
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>No. Polisi</td>
                                                 <td>
-                                                    {
-                                                        bookings.find(
-                                                            (booking) =>
-                                                                booking.id ===
-                                                                selectedBookingId
-                                                        )?.nomor_polisi
-                                                    }
+                                                    {selectedBooking &&
+                                                        selectedBooking.nomor_polisi}
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Merk</td>
                                                 {/* AMBIL DARI TABEL KATALOG */}
                                                 <td>
-                                                    {
-                                                        bookings.find(
-                                                            (booking) =>
-                                                                booking.id ===
-                                                                selectedBookingId
-                                                        )?.katalog.merk
-                                                    }
+                                                    {selectedBooking &&
+                                                        selectedBooking.katalog
+                                                            .merk +
+                                                            " " +
+                                                            selectedBooking
+                                                                .katalog.model}
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Jenis Layanan</td>
                                                 <td>
-                                                    {
-                                                        bookings.find(
-                                                            (booking) =>
-                                                                booking.id ===
-                                                                selectedBookingId
-                                                        )?.jenis_layanan
-                                                    }
+                                                    {selectedBooking &&
+                                                        selectedBooking.jenis_layanan}
                                                 </td>
                                             </tr>
                                             <tr>
@@ -166,14 +163,15 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
                                                 <td>
                                                     {
                                                         // status booking kalau kosong akan default menjadi "Diproses"
-                                                        bookings.find(
-                                                            (booking) =>
-                                                                booking.id ===
-                                                                selectedBookingId
-                                                        )?.invoice?.status ??
-                                                            (selectedBookingId
-                                                                ? "Diproses"
-                                                                : "")
+                                                        (selectedBooking &&
+                                                            (selectedBooking.status ??
+                                                                "Diproses")) +
+                                                            " - " +
+                                                            (selectedBooking &&
+                                                                (selectedBooking
+                                                                    .invoice
+                                                                    .status ??
+                                                                    "Unpaid"))
                                                     }
                                                 </td>
                                             </tr>
@@ -192,64 +190,49 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
                                             className={styles["info-invoice"]}
                                         >
                                             <tbody>
-                                                <tr>
-                                                    <td>
-                                                        {selectedBookingId &&
-                                                            (bookings.find(
-                                                                (booking) =>
-                                                                    booking.id ===
-                                                                    selectedBookingId
-                                                            )?.invoice ? (
-                                                                <div>
-                                                                    {bookings
-                                                                        .find(
-                                                                            (
-                                                                                booking
-                                                                            ) =>
-                                                                                booking.id ===
-                                                                                selectedBookingId
-                                                                        )
-                                                                        .invoice.items.map(
-                                                                            (
-                                                                                item
-                                                                            ) => (
-                                                                                <div
-                                                                                    key={
-                                                                                        item.id
-                                                                                    }
-                                                                                >
-                                                                                    {
-                                                                                        item
-                                                                                            .produk
-                                                                                            .nama_produk
-                                                                                    }{" "}
-                                                                                    -{" "}
-                                                                                    {item.harga.toLocaleString(
-                                                                                        "id-ID",
-                                                                                        {
-                                                                                            style: "currency",
-                                                                                            currency:
-                                                                                                "IDR",
-                                                                                        }
-                                                                                    )}
-
-                                                                                    x{" "}
-                                                                                    {
-                                                                                        item.jumlah
-                                                                                    }
-                                                                                </div>
-                                                                            )
-                                                                        )}
-                                                                </div>
-                                                            ) : (
-                                                                <div>
-                                                                    Invoice
-                                                                    belum
-                                                                    tersedia
-                                                                </div>
-                                                            ))}
-                                                    </td>
-                                                </tr>
+                                                {selectedBooking &&
+                                                selectedBooking.invoice
+                                                    ?.items ? (
+                                                    selectedBooking.invoice.items.map(
+                                                        (item) => (
+                                                            <tr key={item.id}>
+                                                                <td>
+                                                                    {
+                                                                        item
+                                                                            .produk
+                                                                            .nama_produk
+                                                                    }
+                                                                </td>
+                                                                <td>
+                                                                    {item.harga.toLocaleString(
+                                                                        "id-ID",
+                                                                        {
+                                                                            style: "currency",
+                                                                            currency:
+                                                                                "IDR",
+                                                                        }
+                                                                    )}
+                                                                </td>
+                                                                <td
+                                                                    style={{
+                                                                        width: "10%",
+                                                                    }}
+                                                                >
+                                                                    {
+                                                                        item.jumlah
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    )
+                                                ) : (
+                                                    <tr>
+                                                        <td colSpan="3">
+                                                            Invoice belum
+                                                            tersedia
+                                                        </td>
+                                                    </tr>
+                                                )}
                                             </tbody>
                                         </table>
                                         <hr />
@@ -266,47 +249,36 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
                                                 <tr>
                                                     <td>Total Bayar:</td>
                                                     <td>
-                                                        {selectedBookingId &&
-                                                            (bookings.find(
-                                                                (booking) =>
-                                                                    booking.id ===
-                                                                    selectedBookingId
-                                                            )?.invoice ? (
-                                                                <div>
-                                                                    {/* hitung total harga */}
-                                                                    {bookings
-                                                                        .find(
-                                                                            (
-                                                                                booking
-                                                                            ) =>
-                                                                                booking.id ===
-                                                                                selectedBookingId
-                                                                        )
-                                                                        .invoice.items.reduce(
-                                                                            (
-                                                                                total,
-                                                                                item
-                                                                            ) => {
-                                                                                return (
-                                                                                    total +
-                                                                                    item.jumlah *
-                                                                                        item.harga
-                                                                                );
-                                                                            },
-                                                                            0
-                                                                        )
-                                                                        .toLocaleString(
-                                                                            "id-ID",
-                                                                            {
-                                                                                style: "currency",
-                                                                                currency:
-                                                                                    "IDR",
-                                                                            }
-                                                                        )}
-                                                                </div>
-                                                            ) : (
-                                                                <div></div>
-                                                            ))}
+                                                        {selectedBooking &&
+                                                        selectedBooking.invoice ? (
+                                                            <div>
+                                                                {/* hitung total harga */}
+                                                                {selectedBooking.invoice.items
+                                                                    .reduce(
+                                                                        (
+                                                                            total,
+                                                                            item
+                                                                        ) => {
+                                                                            return (
+                                                                                total +
+                                                                                item.jumlah *
+                                                                                    item.harga
+                                                                            );
+                                                                        },
+                                                                        0
+                                                                    )
+                                                                    .toLocaleString(
+                                                                        "id-ID",
+                                                                        {
+                                                                            style: "currency",
+                                                                            currency:
+                                                                                "IDR",
+                                                                        }
+                                                                    )}
+                                                            </div>
+                                                        ) : (
+                                                            <div></div>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -321,3 +293,4 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
         </UserLayout>
     );
 }
+//

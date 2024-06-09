@@ -1,23 +1,9 @@
 /*-----------------------------------*\
-    #REUSED STYLE
-  \*-----------------------------------*/
+  #REUSED STYLE
+\*-----------------------------------*/
 
 .container {
     padding-inline: 16px;
-    margin: auto;
-}
-
-h1.title {
-    color: #e5e5e5;
-    font-family: Poppins;
-    font-size: 40px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-
-    text-align: center;
-    text-transform: uppercase;
-    margin-bottom: 10px;
 }
 
 .material-symbols-rounded {
@@ -64,7 +50,7 @@ h1.title {
 }
 
 .section-subtitle.\:dark::before {
-    background-image: url("../images/text-bars-light.png");
+    background-image: url("/images/text-bars-light.png");
 }
 
 .section-subtitle.\:light {
@@ -72,7 +58,7 @@ h1.title {
 }
 
 .section-subtitle.\:light::before {
-    background-image: url("../images/text-bars-dark.png");
+    background-image: url("/images/text-bars-dark.png");
 }
 
 .section-title {
@@ -212,211 +198,131 @@ h1.title {
 }
 
 /*-----------------------------------*\
-    #HEADER
-  \*-----------------------------------*/
-.header .btn {
-    display: none;
-}
+  #ABOUT
+\*-----------------------------------*/
 
-.header {
-    position: relative;
-    color: #ffffff;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 40px 15px;
-    padding-inline-start: 40px;
-    z-index: 4;
-}
-
-.header .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo img {
-    width: 100px;
-}
-
-.nav-toggle-icon {
-    width: 30px;
-    height: 2px;
-    background-color: var(--white);
-    transition: var(--transition);
-}
-
-.nav-toggle-icon:not(:last-child) {
-    margin-block-end: 7px;
-}
-
-.nav-toggle-btn.active .icon-2 {
-    opacity: 0;
-    transform: translateX(-10px);
-}
-
-.nav-toggle-btn.active .icon-1 {
-    transform: rotate(45deg) translate(8px, 8px);
-}
-
-.nav-toggle-btn.active .icon-3 {
-    transform: rotate(-45deg) translate(4px, -4px);
-}
-
-.navbar {
-    position: absolute;
-    top: 100px;
-    right: 30px;
-    background-color: var(--international-orange-engineering);
-    min-width: max-content;
-    width: 30%;
-    transform: translateY(20px);
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.25s var(--cubic-out);
-    z-index: 2;
-}
-
-.navbar.active {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
-    transition-duration: 0.5s;
-}
-
-.navbar-link {
-    font-family: var(--ff-Inter);
-    font-size: var(--fs-5);
-    text-transform: uppercase;
+.about {
+    background-color: var(--eerie-black);
     color: var(--white);
-    padding: 10px 20px;
+    text-align: center;
+}
+
+.about .container {
+    display: grid;
+    gap: 50px;
+}
+
+.about .section-title {
+    color: var(--white);
+}
+
+.about .section-text:nth-child(3) {
+    margin-block: 12px 8px;
+}
+
+.about-list {
+    display: grid;
+    gap: 25px;
+    margin-block-start: 25px;
+}
+
+.about-item {
+    background-color: var(--secondary-orange);
+    padding: 40px 20px;
     transition: var(--transition);
 }
 
-.navbar-link:is(:hover, :focus-visible) {
-    background-color: var(--white);
-    color: var(--international-orange-engineering);
+.about-item:hover {
+    background-color: var(--international-orange-engineering);
+    transform: translateY(-8px);
 }
 
-.active-navbar::before {
-    opacity: 1;
-    content: url("../images/nav-before-img.png");
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
+.about-item .strong {
+    display: block;
+    line-height: 1.1;
 }
 
-.form-booking {
-    background-color: var(--white);
-    color: var(--base-color);
-    border-radius: 25px;
-    text-align: -webkit-center;
-    padding: 50px;
-}
-
-.form-table input[type="radio"] {
-    margin-right: 20px;
-}
-
-/* select radio */
-.form-table td {
-    color: var(--light-gray);
-    font-size: 16px;
-    padding-bottom: 7px;
-}
-
-.tombol-submit input[type="submit"] {
-    background-color: var(--base-color);
-    color: white;
-    width: -webkit-fill-available;
-    height: 50px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    margin: auto;
-    font-weight: 800;
-    font-size: large;
-}
-
-.tombol-submit input[type="submit"]:hover {
-    background: #fffefe;
-    color: #de7439;
-    border: 1px solid #de7439;
-}
-
-input[type="text"],
-input[type="email"] {
-    border: none;
-    border-bottom: 1px solid var(--light-gray);
-    margin-bottom: 5px;
-    width: 300px;
-    box-sizing: border-box;
-    font-size: 15px;
-    font-family: Poppins;
-}
-
-input[type="text"]::placeholder,
-input[type="email"]::placeholder,
-textarea::placeholder {
-    color: var(--light-gray);
-    font-size: 15px;
-    font-family: Poppins;
-}
-
-textarea {
-    background-color: var(--light-gray);
-    border: 2px solid var(--light-gray);
-    border-radius: 10px;
-    width: -webkit-fill-available;
-    height: 150px;
-    font-family: var(--ff-Poppins);
-    padding: 10px;
-}
-
-input[type="date"] {
-    width: 80%;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-    font-size: 15px;
-    line-height: 1.5;
-    background-repeat: no-repeat;
-    background-position: right center;
-    background-size: 15px 15px;
-    padding-right: 30px;
-}
-
-/* styling line */
-.line {
-    width: px;
-    background-color: #f16111;
-    margin: 0 80px;
-}
-
-/* atur jarak tombol submit */
-.tombol-submit {
-    margin-top: 70px;
+.next-icon {
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /*-----------------------------------*\
-    #MEDIA QUERIES
-  \*-----------------------------------*/
+  #WORK
+\*-----------------------------------*/
+
+.work .container {
+    padding-inline: 0;
+}
+
+.work .section-subtitle {
+    margin-block-end: 24px;
+    color: var(--white);
+}
+
+.work .section-title {
+    margin-block-end: 24px;
+    color: var(--white);
+}
+
+.work-card {
+    position: relative;
+}
+
+.work-card .card-content {
+    background-color: var(--white);
+    max-width: 90%;
+    padding: 30px 10px;
+    margin-block-start: -60px;
+    margin-inline: auto;
+    position: relative;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.work-card .card-subtitle {
+    font-family: var(--ff-Poppins);
+    text-transform: uppercase;
+    color: var(--international-orange-engineering);
+    font-weight: var(--fw-700);
+    margin-block-end: 5px;
+}
+
+.work-card .card-title {
+    margin-block-end: 10px;
+}
+
+.work-card .card-btn {
+    background-color: var(--international-orange-engineering);
+    color: var(--white);
+    font-size: 2rem;
+    margin-inline: auto;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-circle);
+}
+
+/*-----------------------------------*\
+  #MEDIA QUERIES
+\*-----------------------------------*/
 
 /**
-   * responsive for large than 575px screen
-   */
+ * responsive for large than 575px screen
+ */
 
 @media (min-width: 575px) {
     /**
-     * CUSTOM PROPERTY
-     */
+   * CUSTOM PROPERTY
+   */
 
     :root {
         /**
-       * typography
-       */
+     * typography
+     */
 
         --fs-2: 4rem;
         --fs-3: 2.8rem;
@@ -424,8 +330,8 @@ input[type="date"] {
     }
 
     /**
-     * REUSED STYLE
-     */
+   * REUSED STYLE
+   */
 
     .container {
         max-width: 540px;
@@ -442,8 +348,8 @@ input[type="date"] {
     }
 
     /**
-     * ABOUT
-     */
+   * ABOUT
+   */
 
     .about-list {
         grid-template-columns: 1fr 1fr;
@@ -455,16 +361,16 @@ input[type="date"] {
     }
 
     /**
-     * WORK
-     */
+   * WORK
+   */
 
     .scrollbar-item {
         min-width: calc(50% - 15px);
     }
 
     /**
-     * FOOTER
-     */
+   * FOOTER
+   */
 
     .footer-top {
         position: relative;
@@ -484,25 +390,18 @@ input[type="date"] {
 }
 
 /**
-   * responsive for large than 768px screen
-   */
-
-@media (max-width: 768px) {
-    input[type="text"],
-    input[type="email"] {
-        width: -webkit-fill-available;
-    }
-}
+ * responsive for large than 768px screen
+ */
 
 @media (min-width: 768px) {
     /**
-     * CUSTOM PROPERTY
-     */
+   * CUSTOM PROPERTY
+   */
 
     :root {
         /**
-       * typography
-       */
+     * typography
+     */
 
         --fs-1: 4rem;
         --fs-2: 5rem;
@@ -510,10 +409,11 @@ input[type="date"] {
     }
 
     /**
-     * REUSED STYLE
-     */
+   * REUSED STYLE
+   */
 
-    .container {
+    .container,
+    .hero-content {
         max-width: 720px;
     }
 
@@ -531,8 +431,25 @@ input[type="date"] {
     }
 
     /**
-     * FOOTER
-     */
+   * ABOUT
+   */
+
+    .about-banner {
+        max-width: max-content;
+    }
+
+    .about-banner,
+    .about .section-text {
+        margin-inline: auto;
+    }
+
+    .about .section-text {
+        max-width: 520px;
+    }
+
+    /**
+   * FOOTER
+   */
 
     .footer-top .container {
         grid-template-columns: 1fr 0.9fr 0.9fr;
@@ -543,30 +460,34 @@ input[type="date"] {
     }
 }
 
+/**
+ * responsive for large than 992px screen
+ */
+
 @media (min-width: 992px) {
     /**
-     * CUSTOM PROPERTY
-     */
+   * CUSTOM PROPERTY
+   */
 
     :root {
         /**
-       * typography
-       */
+     * typography
+     */
 
         --fs-2: 4.4rem;
         --fs-3: 3.8rem;
         --fs-4: 2.2rem;
 
         /**
-       * spacing
-       */
+     * spacing
+     */
 
         --section-padding: 100px;
     }
 
     /**
-     * REUSED STYLE
-     */
+   * REUSED STYLE
+   */
 
     .container {
         max-width: 960px;
@@ -578,8 +499,8 @@ input[type="date"] {
     }
 
     /**
-     * HEADER
-     */
+   * HEADER
+   */
 
     .nav-toggle-btn {
         display: none;
@@ -612,7 +533,7 @@ input[type="date"] {
     }
 
     .navbar-link::after {
-        content: url("../images/nav-before-img.png");
+        content: url("/images/nav-before-img.png");
         position: absolute;
         bottom: -8px;
         left: 50%;
@@ -629,29 +550,86 @@ input[type="date"] {
         padding: 10px 20px;
         font-size: 1.2rem;
     }
+
+    /**
+   * ABOUT
+   */
+
+    .about {
+        position: relative;
+        z-index: 1;
+    }
+
+    .about,
+    .about .section-title {
+        text-align: left;
+    }
+
+    .about .container {
+        grid-template-columns: 1fr 0.75fr;
+        gap: 30px;
+    }
+
+    .about .section-subtitle {
+        margin-inline: 0;
+    }
+
+    .about-banner,
+    .about-banner .w-100 {
+        margin-inline: auto 0;
+    }
+
+    .about-banner .w-100 {
+        width: 40%;
+    }
+
+    .about-item {
+        text-align: center;
+    }
+
+    .about::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: 100%;
+        background-image: url("/images/about-abs-banner.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: right;
+        z-index: -1;
+    }
+
+    /**
+   * WORK
+   */
+    .scrollbar-item {
+        min-width: calc(33.33% - 20px);
+    }
 }
 
 /**
-   * responsive for large than 1200px screen
-   */
+ * responsive for large than 1200px screen
+ */
 
 @media (min-width: 1200px) {
     /**
-     * CUSTOM PROPERTY
-     */
+   * CUSTOM PROPERTY
+   */
 
     :root {
         /**
-       * typography
-       */
+     * typography
+     */
 
         --fs-2: 5rem;
         --fs-3: 4.6rem;
     }
 
     /**
-     * REUSED STYLE
-     */
+   * REUSED STYLE
+   */
 
     .container,
     .hero .container {
@@ -667,8 +645,8 @@ input[type="date"] {
     }
 
     /**
-     * HEADER
-     */
+   * HEADER
+   */
 
     .header {
         padding-block: 25px;
@@ -696,15 +674,15 @@ input[type="date"] {
     }
 
     /**
-     * WORK
-     */
+   * WORK
+   */
     .scrollbar-item {
         min-width: calc(33.33% - 20px);
     }
 
     /**
-     * FOOTER
-     */
+   * FOOTER
+   */
 
     .footer-top {
         padding-block: 150px;
@@ -739,31 +717,31 @@ input[type="date"] {
 }
 
 /**
-   * responsive for large than 1400px screen
-   */
+ * responsive for large than 1400px screen
+ */
 
 @media (min-width: 1400px) {
     /**
-     * CUSTOM PROPERTY
-     */
+   * CUSTOM PROPERTY
+   */
 
     :root {
         /**
-       * typography
-       */
+     * typography
+     */
 
         --fs-2: 6rem;
 
         /**
-       * spacing
-       */
+     * spacing
+     */
 
         --section-padding: 140px;
     }
 
     /**
-     * REUSED STYLE
-     */
+   * REUSED STYLE
+   */
 
     :is(.header, .hero) .container {
         max-width: 1280px;
@@ -775,16 +753,16 @@ input[type="date"] {
     }
 
     /**
-     * HEADER
-     */
+   * HEADER
+   */
 
     .header .btn {
         padding: 18px 36px;
     }
 
     /**
-     * ABOUT
-     */
+   * ABOUT
+   */
 
     .about::before {
         width: 55%;
@@ -795,8 +773,8 @@ input[type="date"] {
     }
 
     /**
-     * WORK
-     */
+   * WORK
+   */
 
     .has-scrollbar {
         overflow-x: visible;
@@ -807,8 +785,8 @@ input[type="date"] {
     }
 
     /**
-     * FOOTER
-     */
+   * FOOTER
+   */
 
     .footer-top .container {
         padding-inline-start: 20%;

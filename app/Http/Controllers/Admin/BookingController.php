@@ -208,10 +208,24 @@ class BookingController extends Controller
             'status' => 'required',
         ]);
 
+
         $invoice->update([
             'status' => $validatedData['status'],
         ]);
 
         return redirect()->back();
     }
+
+    // public function updateStatusBooking(Request $request, Booking $booking)
+    // {
+    //     $validatedData = $request->validate([
+    //         'status' => 'required',
+    //     ]);
+
+    //     $booking->update([
+    //         'status' => $validatedData['status'],
+    //     ]);
+
+    //     return redirect()->back();
+    // }
 }

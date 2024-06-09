@@ -81,48 +81,26 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
         setSelectedBooking(booking);
     };
 
-    const toggleStatus = (id) => {
-        setBookingList((prevBookings) =>
-            prevBookings.map((booking) =>
-                booking.id === id
-                    ? {
-                          ...booking,
-                          status:
-                              booking.status === "diproses"
-                                  ? "selesai"
-                                  : booking.status === "selesai"
-                                  ? "dibatalkan"
-                                  : "diproses",
-                      }
-                    : booking
-            )
-        );
-    };
-
-    const togglePaymentStatus = (id) => {
-        setBookingList((prevBookings) =>
-            prevBookings.map((booking) =>
-                booking.id === id
-                    ? {
-                          ...booking,
-                          status_pembayaran:
-                              booking.status_pembayaran === "unpaid"
-                                  ? "paid"
-                                  : "unpaid",
-                      }
-                    : booking
-            )
-        );
-    };
-
     const getStatusStyle = (status) => {
         switch (status) {
             case "Diproses":
-                return { backgroundColor: "#1fe71b" };
+                return {
+                    backgroundColor: "#1fe71b",
+                    color: "white",
+                    borderRadius: "5px",
+                };
             case "Selesai":
-                return { backgroundColor: "#1887d7" };
+                return {
+                    backgroundColor: "#1887d7",
+                    color: "white",
+                    borderRadius: "5px",
+                };
             case "Dibatalkan":
-                return { backgroundColor: "#ff0000" };
+                return {
+                    backgroundColor: "#ff0000",
+                    color: "white",
+                    borderRadius: "5px",
+                };
             default:
                 return {};
         }
@@ -137,6 +115,51 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
             default:
                 return {};
         }
+    };
+
+    const { data: status, setData: setStatus } = useForm({
+        status: "",
+    });
+
+    const updateBookingStatus = (bookingId, newStatus) => {
+        router.visit(
+            route("admin.booking.updateStatusBooking", { booking: bookingId }),
+            {
+                method: "PUT",
+                data: {
+                    status: newStatus,
+                },
+                preserveScroll: true,
+                onSuccess: () => {
+                    setReload(!reload); // Memicu reload data
+                },
+                onError: (errors) => {
+                    console.error("Error updating Booking status", errors);
+                },
+            }
+        );
+    };
+
+    const togglePaymentStatus = (invoiceId, currentStatus) => {
+        const newStatus = currentStatus === "Paid" ? "Unpaid" : "Paid";
+        router.visit(
+            route("admin.booking.updateStatusPembayaran", {
+                invoice: invoiceId,
+            }),
+            {
+                method: "PUT",
+                data: {
+                    status: newStatus,
+                },
+                preserveScroll: true,
+                onSuccess: () => {
+                    setReload(!reload); // Memicu reload data
+                },
+                onError: (errors) => {
+                    console.error("Error updating payment status", errors);
+                },
+            }
+        );
     };
 
     const columns = [
@@ -157,12 +180,17 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
         {
             name: "Status Booking",
             selector: (row) => (
-                <ButtonAdmin
+                <select
+                    value={row.status}
+                    onChange={(e) =>
+                        updateBookingStatus(row.id, e.target.value)
+                    }
                     style={getStatusStyle(row.status)}
-                    onClick={() => toggleStatus(row.id)}
                 >
-                    {row.status}
-                </ButtonAdmin>
+                    <option value="Diproses">Diproses</option>
+                    <option value="Selesai">Selesai</option>
+                    <option value="Dibatalkan">Dibatalkan</option>
+                </select>
             ),
         },
         {
@@ -174,7 +202,9 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
             selector: (row) => (
                 <ButtonAdmin
                     style={getPaymentStatusStyle(row.invoice.status)}
-                    onClick={() => togglePaymentStatus(row.id)}
+                    onClick={() =>
+                        togglePaymentStatus(row.invoice.id, row.invoice.status)
+                    }
                 >
                     {row.invoice.status}
                 </ButtonAdmin>

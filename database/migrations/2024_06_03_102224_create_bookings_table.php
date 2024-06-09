@@ -16,12 +16,12 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->string("jenis_layanan");
             $table->foreignId('katalog_id')->constrained();
-            $table->string("tahun_pembuatan");
-            $table->string("nomor_polisi");
-            $table->string("km_kendaraan");
+            $table->string("tahun_pembuatan")->nullable();
+            $table->string("nomor_polisi")->nullable();
+            $table->string("km_kendaraan")->nullable();
             $table->date("jadwal_booking");
-            $table->enum("status", ["Diproses", "Selesai", "Dibatalkan"]);
-            $table->text("catatan");
+            $table->enum("status", ["Diproses", "Selesai", "Dibatalkan"])->default("Diproses");
+            $table->text("catatan")->nullable();
             $table->timestamps();
         });
     }
