@@ -28,30 +28,26 @@ export default function UserLayout({ auth, children }) {
         {
             path: "user.home",
             label: "Home",
-            external: true,
-            url: "../home",
+            external: false,
         },
         {
-            path: "/about",
+            path: "user.about",
             label: "Tentang Kami",
             external: true,
-            url: "../about/index.html",
         },
         {
-            path: "/booking",
+            path: "user.booking",
             label: "Booking",
-            external: true,
-            url: "../booking/index.html",
+            external: false,
         },
 
         { path: "user.katalog", label: "Katalog", external: false },
 
         { path: "user.tutorial", label: "Tutorial", external: false },
         {
-            path: "/riwayat",
+            path: "user.riwayat",
             label: "Riwayat Servis",
-            external: true,
-            url: "../riwayat/index.html",
+            external: false,
         },
         { path: "user.ulasan", label: "Ulasan", external: false },
     ];

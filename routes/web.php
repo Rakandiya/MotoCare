@@ -21,9 +21,12 @@ use App\Http\Controllers\User\TutorialController as UserTutorialController;
 use App\Http\Controllers\User\UlasanController as UserUlasanController;
 use App\Http\Controllers\User\KatalogController as UserKatalogController;
 
+use App\Http\Controllers\User\BookingController as UserBookingController; // Corrected Controller
+use App\Http\Controllers\User\RiwayatController as UserRiwayatController; // Added Controller
 
 //Middleware
 use App\Http\Middleware\AdminMiddleware;
+use App\Models\User;
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function () {
     // Route Dashboard
@@ -99,13 +102,16 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
         return Inertia::render('User/TambahProfil', ['userId' => $id]);
     })->name('tambah-profil');
 
+    // route booking
     Route::get('/booking', function () {
         return Inertia::render('User/Booking');
     })->name('booking');
+    
+    Route::post('/booking', [UserBookingController::class, 'store'])->name('booking.store'); // Corrected Controller
+    
 
-    Route::get('/riwayat', function () {
-        return Inertia::render('User/Riwayat');
-    })->name('riwayat');
+    Route::get('/riwayat', [UserRiwayatController::class, 'index'])->name('riwayat'); // Corrected route to use RiwayatController
+
 })->name('user.');
 
 Route::get('/', function () {
