@@ -86,6 +86,7 @@
   .selected {
     background-color: #febc96;
     border-radius: 40px;
+    display: inline-block;
   }
   
   .search {
@@ -162,6 +163,10 @@
 .total-bayar {
   padding: 5px; 
 }
+.total-bayar td:nth-child(2) {
+  padding: 5px;
+  text-align: left;
+}
 
 .info-invoice tr td {
   padding: 5px;
@@ -174,15 +179,8 @@
   padding: 5px;
 }
 
-.info-pemilik td:nth-child(2) {
 
-  
-}
 
-.info-invoice td:nth-child(2),
-.total-bayar td:nth-child(2){
-  text-align: end;
-}
 
   
   /*-----------------------------------*\
