@@ -6,8 +6,10 @@ import { Row, Col, Table } from "react-bootstrap";
 import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Link, useForm, Head, router } from "@inertiajs/react";
 
-export default function DetailBooking({ dataBooking }) {
+export default function DetailBooking({ dataBooking, totalPrice }) {
     const [booking, setBooking] = useState(dataBooking);
+
+    console.log(totalPrice);
 
     const [produkData, setProdukData] = useState([]);
     const [errorMessages, setErrorMessages] = useState({});
@@ -139,13 +141,11 @@ export default function DetailBooking({ dataBooking }) {
                     <td style={{ width: "15px" }}>:</td>
                     <td>{booking.invoice.catatan}</td>
                 </tr>
-                {/* <tr className={styles["tr"]}>
+                <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Total Pembayaran</th>
-                    <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>
-                        Rp. {booking.invoice.total_pembayaran.toFixed(2)}
-                    </td>
-                </tr> */}
+                    <td style={{ width: "15px" }}>:</td>
+                    <td>Rp. {totalPrice}</td>
+                </tr>
             </Table>
 
             <Table>

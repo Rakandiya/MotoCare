@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->enum('role', ['admin', 'user'])->default('user');
-            $table->string('photo')->nullable();
+            $table->string('foto')->nullable();
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
             $table->string('no_telepon')->nullable();
             $table->date('tanggal_lahir')->nullable();

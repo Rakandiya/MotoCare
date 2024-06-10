@@ -11,6 +11,7 @@ use App\Models\InvoiceItem;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 
 class BookingController extends Controller
@@ -72,7 +73,12 @@ class BookingController extends Controller
     public function show(Booking $booking)
     {
         $dataBooking = Booking::with(['user', 'katalog', 'invoice.items.produk'])->find($booking->id);
-        return Inertia::render("Admin/DetailBooking", compact('dataBooking'));
+
+        // Memanggil fungsi MySQL untuk menghitung total harga
+        $totalPrice = DB::selectOne("SELECT calculate_total_price(?) AS total_price", [$dataBooking->invoice->id]);;
+
+        $totalPrice = $totalPrice->total_price ?? 0;
+        return Inertia::render("Admin/DetailBooking", compact('dataBooking', 'totalPrice'));
     }
 
     // menampilkan form untuk edit booking
@@ -143,41 +149,47 @@ class BookingController extends Controller
     }
 
     public function updateInvoice(Request $request, Booking $booking)
-    {
+{
+    $validatedData = $request->validate([
+        'user_id' => 'required',
+        'booking_id' => 'required',
+        'tanggal' => 'required|date',
+        'status' => 'required',
+        'catatan' => 'nullable',
+    ]);
 
-        $validatedData = $request->validate([
-            'user_id' => 'required',
-            'booking_id' => 'required',
-            'tanggal' => 'required|date',
-            'status' => 'required',
-            'catatan' => 'nullable',
-        ]);
+    $totalHarga = 0;
 
-        $totalHarga = 0;
+    foreach ($request->produk as $produk) {
+        $totalHarga += $produk['harga'] * $produk['jumlah'];
+    }
 
-        foreach($request->produk as $produk){
-            $totalHarga += $produk['harga'] * $produk['jumlah'];
+    $invoice = Invoice::where('booking_id', $booking->id)->first();
+    $invoice->update([
+        'user_id' => $validatedData['user_id'],
+        'booking_id' => $validatedData['booking_id'],
+        'tanggal' => $validatedData['tanggal'],
+        'status' => $validatedData['status'],
+        'catatan' => $validatedData['catatan'],
+        // 'total_harga' => $totalHarga,
+    ]);
+
+    $invoiceItems = InvoiceItem::where('invoice_id', $invoice->id)->get();
+
+    if ($invoiceItems->count() > 0) {
+        foreach ($invoiceItems as $invoiceItem) {
+            $invoiceItem->delete();
         }
+    }
 
-        $invoice = Invoice::where('booking_id', $booking->id)->first();
-        $invoice->update([
-            'user_id' => $validatedData['user_id'],
-            'booking_id' => $validatedData['booking_id'],
-            'tanggal' => $validatedData['tanggal'],
-            'status' => $validatedData['status'],
-            'catatan' => $validatedData['catatan'],
-            // 'total_harga' => $validatedData['total_harga'],
-        ]);
-
-        $invoiceItems = InvoiceItem::where('invoice_id', $invoice->id)->get();
-
-        if($invoiceItems->count() > 0){
-            foreach($invoiceItems as $invoiceItem){
-                $invoiceItem->delete();
+    try {
+        foreach ($request->produk as $produk) {
+            // Check if stock is sufficient before inserting
+            $product = Produk::find($produk['id']);
+            if ($product->stok < $produk['jumlah']) {
+                return redirect()->route('admin.booking.index')->with('error', 'Insufficient stock for product: ' . $product->nama_produk);
             }
-        }
 
-        foreach($request->produk as $produk){
             InvoiceItem::create([
                 'invoice_id' => $invoice->id,
                 'produk_id' => $produk['id'],
@@ -185,9 +197,16 @@ class BookingController extends Controller
                 'harga' => $produk['harga'],
             ]);
         }
-
-        return redirect()->route('admin.booking.index')->with('success', 'Data invoice berhasil diperbarui');
+    } catch (QueryException $e) {
+        // Handle potential errors thrown by the trigger
+        if ($e->getCode() == '45000') {
+            return redirect()->route('admin.booking.index')->with('error', 'Insufficient stock for product');
+        }
+        throw $e;
     }
+
+    return redirect()->route('admin.booking.index')->with('success', 'Data invoice berhasil diperbarui');
+}
 
     public function updateStatusBooking(Request $request, Booking $booking)
     {

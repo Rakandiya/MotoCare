@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date("tanggal")->nullable();
             $table->enum("status", ["Paid", "Unpaid"])->default("Unpaid");
             $table->text("catatan")->nullable();
-            $table->integer("total_harga")->nullable();
+            // $table->integer("total_harga")->nullable();
             $table->timestamps();
         });
     }
