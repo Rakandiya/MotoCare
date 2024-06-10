@@ -85,25 +85,27 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
                                             />
                                         </div>
                                         <ul id={styles["booking-list"]}>
-                                            {filteredBookings.map((booking) => (
-                                                <li
-                                                    key={booking.id}
-                                                    id={`list-${booking.id}`}
-                                                    className={
-                                                        selectedBookingId ===
-                                                        booking.id
-                                                            ? `${styles.selected} ${styles.highlighted}`
-                                                            : ""
-                                                    }
-                                                    onClick={() =>
-                                                        handleBookingClick(
+                                            {filteredBookings.map(
+                                                (booking, index) => (
+                                                    <li
+                                                        key={booking.id}
+                                                        id={`list-${booking.id}`}
+                                                        className={
+                                                            selectedBookingId ===
                                                             booking.id
-                                                        )
-                                                    }
-                                                >
-                                                    Booking {number}
-                                                </li>
-                                            ))}
+                                                                ? `${styles.selected} ${styles.highlighted}`
+                                                                : ""
+                                                        }
+                                                        onClick={() =>
+                                                            handleBookingClick(
+                                                                booking.id
+                                                            )
+                                                        }
+                                                    >
+                                                        Booking {index + 1}
+                                                    </li>
+                                                )
+                                            )}
                                         </ul>
                                     </div>
                                 </Col>

@@ -8,9 +8,7 @@ import ReactSelect from "react-select";
 
 export default function Booking({ users, katalogs, auth }) {
     const [selectedJenisLayanan, setSelectedJenisLayanan] = useState("");
-    const [selectedUser, setSelectedUser] = useState(
-        users && users.length > 0 ? users[0].id : null
-    );
+    const [selectedUser, setSelectedUser] = useState(null);
 
     const [selectedKatalog, setSelectedKatalog] = useState("");
     const [errorMessages, setErrorMessages] = useState({});
@@ -183,117 +181,109 @@ export default function Booking({ users, katalogs, auth }) {
                                     <Col className="form-container-col">
                                         <h3>Informasi Motor</h3>
                                         <table className={styles["form-table"]}>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <ReactSelect
-                                                            id="katalog"
-                                                            options={
-                                                                dataSelectKatalog
-                                                            }
-                                                            value={dataSelectKatalog.find(
-                                                                (option) =>
-                                                                    option.value ===
-                                                                    selectedKatalog
-                                                            )}
-                                                            onChange={(
-                                                                selectedOption
-                                                            ) => {
-                                                                setSelectedKatalog(
-                                                                    selectedOption.value
-                                                                );
-                                                                setData(
-                                                                    (
-                                                                        prevData
-                                                                    ) => ({
-                                                                        ...prevData,
-                                                                        katalog_id:
-                                                                            selectedOption.value,
-                                                                    })
-                                                                );
-                                                            }}
-                                                            placeholder="Pilih Katalog"
-                                                        />
-                                                    </td>
-                                                </tr>
-                                                {errorMessages.katalog_id && (
-                                                    <p className={styles.error}>
-                                                        Katalog is required
-                                                    </p>
-                                                )}
-                                                <tr>
-                                                    <td>
-                                                        <input
-                                                            type="text"
-                                                            id="th-pembuatan"
-                                                            name="tahun_pembuatan"
-                                                            placeholder="Tahun Pembuatan"
-                                                            value={
-                                                                data.tahun_pembuatan
-                                                            }
-                                                            onChange={
-                                                                handleInputChange
-                                                            }
-                                                        />
-                                                    </td>
-                                                </tr>
-                                                {errorMessages.tahun_pembuatan && (
-                                                    <p className={styles.error}>
-                                                        {
-                                                            errorMessages.tahun_pembuatan
+                                            <tr>
+                                                <td>
+                                                    <ReactSelect
+                                                        id="katalog"
+                                                        options={
+                                                            dataSelectKatalog
                                                         }
-                                                    </p>
-                                                )}
+                                                        value={dataSelectKatalog.find(
+                                                            (option) =>
+                                                                option.value ===
+                                                                selectedKatalog
+                                                        )}
+                                                        onChange={(
+                                                            selectedOption
+                                                        ) => {
+                                                            setSelectedKatalog(
+                                                                selectedOption.value
+                                                            );
+                                                            setData(
+                                                                (prevData) => ({
+                                                                    ...prevData,
+                                                                    katalog_id:
+                                                                        selectedOption.value,
+                                                                })
+                                                            );
+                                                        }}
+                                                        placeholder="Pilih Katalog"
+                                                    />
+                                                </td>
+                                            </tr>
+                                            {errorMessages.katalog_id && (
+                                                <p className={styles.error}>
+                                                    Katalog is required
+                                                </p>
+                                            )}
+                                            <tr>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        id="th-pembuatan"
+                                                        name="tahun_pembuatan"
+                                                        placeholder="Tahun Pembuatan"
+                                                        value={
+                                                            data.tahun_pembuatan
+                                                        }
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                    />
+                                                </td>
+                                            </tr>
+                                            {errorMessages.tahun_pembuatan && (
+                                                <p className={styles.error}>
+                                                    {
+                                                        errorMessages.tahun_pembuatan
+                                                    }
+                                                </p>
+                                            )}
 
-                                                <tr>
-                                                    <td>
-                                                        <input
-                                                            type="text"
-                                                            id="no-plat"
-                                                            name="nomor_polisi"
-                                                            placeholder="Nomor Polisi/Nomor Plat"
-                                                            required
-                                                            value={
-                                                                data.nomor_polisi
-                                                            }
-                                                            onChange={
-                                                                handleInputChange
-                                                            }
-                                                        />
-                                                    </td>
-                                                </tr>
-                                                {errorMessages.nomor_polisi && (
-                                                    <p className={styles.error}>
-                                                        {
-                                                            errorMessages.nomor_polisi
+                                            <tr>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        id="no-plat"
+                                                        name="nomor_polisi"
+                                                        placeholder="Nomor Polisi/Nomor Plat"
+                                                        required
+                                                        value={
+                                                            data.nomor_polisi
                                                         }
-                                                    </p>
-                                                )}
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                    />
+                                                </td>
+                                            </tr>
+                                            {errorMessages.nomor_polisi && (
+                                                <p className={styles.error}>
+                                                    {errorMessages.nomor_polisi}
+                                                </p>
+                                            )}
 
-                                                <tr>
-                                                    <td>
-                                                        <input
-                                                            type="text"
-                                                            id="km-kendaraan"
-                                                            name="km_kendaraan"
-                                                            placeholder="Kilometer Kendaraan"
-                                                            value={
-                                                                data.km_kendaraan
-                                                            }
-                                                            onChange={
-                                                                handleInputChange
-                                                            }
-                                                        />
-                                                    </td>
-                                                </tr>
-                                                {errorMessages.km_kendaraan && (
-                                                    <p className={styles.error}>
-                                                        {
-                                                            errorMessages.km_kendaraan
+                                            <tr>
+                                                <td>
+                                                    <input
+                                                        type="text"
+                                                        id="km-kendaraan"
+                                                        name="km_kendaraan"
+                                                        placeholder="Kilometer Kendaraan"
+                                                        value={
+                                                            data.km_kendaraan
                                                         }
-                                                    </p>
-                                                )}
-                                            </tbody>
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                    />
+                                                </td>
+                                            </tr>
+                                            {errorMessages.km_kendaraan && (
+                                                <p className={styles.error}>
+                                                    {errorMessages.km_kendaraan}
+                                                </p>
+                                            )}
                                         </table>
                                     </Col>
                                 </Row>
