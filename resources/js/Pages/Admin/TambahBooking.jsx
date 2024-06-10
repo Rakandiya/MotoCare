@@ -302,7 +302,6 @@ export default function TambahBooking({ katalogs, users }) {
                                 rows="4"
                                 placeholder="catatan Tambahan"
                                 autoComplete="off"
-                                required
                                 onChange={handleInputChange}
                                 value={data.catatan}
                             ></textarea>

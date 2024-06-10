@@ -5,11 +5,14 @@ import DataTable from "react-data-table-component";
 import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Link, useForm, Head, router } from "@inertiajs/react";
 import { Modal, Button } from "react-bootstrap";
+import moment from "moment";
 
-export default function ManajemenBooking({ bookings, users, katalog }) {
+export default function ManajemenBooking({ bookings }) {
     const [showDetail, setShowDetail] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
+
+    console.log(bookings);
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredBookings, setFilteredBookings] = useState(bookings);
@@ -17,16 +20,7 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
     useEffect(() => {
         const results = bookings.filter(
             (booking) =>
-                booking.user.nama
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                booking.katalog.merk
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                booking.katalog.model
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                booking.tahun_pembuatan
+                booking.user_nama
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
                 booking.nomor_polisi
@@ -38,10 +32,12 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
                 booking.jadwal_booking
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
-                booking.catatan
+                booking.booking_status
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()) ||
-                booking.status.toLowerCase().includes(searchTerm.toLowerCase())
+                booking.invoice_status
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())
         );
         setFilteredBookings(results);
     }, [searchTerm, bookings]);
@@ -58,11 +54,6 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
         id: "",
         user_id: "",
         jenis_layanan: "",
-        katalog_id: "",
-        merk_motor: "",
-        tahun_pembuatan: "",
-        nomor_polisi: "",
-        km_kendaraan: "",
         jadwal_booking: "",
         catatan: "",
     });
@@ -117,10 +108,6 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
         }
     };
 
-    const { data: status, setData: setStatus } = useForm({
-        status: "",
-    });
-
     const updateBookingStatus = (bookingId, newStatus) => {
         router.visit(
             route("admin.booking.updateStatusBooking", { booking: bookingId }),
@@ -164,14 +151,14 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
 
     const columns = [
         {
-            name: "ID",
-            selector: (row) => row.id,
+            name: "No",
+            selector: (row, index) => index + 1,
             width: "7%",
         },
         {
-            name: "Name",
+            name: "Nama",
             // ambil data name dari tabel users
-            selector: (row) => row.user.nama,
+            selector: (row) => row.user_nama,
         },
         {
             name: "Service",
@@ -181,11 +168,11 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
             name: "Status Booking",
             selector: (row) => (
                 <select
-                    value={row.status}
+                    value={row.booking_status}
                     onChange={(e) =>
-                        updateBookingStatus(row.id, e.target.value)
+                        updateBookingStatus(row.booking_id, e.target.value)
                     }
-                    style={getStatusStyle(row.status)}
+                    style={getStatusStyle(row.booking_status)}
                 >
                     <option value="Diproses">Diproses</option>
                     <option value="Selesai">Selesai</option>
@@ -195,18 +182,27 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
         },
         {
             name: "Tanggal",
-            selector: (row) => row.jadwal_booking,
+            selector: (row) => {
+                return new Date(row.jadwal_booking).toLocaleDateString(
+                    "id-ID",
+                    {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                    }
+                );
+            },
         },
         {
             name: "Status Pembayaran",
             selector: (row) => (
                 <ButtonAdmin
-                    style={getPaymentStatusStyle(row.invoice.status)}
+                    style={getPaymentStatusStyle(row.invoice_status)}
                     onClick={() =>
-                        togglePaymentStatus(row.invoice.id, row.invoice.status)
+                        togglePaymentStatus(row.invoice_id, row.invoice_status)
                     }
                 >
-                    {row.invoice.status}
+                    {row.invoice_status}
                 </ButtonAdmin>
             ),
             width: "17%",
@@ -218,7 +214,7 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
                     <Link
                         title="Invoice"
                         href={route("admin.booking.createInvoice", {
-                            booking: row.id,
+                            booking: row.booking_id,
                         })}
                     >
                         <box-icon
@@ -229,7 +225,7 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
                     </Link>
                     <Link
                         title="Detail"
-                        href={route("admin.booking.show", [row.id])}
+                        href={route("admin.booking.show", [row.booking_id])}
                     >
                         <box-icon
                             name="info-circle"
@@ -239,7 +235,7 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
                     </Link>
                     <Link
                         title="Edit"
-                        href={route("admin.booking.edit", [row.id])}
+                        href={route("admin.booking.edit", [row.booking_id])}
                         className="mx-2"
                     >
                         <box-icon
@@ -268,7 +264,9 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
     const handleDelete = (e) => {
         e.preventDefault();
         deleteRoute(
-            route("admin.booking.delete", { booking: selectedBooking.id }),
+            route("admin.booking.delete", {
+                booking: selectedBooking.booking_id,
+            }),
             {
                 preserveScroll: true,
                 onSuccess: () => {
@@ -294,11 +292,7 @@ export default function ManajemenBooking({ bookings, users, katalog }) {
             id: "",
             user_id: "",
             jenis_layanan: "",
-            katalog_id: "",
-            merk_motor: "",
-            tahun_pembuatan: "",
             nomor_polisi: "",
-            km_kendaraan: "",
             jadwal_booking: "",
             catatan: "",
         });

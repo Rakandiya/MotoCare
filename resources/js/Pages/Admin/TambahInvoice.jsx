@@ -532,7 +532,6 @@ export default function AddInvoice({ booking, produks }) {
                                 id="catatan"
                                 value={data.catatan}
                                 autoComplete="off"
-                                required
                                 className={styles["catatan"]}
                                 onChange={handleInputChange}
                             ></textarea>

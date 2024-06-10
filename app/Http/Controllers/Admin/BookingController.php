@@ -19,7 +19,7 @@ class BookingController extends Controller
     // menampilkan daftar semua booking
     public function index()
     {
-        $bookings = Booking::with(['user', 'katalog', 'invoice'])->where('user_id', auth()->user()->id)->get();
+        $bookings = DB::table('ViewBookingDetails')->get();
         return Inertia::render('Admin/ManajemenBooking', compact('bookings'));
     }
 
@@ -35,37 +35,31 @@ class BookingController extends Controller
     // menyimpan data booking baru ke dalam database
     public function store(Request $request)
     {
-        // dd($request->all());
-        $validatedData = $request -> validate([
-            'user_id' => 'required',
-            'jenis_layanan' => 'required',
-            'katalog_id' => 'required',
-            'tahun_pembuatan' => 'required|numeric',
-            'nomor_polisi' => 'required',
-            'km_kendaraan' => 'required|numeric',
-            'jadwal_booking' => 'required|date',
-            'catatan' => 'required',
+        DB::transaction(function () use ($request) {
+            $validatedData = $request->validate([
+                'user_id' => 'required',
+                'jenis_layanan' => 'required',
+                'katalog_id' => 'required',
+                'tahun_pembuatan' => 'required|numeric',
+                'nomor_polisi' => 'required',
+                'km_kendaraan' => 'required|numeric',
+                'jadwal_booking' => 'required|date',
+                'catatan' => 'required',
+            ]);
 
+            // Memanggil stored procedure yang telah diperbarui
+        DB::select('CALL CreateBooking(?, ?, ?, ?, ?, ?, ?, ?)', [
+            $validatedData['user_id'],
+            $validatedData['jenis_layanan'],
+            $validatedData['katalog_id'],
+            $validatedData['tahun_pembuatan'],
+            $validatedData['nomor_polisi'],
+            $validatedData['km_kendaraan'],
+            $validatedData['jadwal_booking'],
+            $validatedData['catatan']
         ]);
+        });
 
-        $booking = Booking::create([
-            'user_id' => $validatedData['user_id'],
-            'jenis_layanan' => $validatedData['jenis_layanan'],
-            'katalog_id' => $validatedData['katalog_id'],
-            'tahun_pembuatan' => $validatedData['tahun_pembuatan'],
-            'nomor_polisi' => $validatedData['nomor_polisi'],
-            'km_kendaraan' => $validatedData['km_kendaraan'],
-            'jadwal_booking' => $validatedData['jadwal_booking'],
-            'status' => 'diproses',
-            'catatan' => $validatedData['catatan'],
-        ]);
-
-
-        Invoice::create([
-            'user_id' => $validatedData['user_id'],
-            'booking_id' => $booking->id,
-            'status' => 'Unpaid',
-        ]);
         return redirect()->route('admin.booking.index')->with('success', 'Data booking berhasil ditambahkan');
     }
 
@@ -93,30 +87,31 @@ class BookingController extends Controller
     // memperbarui/update data booking yang ada
     public function update(Request $request, Booking $booking)
     {
-        // untuk update
-        $validatedData = $request->validate([
-            'user_id' => 'required',
-            'jenis_layanan' => 'required',
-            'katalog_id' => 'required',
-            'tahun_pembuatan' => 'required|numeric',
-            'nomor_polisi' => 'required',
-            'km_kendaraan' => 'required|numeric',
-            'jadwal_booking' => 'required|date',
-            'status' => 'required',
-            'catatan' => 'nullable',
-        ]);
+        DB::transaction(function () use ($request, $booking) {
+            $validatedData = $request->validate([
+                'user_id' => 'required',
+                'jenis_layanan' => 'required',
+                'katalog_id' => 'required',
+                'tahun_pembuatan' => 'required|numeric',
+                'nomor_polisi' => 'required',
+                'km_kendaraan' => 'required|numeric',
+                'jadwal_booking' => 'required|date',
+                'status' => 'required',
+                'catatan' => 'nullable',
+            ]);
 
-        $booking->update([
-            'user_id' => $validatedData['user_id'],
-            'jenis_layanan' => $validatedData['jenis_layanan'],
-            'katalog_id' => $validatedData['katalog_id'],
-            'tahun_pembuatan' => $validatedData['tahun_pembuatan'],
-            'nomor_polisi' => $validatedData['nomor_polisi'],
-            'km_kendaraan' => $validatedData['km_kendaraan'],
-            'jadwal_booking' => $validatedData['jadwal_booking'],
-            'status' => $validatedData['status'],
-            'catatan' => $validatedData['catatan'],
-        ]);
+            $booking->update([
+                'user_id' => $validatedData['user_id'],
+                'jenis_layanan' => $validatedData['jenis_layanan'],
+                'katalog_id' => $validatedData['katalog_id'],
+                'tahun_pembuatan' => $validatedData['tahun_pembuatan'],
+                'nomor_polisi' => $validatedData['nomor_polisi'],
+                'km_kendaraan' => $validatedData['km_kendaraan'],
+                'jadwal_booking' => $validatedData['jadwal_booking'],
+                'status' => $validatedData['status'],
+                'catatan' => $validatedData['catatan'],
+            ]);
+        });
 
         return redirect()->route('admin.booking.index')->with('success', 'Data booking berhasil diperbarui');
     }

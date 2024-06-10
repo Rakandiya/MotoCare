@@ -9,6 +9,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class KatalogController extends Controller
 {
@@ -17,7 +18,10 @@ class KatalogController extends Controller
      */
     public function index()
     {
-        $katalogs = Katalog::all();
+        // $katalogs = Katalog::all();
+        $katalogs = DB::table('katalogs')->select('*', DB::raw("CONCAT(merk, ' - ', model) AS merk_model"))->get();
+
+        // dd($katalogs);
         return Inertia::render("Admin/ManajemenKatalog", ['katalogs' => $katalogs]);
     }
 

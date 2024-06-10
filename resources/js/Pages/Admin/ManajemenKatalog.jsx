@@ -65,7 +65,7 @@ export default function ManajemenKatalog({ katalogs }) {
     const columns = [
         {
             name: "Merk Motor",
-            selector: (row) => row.merk + " " + row.model,
+            selector: (row) => row.merk_model,
         },
         {
             name: "Action",
@@ -519,30 +519,30 @@ export default function ManajemenKatalog({ katalogs }) {
                     <Table borderless className={styles["table"]}>
                         <tbody>
                             <tr>
-                                <th>Merk</th>
-                                <td className={styles["td"]}>:</td>
+                                <th style={{ width: "10%" }}>Merk</th>
+                                <td style={{ width: "5px" }}>:</td>
                                 <td>
                                     {selectedKatalog && selectedKatalog.merk}
                                 </td>
                             </tr>
                             <tr>
-                                <th>Model</th>
-                                <td className={styles["td"]}>:</td>
+                                <th style={{ width: "10%" }}>Model</th>
+                                <td style={{ width: "5px" }}>:</td>
                                 <td className="model">
                                     {selectedKatalog && selectedKatalog.model}
                                 </td>
                             </tr>
                             <tr>
-                                <th>Deskripsi</th>
-                                <td className={styles["td"]}>:</td>
+                                <th style={{ width: "10%" }}>Deskripsi</th>
+                                <td style={{ width: "5px" }}>:</td>
                                 <td className="deskripsi">
                                     {selectedKatalog &&
                                         selectedKatalog.deskripsi}
                                 </td>
                             </tr>
                             <tr>
-                                <th>Gambar</th>
-                                <td className={styles["td"]}>:</td>
+                                <th style={{ width: "10%" }}>Gambar</th>
+                                <td style={{ width: "5px" }}>:</td>
                                 <td className="gambar-modal">
                                     {selectedKatalog &&
                                     selectedKatalog.gambar ? (
@@ -552,7 +552,10 @@ export default function ManajemenKatalog({ katalogs }) {
                                                 selectedKatalog.gambar
                                             }
                                             alt="Image Preview Gambar Motor"
-                                            className="img-preview-modal"
+                                            className={
+                                                styles["img-preview-modal"]
+                                            }
+                                            width="200px"
                                         />
                                     ) : (
                                         "Gambar tidak tersedia"
