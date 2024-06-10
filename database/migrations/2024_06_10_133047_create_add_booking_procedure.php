@@ -50,6 +50,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('add_booking_procedure');
+        DB::unprepared('DROP PROCEDURE IF EXISTS CreateBooking');
     }
 };

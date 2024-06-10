@@ -42,6 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reduce_stock_trigger');
+        DB::unprepared('DROP TRIGGER IF EXISTS reduce_stock_after_insert');
     }
 };
