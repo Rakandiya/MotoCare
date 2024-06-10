@@ -315,6 +315,7 @@
     aspect-ratio: var(--width) / var(--height);
     background-color: var(--light-gray);
     overflow: hidden;
+    margin-left: 360px;
   }
   
   .img-cover {
@@ -576,6 +577,63 @@
     text-align: center;
     font-size: var(--fs-6);
   }
+
+  /*-----------------------------------*\
+  #WORK
+\*-----------------------------------*/
+
+.work .container {
+  padding-inline: 0;
+}
+
+.work .section-subtitle {
+  margin-block-end: 24px;
+  color: var(--white);
+}
+
+.work .section-title {
+  margin-block-end: 24px;
+  color: var(--white);
+}
+
+.work-card {
+  position: relative;
+}
+
+.work-card .card-content {
+  background-color: var(--white);
+  max-width: 50%;
+  padding: 30px 10px;
+  margin-block-start: -60px;
+  margin-inline: auto;
+  position: relative;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.work-card .card-subtitle {
+  font-family: var(--ff-Poppins);
+  text-transform: uppercase;
+  color: var(--international-orange-engineering);
+  font-weight: var(--fw-700);
+  margin-block-end: 5px;
+}
+
+.work-card .card-title {
+  margin-block-end: 10px;
+}
+
+.work-card .card-btn {
+  background-color: var(--international-orange-engineering);
+  color: var(--white);
+  font-size: 2rem;
+  margin-inline: auto;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-circle);
+}
   
   /*-----------------------------------*\
     #MEDIA QUERIES
