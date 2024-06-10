@@ -43,6 +43,80 @@ const HeroSection = ({ auth }) => {
                     </figure>
                 </div>
             </section>
+
+            <section className="section work" aria-labelledby="work-label">
+                <div className={`${styles["container"]}`}>
+                    <p
+                        className={`${styles["section-subtitle"]} ${styles["light"]}`}
+                        style={{
+                            color: "white",
+                        }}
+                        id="work-label"
+                    >
+                        TOTAL
+                    </p>
+
+                    <h2
+                        className={`${styles["h2"]} ${styles["section-title"]}`}
+                        style={{
+                            color: "white",
+                        }}
+                    >
+                        BOOKING
+                    </h2>
+
+                    <ul className={`${styles["has-scrollbar"]}`}>
+                        <li className={`${styles["scrollbar-item"]}`}>
+                            <div className={`${styles["work-card"]}`}>
+                                <figure
+                                    className={`${styles["card-banner"]} ${styles["img-holder"]}`}
+                                    style={{
+                                        width: "350px",
+                                        height: "406px",
+                                    }}
+                                >
+                                    <img
+                                        src="/images/work-1.png"
+                                        width="350"
+                                        height="406"
+                                        loading="lazy"
+                                        alt="Engine Repair"
+                                        className={`${styles["img-cover"]}`}
+                                    />
+                                </figure>
+
+                                <div className={`${styles["card-content"]}`}>
+                                    <p className={`${styles["card-subtitle"]}`}>
+                                        PERINGKAT 1
+                                    </p>
+
+                                    <h3
+                                        className={`${styles["h3"]} ${styles["card-title"]}`}
+                                    >
+                                        JUMLAH BOOKING 234
+                                    </h3>
+
+                                    <a
+                                        href="#"
+                                        className={`${styles["card-btn"]}`}
+                                    >
+                                        <span
+                                            className={`${styles["next-icon"]}`}
+                                        >
+                                            <box-icon
+                                                name="right-arrow-alt"
+                                                color="white"
+                                            ></box-icon>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+
+                        
+                    </ul>
+                </div>
+            </section>
         </UserLayout>
     );
 };
