@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ProdukController;
 use App\Http\Controllers\Auth\LoginController;
 
 // User Controller
+use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\TutorialController as UserTutorialController;
 use App\Http\Controllers\User\UlasanController as UserUlasanController;
 use App\Http\Controllers\User\KatalogController as UserKatalogController;
@@ -96,9 +97,7 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
     
     Route::get('/katalog', [UserKatalogController::class, 'index'])->name('katalog');
     
-    Route::get('/home', function () {
-        return Inertia::render('User/Home');
-    })->name('home');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     Route::get('/about', function () {
         return Inertia::render('User/About');

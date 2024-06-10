@@ -48,16 +48,16 @@ class BookingController extends Controller
             ]);
 
             // Memanggil stored procedure yang telah diperbarui
-        DB::select('CALL CreateBooking(?, ?, ?, ?, ?, ?, ?, ?)', [
-            $validatedData['user_id'],
-            $validatedData['jenis_layanan'],
-            $validatedData['katalog_id'],
-            $validatedData['tahun_pembuatan'],
-            $validatedData['nomor_polisi'],
-            $validatedData['km_kendaraan'],
-            $validatedData['jadwal_booking'],
-            $validatedData['catatan']
-        ]);
+            DB::select('CALL CreateBooking(?, ?, ?, ?, ?, ?, ?, ?)', [
+                $validatedData['user_id'],
+                $validatedData['jenis_layanan'],
+                $validatedData['katalog_id'],
+                $validatedData['tahun_pembuatan'],
+                $validatedData['nomor_polisi'],
+                $validatedData['km_kendaraan'],
+                $validatedData['jadwal_booking'],
+                $validatedData['catatan']
+            ]);
         });
 
         return redirect()->route('admin.booking.index')->with('success', 'Data booking berhasil ditambahkan');
