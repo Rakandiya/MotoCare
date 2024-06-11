@@ -36,9 +36,43 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
         setSearchTerm(e.target.value.toLowerCase());
     };
 
-    const filteredBookings = bookingList.filter((booking) =>
-        booking.id.toString().toLowerCase().includes(searchTerm)
-    );
+    const filteredBookings = bookingList.filter((booking, index) => {
+        const indexVal = index + 1;
+        const userVal = booking.user.nama
+            .toString()
+            .toLowerCase()
+            .includes(searchTerm);
+        const merk = booking.katalog.merk
+            .toString()
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        const model = booking.katalog.model
+            .toString()
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        const polisiVal = booking.nomor_polisi
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        const jenisLayananVal = booking.jenis_layanan
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        const statusVal = booking.status
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        const invoiceStatusVal = booking.invoice.status
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+
+        return (
+            userVal ||
+            merk ||
+            model ||
+            polisiVal ||
+            jenisLayananVal ||
+            statusVal ||
+            invoiceStatusVal
+        );
+    });
 
     useEffect(() => {
         console.log(bookings, users); // Check the initial values
