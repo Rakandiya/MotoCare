@@ -114,6 +114,9 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
 
     Route::get('/riwayat', [UserRiwayatController::class, 'index'])->name('riwayat'); // Corrected route to use RiwayatController
 
+    Route::get('/FaQ', function () {
+        return Inertia::render('User/FaQ');
+    })->name('FaQ');
 })->name('user.');
 
 Route::get('/', function () {

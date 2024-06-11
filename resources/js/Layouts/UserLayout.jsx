@@ -50,6 +50,7 @@ export default function UserLayout({ auth, children }) {
             external: false,
         },
         { path: "user.ulasan", label: "Ulasan", external: false },
+        { path: "user.FaQ", label: "FaQ", external: false },
     ];
 
     const handleLogout = (e) => {
