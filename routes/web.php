@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 // Admin Controller
 use App\Http\Controllers\Admin\DashboardController;
@@ -29,7 +30,26 @@ use App\Http\Controllers\User\RiwayatController as UserRiwayatController; // Add
 use App\Http\Middleware\AdminMiddleware;
 use App\Models\User;
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function () {
+// Route::get('/', function () {
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
+
+Route::get('/dashboard', function () {
+    return redirect()->route('user.home');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
+
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin', 'verified']], function () {
     // Route Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -93,7 +113,7 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
 
     Route::get('/ulasan', [UserUlasanController::class, 'index'])->name('ulasan');
 
-    Route::post('/ulasan', [UserUlasanController::class, 'store'])->name('ulasan.create');
+    Route::post('/ulasan', [UserUlasanController::class, 'store'])->name('ulasan.create')->middleware('verified');
     
     Route::get('/katalog', [UserKatalogController::class, 'index'])->name('katalog');
     
@@ -105,14 +125,14 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
 
     Route::get('/tambah-profil/{id}', function ($id) {
         return Inertia::render('User/TambahProfil', ['userId' => $id]);
-    })->name('tambah-profil');
+    })->name('tambah-profil')->middleware('verified');
 
     // route booking
     Route::get('/booking', [UserBookingController::class, 'index'])->name('booking');
-    Route::post('/booking', [UserBookingController::class, 'store'])->name('booking.store'); // Corrected Controller
+    Route::post('/booking', [UserBookingController::class, 'store'])->name('booking.store')->middleware('verified'); // Corrected Controller
     
 
-    Route::get('/riwayat', [UserRiwayatController::class, 'index'])->name('riwayat'); // Corrected route to use RiwayatController
+    Route::get('/riwayat', [UserRiwayatController::class, 'index'])->name('riwayat')->middleware('verified'); // Corrected route to use RiwayatController
 
 })->name('user.');
 
@@ -120,24 +140,8 @@ Route::get('/', function () {
     return Inertia::render('Register');
 })->name('auth');
 
-Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/forgot', [LoginController::class, 'forgot'])->name('forgot');
-
-Route::get('/change-password', [LoginController::class, 'changePasswordPage'])->name('changePasswordPage');
-Route::put('/change-password', [LoginController::class, 'changePassword'])->name('changePassword');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::put('/profile/{id}', [ProfileController::class, 'store'])->name('profile.store');
 
-// Uncomment if needed
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-
-// Route::middleware('auth')->group(function () {
-//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-// });
-
-// require __DIR__.'/auth.php';
+require __DIR__.'/auth.php';

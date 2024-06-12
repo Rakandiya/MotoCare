@@ -10,7 +10,7 @@ export default function Register({ auth, flash }) {
     const registerLinkRef = useRef(null);
     const forgotLinkRef = useRef(null);
 
-    console.log(flash);
+    // console.log(flash);
 
     useEffect(() => {
         const wrapper = wrapperRef.current;
@@ -196,7 +196,7 @@ export default function Register({ auth, flash }) {
             return;
         }
         e.preventDefault();
-        postRegister("/register");
+        postRegister(route("register"));
     };
 
     const handleForgotSubmit = (e) => {
@@ -252,7 +252,7 @@ export default function Register({ auth, flash }) {
                                         </h3>
                                     )}
 
-                                    {flash.success && (
+                                    {/* {flash.success && (
                                         <h3
                                             style={{
                                                 color: "white",
@@ -264,7 +264,7 @@ export default function Register({ auth, flash }) {
                                         >
                                             {flash.success}
                                         </h3>
-                                    )}
+                                    )} */}
                                     <form onSubmit={handleLoginSubmit}>
                                         <div className={styles["input-box"]}>
                                             <span className={styles.icon}>

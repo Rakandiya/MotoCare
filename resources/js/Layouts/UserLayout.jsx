@@ -111,10 +111,7 @@ export default function UserLayout({ auth, children }) {
                     </nav>
 
                     {auth && !auth.user ? (
-                        <Link
-                            href={route("auth")}
-                            className={styles["button-login"]}
-                        >
+                        <Link href="/" className={styles["button-login"]}>
                             <span className="span">SIGN IN / SIGN UP</span>
 
                             <box-icon
