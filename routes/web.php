@@ -4,8 +4,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
-// Admin Controller
+// // Admin Controller
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TutorialController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -14,9 +15,10 @@ use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\KatalogController;
 use App\Http\Controllers\Admin\UlasanController;
 use App\Http\Controllers\Admin\ProdukController;
+use App\Http\Controllers\Admin\JenisLayananController;
 use App\Http\Controllers\Auth\LoginController;
 
-// User Controller
+// // User Controller
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\TutorialController as UserTutorialController;
 use App\Http\Controllers\User\UlasanController as UserUlasanController;
@@ -24,12 +26,32 @@ use App\Http\Controllers\User\KatalogController as UserKatalogController;
 
 use App\Http\Controllers\User\BookingController as UserBookingController; // Corrected Controller
 use App\Http\Controllers\User\RiwayatController as UserRiwayatController; // Added Controller
+use App\Http\Controllers\User\ProfileController as UserProfileController;
 
-//Middleware
+// //Middleware
 use App\Http\Middleware\AdminMiddleware;
 use App\Models\User;
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function () {
+// // Route::get('/', function () {
+// //     return Inertia::render('Welcome', [
+// //         'canLogin' => Route::has('login'),
+// //         'canRegister' => Route::has('register'),
+// //         'laravelVersion' => Application::VERSION,
+// //         'phpVersion' => PHP_VERSION,
+// //     ]);
+// // });
+
+Route::get('/dashboard', function () {
+    return redirect()->route('user.home');
+})->middleware(['auth'])->name('dashboard');
+
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
+
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']], function () {
     // Route Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -84,16 +106,22 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], f
     Route::post('/manajemen-produk', [ProdukController::class, 'store'])->name('produk.store');
     Route::put("/manajemen-produk/{produk}", [ProdukController::class, 'update'])->name('produk.update');
     Route::delete("/manajemen-produk/{produk}", [ProdukController::class, 'destroy'])->name('produk.delete');
-})->middleware(["admin", "auth"])->name('admin.');
+
+    // Route Manajemen Jenis Layanan
+    Route::get('/manajemen-jenis-layanan', [JenisLayananController::class, 'index'])->name('jenisLayanan.index');
+    Route::post('/manajemen-jenis-layanan', [JenisLayananController::class, 'store'])->name('jenisLayanan.store');
+    Route::put("/manajemen-jenis-layanan/{jenisLayanan}", [JenisLayananController::class, 'update'])->name('jenisLayanan.update');
+    Route::delete("/manajemen-jenis-layanan/{jenisLayanan}", [JenisLayananController::class, 'destroy'])->name('jenisLayanan.delete');
+})->middleware(["admin"])->name('admin.');
 
 
-Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
+Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['admin']], function () {
     Route::get('/tutorial', [UserTutorialController::class, 'index'])->name('tutorial');
     Route::get('/tutorial/search', [UserTutorialController::class, 'search'])->name('tutorial.search');
 
     Route::get('/ulasan', [UserUlasanController::class, 'index'])->name('ulasan');
 
-    Route::post('/ulasan', [UserUlasanController::class, 'store'])->name('ulasan.create');
+    Route::post('/ulasan', [UserUlasanController::class, 'store'])->name('ulasan.create')->middleware('verified');
     
     Route::get('/katalog', [UserKatalogController::class, 'index'])->name('katalog');
     
@@ -107,37 +135,30 @@ Route::group(['prefix' => 'user', 'as' => 'user.'], function () {
         return Inertia::render('User/TambahProfil', ['userId' => $id]);
     })->name('tambah-profil');
 
+    Route::put('/tambah-profil/{id}', [UserProfileController::class, 'store'])->name('profile.store');
+
     // route booking
     Route::get('/booking', [UserBookingController::class, 'index'])->name('booking');
-    Route::post('/booking', [UserBookingController::class, 'store'])->name('booking.store'); // Corrected Controller
+    Route::post('/booking', [UserBookingController::class, 'store'])->name('booking.store')->middleware('verified'); // Corrected Controller
     
 
-    Route::get('/riwayat', [UserRiwayatController::class, 'index'])->name('riwayat'); // Corrected route to use RiwayatController
+    Route::get('/riwayat', [UserRiwayatController::class, 'index'])->name('riwayat')->middleware('verified'); // Corrected route to use RiwayatController
 
+    Route::get('/FaQ', function () {
+        return Inertia::render('User/FaQ');
+    })->name('FaQ');
 })->name('user.');
 
 Route::get('/', function () {
     return Inertia::render('Register');
 })->name('auth');
 
-Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/forgot', [LoginController::class, 'forgot'])->name('forgot');
-
-Route::get('/change-password', [LoginController::class, 'changePasswordPage'])->name('changePasswordPage');
-Route::put('/change-password', [LoginController::class, 'changePassword'])->name('changePassword');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::put('/profile/{id}', [ProfileController::class, 'store'])->name('profile.store');
 
-// Uncomment if needed
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+require __DIR__.'/auth.php';
 
-// Route::middleware('auth')->group(function () {
-//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// Route::get('/', function () {
+//     echo "OK";
 // });
-
-// require __DIR__.'/auth.php';

@@ -6,7 +6,12 @@ import ButtonAdmin from "@/Components/ButtonAdmin";
 import { Link, useForm } from "@inertiajs/react";
 import ReactSelect from "react-select";
 
-export default function EditBooking({ booking, katalogs, users }) {
+export default function EditBooking({
+    booking,
+    katalogs,
+    users,
+    jenisLayanans,
+}) {
     const [selectedUser, setSelectedUser] = useState("");
     const [selectedKatalog, setSelectedKatalog] = useState("");
     const [selectedJenisLayanan, setSelectedJenisLayanan] = useState("");
@@ -16,13 +21,7 @@ export default function EditBooking({ booking, katalogs, users }) {
 
     // DROP DOWN: ambil merk motor dari tabel katalogs
     const [katalogList, setKatalogList] = useState(katalogs);
-
-    const jenisLayananList = [
-        { value: "Service Rutin", label: "Service Rutin" },
-        { value: "Perbaikan Khusus", label: "Perbaikan Khusus" },
-        { value: "Tune Up / Bore Up", label: "Tune Up / Bore Up" },
-        { value: "Cek Kendaraan", label: "Cek Kendaraan" },
-    ];
+    const [jenisLayananList, setJenisLayananList] = useState(jenisLayanans);
 
     const statusList = [
         { value: "Diproses", label: "Diproses" },
@@ -36,8 +35,8 @@ export default function EditBooking({ booking, katalogs, users }) {
     }));
 
     const dataSelectJenisLayanan = jenisLayananList.map((layanan) => ({
-        value: layanan.value,
-        label: layanan.label,
+        value: layanan.id,
+        label: layanan.jenis_layanan,
     }));
 
     const dataSelectUser = userList.map((user) => ({

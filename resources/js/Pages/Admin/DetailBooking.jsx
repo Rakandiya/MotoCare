@@ -9,6 +9,8 @@ import { Link, useForm, Head, router } from "@inertiajs/react";
 export default function DetailBooking({ dataBooking, totalPrice }) {
     const [booking, setBooking] = useState(dataBooking);
 
+    console.log(dataBooking);
+
     console.log(totalPrice);
 
     const [produkData, setProdukData] = useState([]);
@@ -38,6 +40,14 @@ export default function DetailBooking({ dataBooking, totalPrice }) {
 
     useEffect(() => {
         // This will run after the component is mounted
+        setProdukData([
+            {
+                nama_produk: booking.jenis_layanan.jenis_layanan,
+                jumlah: 1,
+                harga: booking.jenis_layanan.harga,
+                totalHarga: booking.jenis_layanan.harga,
+            },
+        ]);
         addDataToProdukData(booking);
     }, [booking]);
 
@@ -68,7 +78,9 @@ export default function DetailBooking({ dataBooking, totalPrice }) {
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Jenis Layanan</th>
                     <td className={styles["td"]}>:</td>
-                    <td className={styles["td"]}>{booking.jenis_layanan}</td>
+                    <td className={styles["td"]}>
+                        {booking.jenis_layanan.jenis_layanan}
+                    </td>
                 </tr>
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Merk Motor</th>
@@ -144,7 +156,9 @@ export default function DetailBooking({ dataBooking, totalPrice }) {
                 <tr className={styles["tr"]}>
                     <th className={styles["th"]}>Total Pembayaran</th>
                     <td style={{ width: "15px" }}>:</td>
-                    <td>Rp. {totalPrice}</td>
+                    <td>
+                        Rp. {parseInt(totalPrice) + booking.jenis_layanan.harga}
+                    </td>
                 </tr>
             </Table>
 

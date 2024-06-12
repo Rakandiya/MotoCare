@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import UserLayout from "@/Layouts/UserLayout";
 import styles from "../../css/Register.module.css";
-import { useForm } from "@inertiajs/react";
+import { useForm, router } from "@inertiajs/react";
+import { route } from "ziggy-js";
 
 export default function Register({ auth, flash }) {
     const wrapperRef = useRef(null);
@@ -10,7 +11,17 @@ export default function Register({ auth, flash }) {
     const registerLinkRef = useRef(null);
     const forgotLinkRef = useRef(null);
 
-    console.log(flash);
+    // console.log(flash);
+
+    useEffect(() => {
+        if (auth.user) {
+            router.visit(route("user.home"), {
+                onSuccess: () => {
+                    console.log("User is logged in");
+                },
+            });
+        }
+    }, []);
 
     useEffect(() => {
         const wrapper = wrapperRef.current;
@@ -196,7 +207,7 @@ export default function Register({ auth, flash }) {
             return;
         }
         e.preventDefault();
-        postRegister("/register");
+        postRegister(route("register"));
     };
 
     const handleForgotSubmit = (e) => {
@@ -252,7 +263,7 @@ export default function Register({ auth, flash }) {
                                         </h3>
                                     )}
 
-                                    {flash.success && (
+                                    {/* {flash.success && (
                                         <h3
                                             style={{
                                                 color: "white",
@@ -264,7 +275,7 @@ export default function Register({ auth, flash }) {
                                         >
                                             {flash.success}
                                         </h3>
-                                    )}
+                                    )} */}
                                     <form onSubmit={handleLoginSubmit}>
                                         <div className={styles["input-box"]}>
                                             <span className={styles.icon}>

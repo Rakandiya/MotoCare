@@ -51,11 +51,11 @@ export default function AdminLayout({ title, children }) {
             label: "Manajemen Produk",
             subPaths: [],
         },
-        // {
-        //     path: "admin.invoice.index",
-        //     label: "Manajamaen Invoice",
-        //     subPaths: [],
-        // },
+        {
+            path: "admin.jenisLayanan.index",
+            label: "Manajemen Jenis Layanan",
+            subPaths: [],
+        },
         {
             path: "auth.logout",
             label: "Log Out",

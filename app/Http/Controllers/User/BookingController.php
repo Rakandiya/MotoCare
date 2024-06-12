@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\Katalog;
-use App\Models\Invoice;
+use App\Models\JenisLayanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -18,7 +18,8 @@ class BookingController extends Controller
     {
         $bookings = Booking::all();
         $katalogs = Katalog::all();
-        return Inertia::render('User/Booking', compact('bookings', 'katalogs'));
+        $jenisLayanans = JenisLayanan::all();
+        return Inertia::render('User/Booking', compact('bookings', 'katalogs', 'jenisLayanans'));
     }
 
     // menampilkan form untuk tambah booking
@@ -27,27 +28,22 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        
-
-        
         DB::transaction(function () use ($request) {
-            $user = Auth::user(); // Get the currently authenticated user
-
-            // dd($user);
             $validatedData = $request->validate([
-                'jenis_layanan' => 'required',
+                'user_id' => 'required',
+                'jenis_layanan_id' => 'required',
                 'katalog_id' => 'required',
-                'tahun_pembuatan' => 'nullable|numeric',
-                'nomor_polisi' => 'nullable|string',
-                'km_kendaraan' => 'nullable|numeric',
+                'tahun_pembuatan' => 'required|numeric',
+                'nomor_polisi' => 'required',
+                'km_kendaraan' => 'required|numeric',
                 'jadwal_booking' => 'required|date',
-                'catatan' => 'nullable',
+                'catatan' => 'required',
             ]);
 
             // Memanggil stored procedure yang telah diperbarui
             DB::select('CALL CreateBooking(?, ?, ?, ?, ?, ?, ?, ?)', [
-                $user->id,
-                $validatedData['jenis_layanan'],
+                $validatedData['user_id'],
+                $validatedData['jenis_layanan_id'],
                 $validatedData['katalog_id'],
                 $validatedData['tahun_pembuatan'],
                 $validatedData['nomor_polisi'],

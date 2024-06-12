@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -32,9 +33,13 @@ class RegisterController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
+            event(new Registered($user));
+
+            $user->sendEmailVerificationNotification();
+
             Auth::login($user);
 
-            return redirect()->route('user.tambah-profil', ['id' => $user->id]);
+            // return redirect()->route('user.tambah-profil', ['id' => $user->id]);
         } catch (\Exception $e) {
             \Log::error($e);
             return redirect()->back()->with('error', 'Registration failed. Please try again.');

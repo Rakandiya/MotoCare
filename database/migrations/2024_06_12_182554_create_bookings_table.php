@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->string("jenis_layanan");
+            $table->foreignId('jenis_layanan_id')->constrained();
             $table->foreignId('katalog_id')->constrained();
             $table->string("tahun_pembuatan")->nullable();
             $table->string("nomor_polisi")->nullable();

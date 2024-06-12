@@ -153,6 +153,10 @@ const Ziggy = {
         "user.register": { uri: "user/register", methods: ["GET", "HEAD"] },
         "register.post": { uri: "register", methods: ["POST"] },
         login: { uri: "login", methods: ["POST"] },
+        "user.FaQ": {
+            uri: "user/FaQ",
+            methods: ["GET", "HEAD"]
+        },
     },
 };
 if (typeof window !== "undefined" && typeof window.Ziggy !== "undefined") {

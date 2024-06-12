@@ -192,6 +192,7 @@ export default function ManajemenBooking({ bookings }) {
                     }
                 );
             },
+            width: "14%",
         },
         {
             name: "Status Pembayaran",

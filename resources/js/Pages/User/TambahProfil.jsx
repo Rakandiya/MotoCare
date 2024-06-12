@@ -175,10 +175,7 @@ export default function TambahProfil({ auth, userId }) {
                             </div>
 
                             <div className={styles.btnWrapper}>
-                                <Link
-                                    href={route("auth")}
-                                    className={styles.btnBack}
-                                >
+                                <Link href="/" className={styles.btnBack}>
                                     <i className="bx bx-arrow-back"></i> KEMBALI
                                 </Link>
                                 <button

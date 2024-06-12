@@ -47,7 +47,7 @@ export default function Dashboard({
     const cardData = [
         {
             background: "#f28c85",
-            title: averageRating.toFixed(2),
+            title: averageRating ? averageRating.toFixed(2) : "0",
             text: "Rating Pengguna",
             icon: (
                 <box-icon
