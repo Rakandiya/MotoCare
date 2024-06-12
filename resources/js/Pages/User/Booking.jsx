@@ -6,7 +6,7 @@ import { data } from "autoprefixer";
 import { Head, useForm, router } from "@inertiajs/react";
 import ReactSelect from "react-select";
 
-export default function Booking({ users, katalogs, auth }) {
+export default function Booking({ users, katalogs, auth, jenisLayanans }) {
     const [selectedJenisLayanan, setSelectedJenisLayanan] = useState("");
     const [selectedUser, setSelectedUser] = useState(
         users && users.length > 0 ? users[0].id : null
@@ -28,10 +28,16 @@ export default function Booking({ users, katalogs, auth }) {
     });
 
     const [katalogList, setKatalogList] = useState(katalogs);
+    const [jenisLayananList, setJenisLayananList] = useState(jenisLayanans);
 
     const dataSelectKatalog = katalogList.map((katalog) => ({
         value: katalog.id,
         label: katalog.merk + " " + katalog.model,
+    }));
+
+    const dataSelectJenisLayanan = jenisLayananList.map((jenisLayanan) => ({
+        value: jenisLayanan.id,
+        label: jenisLayanan.nama,
     }));
 
     // handleSubmit untuk tambah booking
@@ -93,94 +99,66 @@ export default function Booking({ users, katalogs, auth }) {
                         <h1 className={styles["title"]}>BOOKING</h1>
                         <form onSubmit={handleSubmit}>
                             <section className={styles["form-booking"]}>
-                                <Row className="form-container-row">
-                                    <Col className="form-container-col">
-                                        <h3 className={styles["jenis-layanan"]}>
-                                            Jenis Layanan
-                                        </h3>
-                                        <table className={styles["form-table"]}>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <input
-                                                            type="radio"
-                                                            name="jenis_layanan"
-                                                            value="Service Rutin"
-                                                            checked={
-                                                                data.jenis_layanan ===
-                                                                "Service Rutin"
-                                                            }
-                                                            onChange={
-                                                                handleInputChange
-                                                            }
-                                                        />
-                                                        Service Rutin
-                                                    </td>
-                                                </tr>
+                                <Row>
+                                    <Col md={6}>
+                                        <div style={{ width: "60%" }}>
+                                            <h3
+                                                className={
+                                                    styles["jenis-layanan"]
+                                                }
+                                            >
+                                                Jenis Layanan
+                                            </h3>
+                                            <ReactSelect
+                                                id="katalog"
+                                                options={dataSelectJenisLayanan}
+                                                value={dataSelectJenisLayanan.find(
+                                                    (option) =>
+                                                        option.value ===
+                                                        selectedJenisLayanan
+                                                )}
+                                                onChange={(selectedOption) => {
+                                                    setSelectedJenisLayanan(
+                                                        selectedOption.value
+                                                    );
+                                                    setData((prevData) => ({
+                                                        ...prevData,
+                                                        jenis_layanan_id:
+                                                            selectedOption.value,
+                                                    }));
+                                                }}
+                                                placeholder="Pilih Jenis Layanan"
+                                            />
+                                            {errorMessages.jenis_layanan_id && (
+                                                <p className={styles.error}>
+                                                    {
+                                                        errorMessages.jenis_layanan_id
+                                                    }
+                                                </p>
+                                            )}
+                                        </div>
+                                    </Col>
 
-                                                <tr>
-                                                    <td>
-                                                        <input
-                                                            type="radio"
-                                                            name="jenis_layanan"
-                                                            value="Perbaikan Khusus"
-                                                            checked={
-                                                                data.jenis_layanan ===
-                                                                "Perbaikan Khusus"
-                                                            }
-                                                            onChange={
-                                                                handleInputChange
-                                                            }
-                                                        />
-                                                        Perbaikan Khusus
-                                                    </td>
-                                                </tr>
-
-                                                <tr>
-                                                    <td>
-                                                        <input
-                                                            type="radio"
-                                                            name="jenis_layanan"
-                                                            value="Tune Up/Bore Up"
-                                                            checked={
-                                                                data.jenis_layanan ===
-                                                                "Tune Up/Bore Up"
-                                                            }
-                                                            onChange={
-                                                                handleInputChange
-                                                            }
-                                                        />
-                                                        Tune Up/Bore Up
-                                                    </td>
-                                                </tr>
-
-                                                <tr>
-                                                    <td>
-                                                        <input
-                                                            type="radio"
-                                                            name="jenis_layanan"
-                                                            value="Cek Kendaraan"
-                                                            checked={
-                                                                data.jenis_layanan ===
-                                                                "Cek Kendaraan"
-                                                            }
-                                                            onChange={
-                                                                handleInputChange
-                                                            }
-                                                        />
-                                                        Cek Kendaraan
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        {errorMessages.jenis_layanan && (
+                                    <Col md={6}>
+                                        <h3>Jadwal Booking</h3>
+                                        <input
+                                            type="date"
+                                            id="tanggal"
+                                            name="jadwal_booking"
+                                            required
+                                            value={data.jadwal_booking}
+                                            onChange={handleInputChange}
+                                        />
+                                        {errorMessages.jadwal_booking && (
                                             <p className={styles.error}>
-                                                {errorMessages.jenis_layanan}
+                                                {errorMessages.jadwal_booking}
                                             </p>
                                         )}
                                     </Col>
+                                </Row>
 
-                                    <Col className="form-container-col">
+                                <Row style={{ marginTop: "20px" }}>
+                                    <Col md={6}>
                                         <h3>Informasi Motor</h3>
                                         <table className={styles["form-table"]}>
                                             <tbody>
@@ -231,9 +209,52 @@ export default function Booking({ users, katalogs, auth }) {
                                                             value={
                                                                 data.tahun_pembuatan
                                                             }
-                                                            onChange={
-                                                                handleInputChange
-                                                            }
+                                                            onChange={(e) => {
+                                                                const year =
+                                                                    e.target
+                                                                        .value;
+                                                                // Allow only 4 digit numbers
+                                                                if (
+                                                                    year.length <=
+                                                                        4 &&
+                                                                    /^[0-9]*$/.test(
+                                                                        year
+                                                                    )
+                                                                ) {
+                                                                    handleInputChange(
+                                                                        e
+                                                                    );
+                                                                }
+                                                                // Set error message if length is less than 4
+                                                                if (
+                                                                    year.length <
+                                                                    4
+                                                                ) {
+                                                                    setErrorMessages(
+                                                                        (
+                                                                            prevErrors
+                                                                        ) => ({
+                                                                            ...prevErrors,
+                                                                            tahun_pembuatan:
+                                                                                "Tahun Pembuatan harus 4 digit",
+                                                                        })
+                                                                    );
+                                                                } else {
+                                                                    setErrorMessages(
+                                                                        (
+                                                                            prevErrors
+                                                                        ) => {
+                                                                            const {
+                                                                                tahun_pembuatan,
+                                                                                ...rest
+                                                                            } =
+                                                                                prevErrors;
+                                                                            return rest;
+                                                                        }
+                                                                    );
+                                                                }
+                                                            }}
+                                                            maxLength="4"
                                                         />
                                                     </td>
                                                 </tr>
@@ -296,27 +317,7 @@ export default function Booking({ users, katalogs, auth }) {
                                             </tbody>
                                         </table>
                                     </Col>
-                                </Row>
-
-                                <Row>
-                                    <Col style={{ marginTop: "10px" }}>
-                                        <h3>Jadwal Booking</h3>
-                                        <input
-                                            type="date"
-                                            id="tanggal"
-                                            name="jadwal_booking"
-                                            required
-                                            value={data.jadwal_booking}
-                                            onChange={handleInputChange}
-                                        />
-                                        {errorMessages.jadwal_booking && (
-                                            <p className={styles.error}>
-                                                {errorMessages.jadwal_booking}
-                                            </p>
-                                        )}
-                                    </Col>
-
-                                    <Col className="form-container-col">
+                                    <Col md={6}>
                                         <h3>Catatan</h3>
                                         <textarea
                                             id="catatan"
@@ -331,8 +332,8 @@ export default function Booking({ users, katalogs, auth }) {
                                         )}
                                     </Col>
                                 </Row>
-                                <Row className="form-container-row">
-                                    <Col className="form-container-col">
+                                <Row>
+                                    <Col>
                                         <div
                                             className={styles["tombol-submit"]}
                                         >

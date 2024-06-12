@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import ReactSelect from "react-select";
 import { Head, useForm, router } from "@inertiajs/react";
 
-export default function TambahBooking({ katalogs, users }) {
+export default function TambahBooking({ katalogs, users, jenisLayanans }) {
     const [selectedUser, setSelectedUser] = useState("");
     const [selectedKatalog, setSelectedKatalog] = useState("");
     const [selectedJenisLayanan, setSelectedJenisLayanan] = useState("");
@@ -18,16 +18,11 @@ export default function TambahBooking({ katalogs, users }) {
     // DROP DOWN: ambil merk motor dari tabel katalogs
     const [katalogList, setKatalogList] = useState(katalogs);
 
-    const jenisLayananList = [
-        { value: "Service Rutin", label: "Service Rutin" },
-        { value: "Perbaikan Khusus", label: "Perbaikan Khusus" },
-        { value: "Tune Up / Bore Up", label: "Tune Up / Bore Up" },
-        { value: "Cek Kendaraan", label: "Cek Kendaraan" },
-    ];
+    const [jenisLayananList, setJenisLayananList] = useState(jenisLayanans);
 
     const dataSelectJenisLayanan = jenisLayananList.map((layanan) => ({
-        value: layanan.value,
-        label: layanan.label,
+        value: layanan.id,
+        label: layanan.jenis_layanan,
     }));
 
     const dataSelectUser = userList.map((user) => ({
@@ -43,7 +38,7 @@ export default function TambahBooking({ katalogs, users }) {
     const { data, setData, post, processing, errors } = useForm({
         id: "",
         user_id: selectedUser.id,
-        jenis_layanan: selectedJenisLayanan,
+        jenis_layanan_id: selectedJenisLayanan.id,
         katalog_id: selectedKatalog.id,
         tahun_pembuatan: "",
         nomor_polisi: "",
@@ -52,12 +47,12 @@ export default function TambahBooking({ katalogs, users }) {
         catatan: "",
     });
 
-    useEffect(() => {
-        setData({
-            ...data,
-            jenis_layanan: selectedJenisLayanan,
-        });
-    }, [selectedJenisLayanan]);
+    // useEffect(() => {
+    //     setData({
+    //         ...data,
+    //         jenis_layanan_id: selectedJenisLayanan.id,
+    //     });
+    // }, [selectedJenisLayanan]);
 
     const [errorMessages, setErrorMessages] = useState({});
 
@@ -145,11 +140,15 @@ export default function TambahBooking({ katalogs, users }) {
                                     (option) =>
                                         option.value === selectedJenisLayanan
                                 )}
-                                onChange={(selectedOption) =>
+                                onChange={(selectedOption) => {
                                     setSelectedJenisLayanan(
                                         selectedOption.value
-                                    )
-                                }
+                                    );
+                                    setData((prevData) => ({
+                                        ...prevData,
+                                        jenis_layanan_id: selectedOption.value,
+                                    }));
+                                }}
                                 placeholder="Pilih Jenis Layanan"
                             />
                             {errorMessages.jenis_layanan && (

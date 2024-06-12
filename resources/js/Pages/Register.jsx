@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import UserLayout from "@/Layouts/UserLayout";
 import styles from "../../css/Register.module.css";
-import { useForm } from "@inertiajs/react";
+import { useForm, router } from "@inertiajs/react";
+import { route } from "ziggy-js";
 
 export default function Register({ auth, flash }) {
     const wrapperRef = useRef(null);
@@ -11,6 +12,16 @@ export default function Register({ auth, flash }) {
     const forgotLinkRef = useRef(null);
 
     // console.log(flash);
+
+    useEffect(() => {
+        if (auth.user) {
+            router.visit(route("user.home"), {
+                onSuccess: () => {
+                    console.log("User is logged in");
+                },
+            });
+        }
+    }, []);
 
     useEffect(() => {
         const wrapper = wrapperRef.current;

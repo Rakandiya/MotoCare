@@ -15,7 +15,7 @@ class RiwayatController extends Controller
     public function index()
     {
         if(Auth::check()){
-            $bookings = Booking::with(['user', 'katalog', 'invoice.items.produk'])->where('user_id', auth()->user()->id)->get();
+            $bookings = Booking::with(['user', 'katalog', 'invoice.items.produk', 'jenisLayanan'])->where('user_id', auth()->user()->id)->get();
             return Inertia::render('User/Riwayat', compact('bookings'));
         }else{
             return redirect()->route('auth');

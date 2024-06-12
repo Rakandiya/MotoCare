@@ -11,6 +11,8 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
     const [bookingList, setBookingList] = useState(bookings);
     const [number, setNumber] = useState(1);
 
+    console.log(bookings);
+
     useEffect(() => {
         if (auth.user) {
             setBookingList(
@@ -118,7 +120,8 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
                                                 " " +
                                                 selectedBooking.katalog.model +
                                                 " - " +
-                                                selectedBooking.jenis_layanan}
+                                                selectedBooking.jenis_layanan
+                                                    .jenis_layanan}
                                     </h3>
                                     <table className={styles["info-pemilik"]}>
                                         <tbody>
@@ -154,7 +157,9 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
                                                 <td>Jenis Layanan</td>
                                                 <td>
                                                     {selectedBooking &&
-                                                        selectedBooking.jenis_layanan}
+                                                        selectedBooking
+                                                            .jenis_layanan
+                                                            .jenis_layanan}
                                                 </td>
                                             </tr>
                                             <tr>
@@ -190,6 +195,27 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
                                             className={styles["info-invoice"]}
                                         >
                                             <tbody>
+                                                <tr>
+                                                    <td>
+                                                        {
+                                                            selectedBooking
+                                                                ?.jenis_layanan
+                                                                ?.jenis_layanan
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            selectedBooking
+                                                                ?.jenis_layanan
+                                                                ?.harga
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        {selectedBooking?.jenis_layanan
+                                                            ? 1
+                                                            : ""}
+                                                    </td>
+                                                </tr>
                                                 {selectedBooking &&
                                                 selectedBooking.invoice
                                                     ?.items ? (
@@ -252,20 +278,20 @@ export default function Riwayat({ bookings, users, invoices, auth }) {
                                                         {selectedBooking &&
                                                         selectedBooking.invoice ? (
                                                             <div>
-                                                                {/* hitung total harga */}
+                                                                {/* hitung total harga termasuk harga jenis layanan */}
                                                                 {selectedBooking.invoice.items
                                                                     .reduce(
                                                                         (
                                                                             total,
                                                                             item
-                                                                        ) => {
-                                                                            return (
-                                                                                total +
-                                                                                item.jumlah *
-                                                                                    item.harga
-                                                                            );
-                                                                        },
-                                                                        0
+                                                                        ) =>
+                                                                            total +
+                                                                            item.jumlah *
+                                                                                item.harga,
+                                                                        selectedBooking
+                                                                            .jenis_layanan
+                                                                            ?.harga ||
+                                                                            0 // Menambahkan harga layanan sebagai nilai awal
                                                                     )
                                                                     .toLocaleString(
                                                                         "id-ID",

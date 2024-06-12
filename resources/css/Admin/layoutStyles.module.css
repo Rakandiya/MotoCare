@@ -6,13 +6,13 @@
 }
 
 .nav-admin {
-    flex: 0 0 270px; /* lebar tetap 290px, tidak tumbuh atau menyusut */
+    flex: 0 0 280px; /* lebar tetap 290px, tidak tumbuh atau menyusut */
     background: #443f3f;
     min-height: 100%; /* Pastikan navbar mengikuti tinggi container */
     position: sticky;
     top: 0;
     flex-basis: 290px;
-    width: 290px;
+    width: 310px;
 }
 
 .nav-admin .nav-admin-ul {

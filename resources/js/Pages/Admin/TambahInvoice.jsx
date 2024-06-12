@@ -261,7 +261,7 @@ export default function AddInvoice({ booking, produks }) {
                             </label>
                             <input
                                 type="text"
-                                value={bookingData.jenis_layanan}
+                                value={bookingData.jenis_layanan.jenis_layanan}
                                 autoComplete="off"
                                 required
                                 disabled
@@ -405,6 +405,74 @@ export default function AddInvoice({ booking, produks }) {
                     className={styles["form"]}
                 >
                     <Row className="justify-content-md-center mb-3">
+                        <Col md={4}>
+                            <label
+                                className={styles["label"]}
+                                htmlFor="jenis_layanan"
+                            >
+                                Status Pembayaran
+                            </label>
+                            <select
+                                value={data.status}
+                                className={styles["select"]}
+                                name="status"
+                                id="status"
+                                onChange={handleInputChange}
+                            >
+                                <option disabled value="">
+                                    Pilih Status Pembayaran
+                                </option>
+                                <option value="Unpaid">Unpaid</option>
+                                <option value="Paid">Paid</option>
+                            </select>
+                        </Col>
+
+                        <Col md={4}>
+                            <label
+                                className={styles["label"]}
+                                htmlFor="tanggal"
+                            >
+                                Tanggal
+                            </label>
+                            <input
+                                type="date"
+                                name="tanggal"
+                                id="tanggal"
+                                className={styles["input"]}
+                                value={data.tanggal}
+                                onChange={(e) =>
+                                    setData({
+                                        ...data,
+                                        tanggal: e.target.value,
+                                    })
+                                }
+                            />
+                        </Col>
+
+                        <Col md={4}>
+                            <label
+                                className={styles["label"]}
+                                htmlFor="catatan"
+                            >
+                                Catatan Tambahan
+                            </label>
+                            <textarea
+                                rows="4"
+                                name="catatan"
+                                id="catatan"
+                                value={data.catatan}
+                                autoComplete="off"
+                                className={styles["catatan"]}
+                                onChange={handleInputChange}
+                            ></textarea>
+                        </Col>
+                    </Row>
+
+                    <h2 className={styles["title-form"] + " my-3"}>
+                        Tambah Produk
+                    </h2>
+
+                    <Row className="justify-content-md-center mb-3">
                         <Col md={6}>
                             <label className={styles["label"]} htmlFor="produk">
                                 Nama Produk
@@ -471,70 +539,6 @@ export default function AddInvoice({ booking, produks }) {
                                     size="18px"
                                 ></box-icon>
                             </Button>
-                        </Col>
-                    </Row>
-
-                    <Row className="justify-content-md-center mb-3">
-                        <Col md={4}>
-                            <label
-                                className={styles["label"]}
-                                htmlFor="jenis_layanan"
-                            >
-                                Status Pembayaran
-                            </label>
-                            <select
-                                value={data.status}
-                                className={styles["select"]}
-                                name="status"
-                                id="status"
-                                onChange={handleInputChange}
-                            >
-                                <option disabled value="">
-                                    Pilih Status Pembayaran
-                                </option>
-                                <option value="Unpaid">Unpaid</option>
-                                <option value="Paid">Paid</option>
-                            </select>
-                        </Col>
-
-                        <Col md={4}>
-                            <label
-                                className={styles["label"]}
-                                htmlFor="tanggal"
-                            >
-                                Tanggal
-                            </label>
-                            <input
-                                type="date"
-                                name="tanggal"
-                                id="tanggal"
-                                className={styles["input"]}
-                                value={data.tanggal}
-                                onChange={(e) =>
-                                    setData({
-                                        ...data,
-                                        tanggal: e.target.value,
-                                    })
-                                }
-                            />
-                        </Col>
-
-                        <Col md={4}>
-                            <label
-                                className={styles["label"]}
-                                htmlFor="catatan"
-                            >
-                                Catatan Tambahan
-                            </label>
-                            <textarea
-                                rows="4"
-                                name="catatan"
-                                id="catatan"
-                                value={data.catatan}
-                                autoComplete="off"
-                                className={styles["catatan"]}
-                                onChange={handleInputChange}
-                            ></textarea>
                         </Col>
                     </Row>
 

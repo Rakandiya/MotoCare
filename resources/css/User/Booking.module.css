@@ -1,7 +1,3 @@
-/*-----------------------------------*\
-    #REUSED STYLE
-  \*-----------------------------------*/
-
 .container {
     padding-inline: 16px;
     margin: auto;
@@ -211,9 +207,6 @@ h1.title {
     width: 15%;
 }
 
-/*-----------------------------------*\
-    #HEADER
-  \*-----------------------------------*/
 .header .btn {
     display: none;
 }
@@ -321,7 +314,7 @@ h1.title {
 
 /* select radio */
 .form-table td {
-    color: var(--light-gray);
+    color: #585858;
     font-size: 16px;
     padding-bottom: 7px;
 }
@@ -359,7 +352,7 @@ input[type="email"] {
 input[type="text"]::placeholder,
 input[type="email"]::placeholder,
 textarea::placeholder {
-    color: var(--light-gray);
+    color: #585858;
     font-size: 15px;
     font-family: Poppins;
 }
@@ -368,7 +361,7 @@ textarea {
     background-color: var(--light-gray);
     border: 2px solid var(--light-gray);
     border-radius: 10px;
-    width: -webkit-fill-available;
+    width: 350px;
     height: 150px;
     font-family: var(--ff-Poppins);
     padding: 10px;
@@ -397,12 +390,10 @@ input[type="date"] {
 
 /* atur jarak tombol submit */
 .tombol-submit {
-    margin-top: 70px;
+    width: 100%;
+    margin-top: 20px;
+    margin-right: 70px;
 }
-
-/*-----------------------------------*\
-    #MEDIA QUERIES
-  \*-----------------------------------*/
 
 /**
    * responsive for large than 575px screen
